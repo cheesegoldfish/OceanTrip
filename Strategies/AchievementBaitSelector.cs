@@ -72,15 +72,36 @@ namespace OceanTripPlanner.Strategies
 			// Filter fish by spectral status
 			var availableFish = achievementFish.Where(f => f.IsSpectral == isSpectral).ToList();
 
+			// Not in spectral but achievement fish here are mostly spectral? Pop spectral first.
+			if (!isSpectral && !availableFish.Any())
+			{
+				int spectralCount = achievementFish.Count(f => f.IsSpectral);
+				if (spectralCount > 0)
+				{
+					var allFish = FishDataCache.GetFish();
+					var spectralTrigger = allFish.FirstOrDefault(f => f.RouteShortName == context.Location && f.CausesSpectral);
+					if (spectralTrigger != null)
+					{
+						await _baitChanger.ChangeBait(spectralTrigger.FavoriteBait,
+							$"Achievement ({targetAchievement}) — popping spectral, {spectralCount} achievement fish need it");
+						await _patienceManager.UsePatience();
+						return;
+					}
+				}
+
+				Log($"No {targetAchievement} fish available for current conditions. Using default bait.", OceanLogLevel.Debug);
+				await _baitChanger.ChangeBait(context.DefaultBaitId);
+				return;
+			}
+
 			if (!availableFish.Any())
 			{
-				Log($"No {targetAchievement} fish available for current conditions (Spectral: {isSpectral}). Using default bait.", OceanLogLevel.Debug);
+				Log($"No {targetAchievement} fish available at {context.Location}. Using default bait.", OceanLogLevel.Debug);
 				await _baitChanger.ChangeBait(context.DefaultBaitId);
 				return;
 			}
 
 			// Select the preferred bait for achievement fish
-			// Priority: Choose bait that catches the most achievement fish in this location
 			var baitCounts = availableFish
 				.GroupBy(f => f.PreferredBait)
 				.Select(g => new { Bait = g.Key, Count = g.Count() })

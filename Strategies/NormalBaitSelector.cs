@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using ff14bot;
 using ff14bot.Managers;
 using Ocean_Trip.Definitions;
+using OceanTrip;
 using OceanTripPlanner.Definitions;
 using OceanTripPlanner.Helpers;
 
@@ -63,6 +64,21 @@ namespace OceanTripPlanner.Strategies
 				{
 					selectedBait = topFish.FavoriteBait;
 					baitReason = $"Fisher's Intuition active — targeting {topFish.FishName} ({topFish.Points} pts)";
+				}
+			}
+
+			// Step 1.5: Goal needs spectral — use bait for the spectral trigger fish
+			if (selectedBait == 0 && !Core.Player.HasAura(CharacterAuras.FishersIntuition))
+			{
+				var spectralTrigger = availableNormalFish.FirstOrDefault(f => f.CausesSpectral);
+				if (spectralTrigger != null)
+				{
+					string spectralReason = NeedsSpectral(context, missingFish);
+					if (spectralReason != null)
+					{
+						selectedBait = spectralTrigger.FavoriteBait;
+						baitReason = $"Popping spectral — {spectralReason}";
+					}
 				}
 			}
 
@@ -130,6 +146,48 @@ namespace OceanTripPlanner.Strategies
 					ActionManager.DoAction(Actions.Chum, Core.Me);
 				}
 			}
+		}
+
+		/// <summary>
+		/// Returns a reason string if spectral should be prioritized, null otherwise.
+		/// Achievement mode spectral popping is handled in AchievementBaitSelector.
+		/// </summary>
+		private string NeedsSpectral(BaitSelectionContext context, HashSet<uint> missingFish)
+		{
+			var location = context.Location;
+			var allFish = FishDataCache.GetFish();
+
+			// Fish Log / Auto mode: check if missing fish at this zone are spectral
+			if (context.FocusFishLog && missingFish.Count > 0)
+			{
+				var missingHere = allFish
+					.Where(f => f.RouteShortName == location && missingFish.Contains((uint)f.FishID))
+					.ToList();
+				if (missingHere.Any())
+				{
+					int spectralMissing = missingHere.Count(f => f.SpectralFish);
+					int normalMissing = missingHere.Count(f => !f.SpectralFish);
+					if (spectralMissing > 0 && normalMissing == 0)
+						return $"all {spectralMissing} missing fish here are spectral";
+					if (spectralMissing > normalMissing)
+						return $"most missing fish here are spectral ({spectralMissing} spectral vs {normalMissing} normal)";
+				}
+			}
+
+			// Points/Auto mode: spectral fish are worth more points
+			if (OceanTripNewSettings.Instance.FishPriority == FishPriority.Points || OceanTripNewSettings.Instance.FishPriority == FishPriority.Auto)
+			{
+				var spectralFish = allFish
+					.Where(f => f.RouteShortName == location && f.SpectralFish)
+					.ToList();
+				var normalFish = allFish
+					.Where(f => f.RouteShortName == location && !f.SpectralFish && !f.CausesSpectral)
+					.ToList();
+				if (spectralFish.Any() && normalFish.Any() && spectralFish.Average(f => f.Points) > normalFish.Average(f => f.Points))
+					return "spectral fish are worth more points";
+			}
+
+			return null;
 		}
 	}
 }
