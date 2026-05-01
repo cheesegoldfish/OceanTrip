@@ -141,6 +141,20 @@ namespace Ocean_Trip
 				case "Jewel of Plum Spring":
 					obj = UIElements.getIconImage(10, 22);
 					break;
+
+				// Thavnair
+				case "Mantis":
+					obj = UIElements.getIconImage(5, 34);
+					break;
+				case "Prehistoric":
+					obj = UIElements.getIconImage(6, 34);
+					break;
+				case "Akupara":
+					obj = UIElements.getIconImage(7, 34);
+					break;
+				case "Manasvin":
+					obj = UIElements.getIconImage(8, 34);
+					break;
 				default:
 					obj = Resources.blank;
 					break;

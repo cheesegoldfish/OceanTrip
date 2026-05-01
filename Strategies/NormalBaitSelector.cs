@@ -52,11 +52,11 @@ namespace OceanTripPlanner.Strategies
 				await _patienceManager.UsePatience();
 
 			// Deal with Intuition fish first... if we have the intution buff
-			if (Core.Player.HasAura(CharacterAuras.FishersIntuition) && (location == "galadion" || location == "rhotano" || location == "ciel" || location == "blood" || location == "rubysea"))
+			if (Core.Player.HasAura(CharacterAuras.FishersIntuition) && (location == "galadion" || location == "rhotano" || location == "ciel" || location == "blood" || location == "rubysea" || location == "thavnair"))
 				await _baitChanger.ChangeBait(FishBait.Krill);
 			else if (Core.Player.HasAura(CharacterAuras.FishersIntuition) && ((location == "south" && ((currentWeather != "Wind" && currentWeather != "Gales"))) || location == "sirensong" || location == "oneriver"))
 				await _baitChanger.ChangeBait(FishBait.PlumpWorm);
-			else if (Core.Player.HasAura(CharacterAuras.FishersIntuition) && (location == "sound" || location == "north" || location == "kugane"))
+			else if (Core.Player.HasAura(CharacterAuras.FishersIntuition) && (location == "sound" || location == "north" || location == "kugane" || location == "unnamed"))
 				await _baitChanger.ChangeBait(FishBait.Ragworm);
 
 			// Deal with all the rest - prefer favorite bait for missing fish
@@ -69,7 +69,7 @@ namespace OceanTripPlanner.Strategies
 			// Location-based defaults
 			else if (location == "galadion" || location == "rhotano" || location == "sound" || location == "oneriver" || location == "sirensong")
 				await _baitChanger.ChangeBait(FishBait.PlumpWorm);
-			else if (location == "south" || location == "blood")
+			else if (location == "south" || location == "blood" || location == "unnamed" || location == "thavnair")
 				await _baitChanger.ChangeBait(FishBait.Krill);
 			else if (location == "north" || location == "ciel" || location == "kugane" || location == "rubysea")
 				await _baitChanger.ChangeBait(FishBait.Ragworm);

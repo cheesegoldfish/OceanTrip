@@ -112,6 +112,12 @@ namespace OceanTripPlanner
 				case "oneriver":
 					name = "One River";
 					break;
+				case "unnamed":
+					name = "Unnamed Margin";
+					break;
+				case "thavnair":
+					name = "Thavnairian Coast";
+					break;
 				default:
 					name = shortname;
 					break;
@@ -162,6 +168,14 @@ namespace OceanTripPlanner
 
 			if (schedule[0].Item1 == "sirensong" || schedule[0].Item1 == "kugane" || schedule[0].Item1 == "rubysea" || schedule[0].Item1 == "oneriver")
 				objectives.Add("Shrimp");
+
+			if (schedule[0].Item1 == "unnamed")
+			{
+				if (schedule[2].Item2 == "Day")
+					objectives.Add("Prehistoric");
+				else
+					objectives.Add("Mantis");
+			}
 
 
 			for (int i = 0; i <= 2; i++)
@@ -264,6 +278,14 @@ namespace OceanTripPlanner
 					case "oneriver":
 						if (tod == "Day")
 							blueFish.Add("Jewel of Plum Spring");
+						break;
+					case "unnamed":
+						if (schedule[2].Item2 == "Day")
+							blueFish.Add("Akupara");
+						break;
+					case "thavnair":
+						if (tod == "Night")
+							blueFish.Add("Manasvin");
 						break;
 					default:
 						break;

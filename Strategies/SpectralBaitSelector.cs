@@ -65,6 +65,8 @@ namespace OceanTripPlanner.Strategies
 					|| ((location == "kugane") && (timeOfDay == "Night"))
 					|| ((location == "rubysea") && (timeOfDay == "Sunset"))
 					|| ((location == "oneriver") && (timeOfDay == "Day"))
+					|| ((location == "unnamed") && (timeOfDay == "Day"))
+					|| ((location == "thavnair") && (timeOfDay == "Sunset"))
 				))
 			{
 				caughtFish.Clear();
@@ -169,6 +171,20 @@ namespace OceanTripPlanner.Strategies
 					await _baitChanger.ChangeBait(FishBait.Ragworm, $"Switching bait to {_gameCache.GetItemName((uint)FishBait.Ragworm)} in order to catch 1x {_gameCache.GetItemName((uint)OceanFish.GensuiShrimp)}");
 				}
 			}
+			else if ((location == "unnamed") && (timeOfDay == "Day") && missingFish.Contains((uint)OceanFish.Akupara) && focusFishLog)
+			{
+				if (caughtFish.Count(x => x == OceanFish.CieldalaesRoosterfish) < 2) // Needs 2x Cieldalaes Roosterfish (mooch from Captain's Pen)
+				{
+					await _baitChanger.ChangeBait(FishBait.Krill, $"Switching bait to {_gameCache.GetItemName((uint)FishBait.Krill)} in order to catch {_gameCache.GetItemName((uint)OceanFish.CaptainsPen)} to mooch into {_gameCache.GetItemName((uint)OceanFish.CieldalaesRoosterfish)}");
+				}
+			}
+			else if ((location == "thavnair") && (timeOfDay == "Sunset") && missingFish.Contains((uint)OceanFish.Manasvin) && focusFishLog)
+			{
+				if (caughtFish.Count(x => x == OceanFish.Satrapsaurus) < 3) // Needs 3x Satrapsaurus
+				{
+					await _baitChanger.ChangeBait(FishBait.Ragworm, $"Switching bait to {_gameCache.GetItemName((uint)FishBait.Ragworm)} in order to catch 3x {_gameCache.GetItemName((uint)OceanFish.Satrapsaurus)}");
+				}
+			}
 			// Fallback to favorite bait for spectral fish
 			else if (focusFishLog && spectralFishToCatch.Any(x => x.FavoriteBait == FishBait.PlumpWorm) && PassTheTime.inventoryCount((int)FishBait.PlumpWorm) > 0)
 			{
@@ -212,6 +228,7 @@ namespace OceanTripPlanner.Strategies
 				|| ((location == "kugane"))
 				|| ((location == "sirensong"))
 				|| ((location == "oneriver"))
+				|| ((location == "unnamed") && (timeOfDay == "Day"))
 			)
 			{
 				await _baitChanger.ChangeBait(FishBait.Krill);
@@ -223,6 +240,9 @@ namespace OceanTripPlanner.Strategies
 				|| ((location == "north") && (timeOfDay == "Sunset"))
 				|| ((location == "rhotano") && (timeOfDay == "Sunset"))
 				|| ((location == "blood") && (timeOfDay == "Day"))
+				|| ((location == "unnamed") && (timeOfDay == "Sunset"))
+				|| ((location == "unnamed") && (timeOfDay == "Night"))
+				|| ((location == "thavnair"))
 			)
 			{
 				await _baitChanger.ChangeBait(FishBait.Ragworm);

@@ -245,6 +245,53 @@ namespace OceanTripPlanner.Definitions
 		public const int Gakugyo = 40598;
 		public const int GinrinGoshiki = 40599;
 		public const int JewelofPlumSpring = 40600;
+
+		// Unnamed Margin
+		public const int FirstMatesFinger = 51209;
+		public const int Specterfish = 51210;
+		public const int RhotanoPermit = 51211;
+		public const int RhotanoDahlia = 51212;
+		public const int LodesmatesPen = 51213;
+		public const int RhotanoRoosterfish = 51214;
+		public const int Rhotanosaurus = 51215;
+		public const int RoyalHandmaiden = 51216;
+		public const int SpectralStarfish = 51217;
+		public const int FrolicsomeFish = 51218;
+
+		// Unnamed Margin (Spectral)
+		public const int CaptainsFinger = 51219;
+		public const int BrightRedCoral = 51220;
+		public const int RoyalFavorite = 51221;
+		public const int PiratesPurse = 51222;
+		public const int CaptainsPen = 51223;
+		public const int Tylosaurus = 51224;
+		public const int CieldalaesRoosterfish = 51225;
+		public const int RenegadeRhotanosaurus = 51226;
+		public const int RedBoarfish = 51227;
+		public const int Akupara = 51228;
+
+		// Thavnair Margin
+		public const int RedMantis = 51229;
+		public const int DatliGwl = 51230;
+		public const int AgamasStrand = 51231;
+		public const int PalakasBlade = 51232;
+		public const int ParjanyaWrasse = 51233;
+		public const int Simolestes = 51234;
+		public const int Thavnasaurus = 51235;
+		public const int JuniorJinbei = 51236;
+		public const int SpectralGrouper = 51237;
+		public const int Silkfin = 51238;
+
+		// Thavnair Margin (Spectral)
+		public const int GreatRedMantis = 51239;
+		public const int GuzelGwl = 51240;
+		public const int Darpana = 51241;
+		public const int Silverdart = 51242;
+		public const int Satrapsaurus = 51243;
+		public const int TigerMantis = 51244;
+		public const int MehiMahi = 51245;
+		public const int Pliosaurus = 51246;
+		public const int Manasvin = 51247;
 	}
 
 	public static class FishBait

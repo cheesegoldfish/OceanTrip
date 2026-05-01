@@ -43,6 +43,12 @@
 			radioButtonFlat9 = new UI.Controls.RadioButtonFlat();
 			radioButtonFlat8 = new UI.Controls.RadioButtonFlat();
 			radioButtonFlat7 = new UI.Controls.RadioButtonFlat();
+			thavnairMantis = new UI.Controls.RadioButtonFlat();
+			thavnairPrehistoric = new UI.Controls.RadioButtonFlat();
+			MantisLabel = new System.Windows.Forms.Label();
+			mantisPicture = new System.Windows.Forms.CheckBox();
+			PrehistoricLabel = new System.Windows.Forms.Label();
+			prehistoricPicture = new System.Windows.Forms.CheckBox();
 			groupBox3 = new System.Windows.Forms.GroupBox();
 			assistedFishingLabel = new System.Windows.Forms.Label();
 			assistedFishingToggle = new UI.Controls.ToggleButton();
@@ -334,6 +340,8 @@
 			// 
 			// groupBox2
 			// 
+			groupBox2.Controls.Add(thavnairPrehistoric);
+			groupBox2.Controls.Add(thavnairMantis);
 			groupBox2.Controls.Add(radioButtonFlat9);
 			groupBox2.Controls.Add(radioButtonFlat8);
 			groupBox2.Controls.Add(radioButtonFlat7);
@@ -398,9 +406,43 @@
 			radioButtonFlat7.Text = "Shrimp (Solo)";
 			radioButtonFlat7.UnCheckedColor = System.Drawing.Color.Gray;
 			radioButtonFlat7.UseVisualStyleBackColor = true;
-			// 
+			//
+			// thavnairMantis
+			//
+			thavnairMantis.AutoSize = true;
+			thavnairMantis.CheckedColor = System.Drawing.Color.FromArgb(0, 137, 198);
+			thavnairMantis.DisabledColor = System.Drawing.Color.SlateGray;
+			thavnairMantis.Enabled = false;
+			thavnairMantis.Location = new System.Drawing.Point(385, 22);
+			thavnairMantis.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+			thavnairMantis.MinimumSize = new System.Drawing.Size(0, 17);
+			thavnairMantis.Name = "thavnairMantis";
+			thavnairMantis.Size = new System.Drawing.Size(113, 19);
+			thavnairMantis.TabIndex = 0;
+			thavnairMantis.TabStop = true;
+			thavnairMantis.Text = "Mantis Shrimp";
+			thavnairMantis.UnCheckedColor = System.Drawing.Color.Gray;
+			thavnairMantis.UseVisualStyleBackColor = true;
+			//
+			// thavnairPrehistoric
+			//
+			thavnairPrehistoric.AutoSize = true;
+			thavnairPrehistoric.CheckedColor = System.Drawing.Color.FromArgb(0, 137, 198);
+			thavnairPrehistoric.DisabledColor = System.Drawing.Color.SlateGray;
+			thavnairPrehistoric.Enabled = false;
+			thavnairPrehistoric.Location = new System.Drawing.Point(540, 22);
+			thavnairPrehistoric.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+			thavnairPrehistoric.MinimumSize = new System.Drawing.Size(0, 17);
+			thavnairPrehistoric.Name = "thavnairPrehistoric";
+			thavnairPrehistoric.Size = new System.Drawing.Size(121, 19);
+			thavnairPrehistoric.TabIndex = 1;
+			thavnairPrehistoric.TabStop = true;
+			thavnairPrehistoric.Text = "Primordial Fish";
+			thavnairPrehistoric.UnCheckedColor = System.Drawing.Color.Gray;
+			thavnairPrehistoric.UseVisualStyleBackColor = true;
+			//
 			// groupBox3
-			// 
+			//
 			groupBox3.Controls.Add(assistedFishingLabel);
 			groupBox3.Controls.Add(assistedFishingToggle);
 			groupBox3.ForeColor = System.Drawing.Color.Gainsboro;
@@ -1174,12 +1216,16 @@
 			groupBox7.Controls.Add(octopodsPicture);
 			groupBox7.Controls.Add(mantasLabel);
 			groupBox7.Controls.Add(mantasPicture);
+			groupBox7.Controls.Add(MantisLabel);
+			groupBox7.Controls.Add(mantisPicture);
+			groupBox7.Controls.Add(PrehistoricLabel);
+			groupBox7.Controls.Add(prehistoricPicture);
 			groupBox7.ForeColor = System.Drawing.Color.Gainsboro;
 			groupBox7.Location = new System.Drawing.Point(20, 496);
 			groupBox7.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
 			groupBox7.Name = "groupBox7";
 			groupBox7.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
-			groupBox7.Size = new System.Drawing.Size(649, 167);
+			groupBox7.Size = new System.Drawing.Size(649, 240);
 			groupBox7.TabIndex = 16;
 			groupBox7.TabStop = false;
 			groupBox7.Text = "Ocean Fishing Achievements";
@@ -1740,13 +1786,65 @@
 			exitIcon.Size = new System.Drawing.Size(23, 23);
 			exitIcon.TabIndex = 17;
 			exitIcon.TabStop = false;
-			// 
+			//
+			// MantisLabel
+			//
+			MantisLabel.AutoSize = true;
+			MantisLabel.Location = new System.Drawing.Point(16, 164);
+			MantisLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+			MantisLabel.Name = "MantisLabel";
+			MantisLabel.Size = new System.Drawing.Size(44, 15);
+			MantisLabel.TabIndex = 40;
+			MantisLabel.Text = "Mantis";
+			//
+			// mantisPicture
+			//
+			mantisPicture.Appearance = System.Windows.Forms.Appearance.Button;
+			mantisPicture.AutoCheck = false;
+			mantisPicture.FlatAppearance.BorderColor = System.Drawing.Color.Gainsboro;
+			mantisPicture.FlatAppearance.CheckedBackColor = System.Drawing.Color.Transparent;
+			mantisPicture.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Transparent;
+			mantisPicture.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Transparent;
+			mantisPicture.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			mantisPicture.Location = new System.Drawing.Point(15, 185);
+			mantisPicture.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+			mantisPicture.Name = "mantisPicture";
+			mantisPicture.Size = new System.Drawing.Size(47, 46);
+			mantisPicture.TabIndex = 41;
+			mantisPicture.UseVisualStyleBackColor = true;
+			//
+			// PrehistoricLabel
+			//
+			PrehistoricLabel.AutoSize = true;
+			PrehistoricLabel.Location = new System.Drawing.Point(69, 164);
+			PrehistoricLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+			PrehistoricLabel.Name = "PrehistoricLabel";
+			PrehistoricLabel.Size = new System.Drawing.Size(65, 15);
+			PrehistoricLabel.TabIndex = 42;
+			PrehistoricLabel.Text = "Prehistoric";
+			//
+			// prehistoricPicture
+			//
+			prehistoricPicture.Appearance = System.Windows.Forms.Appearance.Button;
+			prehistoricPicture.AutoCheck = false;
+			prehistoricPicture.FlatAppearance.BorderColor = System.Drawing.Color.Gainsboro;
+			prehistoricPicture.FlatAppearance.CheckedBackColor = System.Drawing.Color.Transparent;
+			prehistoricPicture.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Transparent;
+			prehistoricPicture.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Transparent;
+			prehistoricPicture.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			prehistoricPicture.Location = new System.Drawing.Point(72, 185);
+			prehistoricPicture.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+			prehistoricPicture.Name = "prehistoricPicture";
+			prehistoricPicture.Size = new System.Drawing.Size(47, 46);
+			prehistoricPicture.TabIndex = 43;
+			prehistoricPicture.UseVisualStyleBackColor = true;
+			//
 			// FormOceanSettings
 			// 
 			AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
 			AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			BackColor = System.Drawing.Color.FromArgb(30, 30, 44);
-			ClientSize = new System.Drawing.Size(852, 692);
+			ClientSize = new System.Drawing.Size(852, 700);
 			Controls.Add(exitIcon);
 			Controls.Add(groupBox7);
 			Controls.Add(tackleboxGroup);
@@ -1856,6 +1954,12 @@
 		private UI.Controls.RadioButtonFlat radioButtonFlat9;
 		private UI.Controls.RadioButtonFlat radioButtonFlat8;
 		private UI.Controls.RadioButtonFlat radioButtonFlat7;
+		private UI.Controls.RadioButtonFlat thavnairMantis;
+		private UI.Controls.RadioButtonFlat thavnairPrehistoric;
+		private System.Windows.Forms.Label MantisLabel;
+		private System.Windows.Forms.CheckBox mantisPicture;
+		private System.Windows.Forms.Label PrehistoricLabel;
+		private System.Windows.Forms.CheckBox prehistoricPicture;
 		private System.Windows.Forms.PictureBox pictureBoxKrill;
 		private System.Windows.Forms.Label stoneflynymphLabel;
 		private System.Windows.Forms.Label mackerelstripLabel;

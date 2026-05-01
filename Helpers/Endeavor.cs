@@ -36,7 +36,7 @@ namespace Ocean_Trip
 		public void CheckDirector()
 		{
 			// Are we on the boat?
-			if ((WorldManager.RawZoneId == Zones.TheEndeavor || WorldManager.RawZoneId == Zones.TheEndeaver_Ruby)
+			if ((WorldManager.RawZoneId == Zones.TheEndeavor || WorldManager.RawZoneId == Zones.TheEndeaver_Ruby || WorldManager.RawZoneId == Zones.TheEndeavor_Thavnair)
 				&& DirectorManager.ActiveDirector != null && (DirectorPtr == IntPtr.Zero || DirectorPtr != DirectorManager.ActiveDirector.Pointer))
 			{
 				DirectorPtr = DirectorManager.ActiveDirector.Pointer;

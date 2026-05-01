@@ -450,5 +450,6 @@ namespace OceanTripPlanner.Definitions
 
 		public const uint TheEndeavor = 900;
 		public const uint TheEndeaver_Ruby = 1163;
+		public const uint TheEndeavor_Thavnair = 1163; // Shares Ruby Endeavor instance; update if 7.5 uses a separate zone
 	}
 }

@@ -395,6 +395,7 @@ namespace OceanTripPlanner
 			schedule = Routes.GetSchedule();
 			string location = "";
 			string TimeOfDay = "";
+			string lastLoggedLocation = "";
 
 			// Cache the director if needed
 			if (OnBoat)
@@ -418,6 +419,18 @@ namespace OceanTripPlanner
 
 				if (String.IsNullOrEmpty(TimeOfDay))
 					TimeOfDay = "Day";
+
+				if (location != lastLoggedLocation)
+				{
+					lastLoggedLocation = location;
+					string priorityMode = OceanTripNewSettings.Instance.FishPriority.ToString();
+					string focusMode = FocusFishLog ? "Fish Log" : "Points";
+					Log($"Zone: {Schedule.areaName(location)} ({location}), Time: {TimeOfDay}, Stop: {Endeavor.CurrentZone + 1}/3, Priority: {priorityMode} ({focusMode})");
+
+					var zoneRoute = RouteDataCache.GetRoutesWithFish().FirstOrDefault(x => x.Route.RouteShortName == location);
+					if (zoneRoute != null)
+						Log($"Bait: Normal={gameCache.GetItemName((uint)zoneRoute.Route.NormalBait)}, Spectral={gameCache.GetItemName((uint)zoneRoute.Route.SpectralBait)}");
+				}
 
 				// Get the baits required
 				var currentRoute = RouteDataCache.GetRoutesWithFish().FirstOrDefault(x => x.Route.RouteShortName == location);
@@ -715,7 +728,7 @@ namespace OceanTripPlanner
 		{
 			get 
 			{
-				if (WorldManager.RawZoneId == Zones.TheEndeavor || WorldManager.RawZoneId == Zones.TheEndeaver_Ruby)
+				if (WorldManager.RawZoneId == Zones.TheEndeavor || WorldManager.RawZoneId == Zones.TheEndeaver_Ruby || WorldManager.RawZoneId == Zones.TheEndeavor_Thavnair)
 					return true;
 
 				return false;
@@ -770,13 +783,13 @@ namespace OceanTripPlanner
 			{
 				Log("Using Thaliak's Favor!");
 				ActionManager.DoAction(Actions.ThaliaksFavor, Core.Me);
-				await Coroutine.Yield();
+				await Coroutine.Wait(1000, () => !ActionManager.CanCast(Actions.ThaliaksFavor, Core.Me));
 			}
 			else if (!spectraled && gameCache.NeedsGPRecovery(FishingConstants.THALIAK_GP_THRESHOLD) && ActionManager.CanCast(Actions.ThaliaksFavor, Core.Me) && Core.Player.Auras.Any(x => x.Id == CharacterAuras.AnglersArt && x.Value >= 7))
 			{
 				Log("Currently at >7 Angler's Art Stacks - Using Thaliak's Favor!");
 				ActionManager.DoAction(Actions.ThaliaksFavor, Core.Me);
-				await Coroutine.Yield();
+				await Coroutine.Wait(1000, () => !ActionManager.CanCast(Actions.ThaliaksFavor, Core.Me));
 			}
 
 			Log("Done with Thaliak's Favor.", OceanLogLevel.Debug);

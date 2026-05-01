@@ -37,6 +37,7 @@ namespace OceanTripPlanner.Strategies
 		public async Task ExecuteFishingSession(FishingSessionContext context)
 		{
 			bool spectraled = false;
+			bool hookExecuted = false;
 
 			// Handle food consumption at start of session
 			await ConsumeFood(context);
@@ -77,6 +78,7 @@ namespace OceanTripPlanner.Strategies
 
 				if (FishingManager.State == FishingState.None || FishingManager.State == FishingState.PoleReady)
 				{
+					hookExecuted = false;
 					// Process caught fish and check for Identical Cast
 					bool identicalCastUsed = await context.ProcessCaughtFishCallback();
 
@@ -127,8 +129,9 @@ namespace OceanTripPlanner.Strategies
 							FishingManager.Hook();
 					}
 
-					if (FishingManager.CanHook && FishingManager.State == FishingState.Bite)
+					if (FishingManager.CanHook && FishingManager.State == FishingState.Bite && !hookExecuted)
 					{
+						hookExecuted = true;
 						var hookContext = new HookContext
 						{
 							BiteElapsedSeconds = FishingManager.TimeSinceCast.TotalSeconds + FishingConstants.BITE_TIMER_OFFSET,

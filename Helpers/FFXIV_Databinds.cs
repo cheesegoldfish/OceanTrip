@@ -102,6 +102,10 @@ namespace OceanTripPlanner
 		public bool achievementShellfish { get => _achievementShellfish; set => SetProperty(ref _achievementShellfish, value); }
 		private bool _achievementSquid;
 		public bool achievementSquid { get => _achievementSquid; set => SetProperty(ref _achievementSquid, value); }
+		private bool _achievementMantisShrimp;
+		public bool achievementMantisShrimp { get => _achievementMantisShrimp; set => SetProperty(ref _achievementMantisShrimp, value); }
+		private bool _achievementPrehistoric;
+		public bool achievementPrehistoric { get => _achievementPrehistoric; set => SetProperty(ref _achievementPrehistoric, value); }
 
 
 		private bool _achievement5kruby;
