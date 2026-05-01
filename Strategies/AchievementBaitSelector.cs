@@ -106,28 +106,15 @@ namespace OceanTripPlanner.Strategies
 		}
 
 		/// <summary>
-		/// Determines which achievement the user has selected based on the UI checkboxes
+		/// Determines which achievement the user has selected based on the current route
 		/// </summary>
 		private AchievementType GetSelectedAchievement()
 		{
-			var databinds = FFXIV_Databinds.Instance;
-
-			// Check Indigo route achievements
-			if (databinds.achievementMantas) return AchievementType.Mantas;
-			if (databinds.achievementOctopods) return AchievementType.Octopods;
-			if (databinds.achievementSharks) return AchievementType.Sharks;
-			if (databinds.achievementJellyfish) return AchievementType.Jellyfish;
-			if (databinds.achievementSeadragons) return AchievementType.Seadragons;
-			if (databinds.achievementBalloons) return AchievementType.Balloons;
-			if (databinds.achievementCrabs) return AchievementType.Crabs;
-
-			// Check Ruby route achievements
-			if (databinds.achievementShrimp) return AchievementType.Shrimp;
-			if (databinds.achievementShellfish) return AchievementType.Shellfish;
-			if (databinds.achievementSquid) return AchievementType.Squid;
-			if (databinds.achievementMantisShrimp) return AchievementType.MantisShrimp;
-			if (databinds.achievementPrehistoric) return AchievementType.Prehistoric;
-
+			int focus = OceanTripNewSettings.Instance.FishingRoute == FishingRoute.Indigo
+				? OceanTripNewSettings.Instance.IndigoAchievementFocus
+				: OceanTripNewSettings.Instance.RubyAchievementFocus;
+			if (Enum.IsDefined(typeof(AchievementType), focus))
+				return (AchievementType)focus;
 			return AchievementType.None;
 		}
 

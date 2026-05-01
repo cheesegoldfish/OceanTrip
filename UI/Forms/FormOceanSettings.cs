@@ -1,5 +1,6 @@
 ﻿using ff14bot.Managers;
 using Ocean_Trip.Properties;
+using Ocean_Trip.Definitions;
 using OceanTripPlanner;
 using OceanTripPlanner.Definitions;
 using System;
@@ -106,6 +107,32 @@ namespace Ocean_Trip
 					fishExchangeSell.Select();
 					break;
 			}
+
+			// Lure Mode
+			switch (OceanTripNewSettings.Instance.LureMode)
+			{
+				case OceanTripPlanner.LureMode.Off:
+					lureOff.Select();
+					break;
+				case OceanTripPlanner.LureMode.Modest:
+					lureModest.Select();
+					break;
+				case OceanTripPlanner.LureMode.Ambitious:
+					lureAmbitious.Select();
+					break;
+				case OceanTripPlanner.LureMode.Auto:
+					lureAuto.Select();
+					break;
+			}
+
+			// Lure Stack Count
+			numericLureStacks.DataBindings.Add("Value", OceanTripPlanner.OceanTripNewSettings.Instance, "LureStackCount", false, DataSourceUpdateMode.OnPropertyChanged);
+
+			// Target Fish
+			if (OceanTripNewSettings.Instance.TargetFishId == 51236)
+				targetFishJinbei.Select();
+			else
+				targetFishNone.Select();
 
 
 			// PictureBox Tooltips
@@ -223,6 +250,11 @@ namespace Ocean_Trip
 		private readonly Dictionary<RadioButton, object> _radioButtonEnumMap = new Dictionary<RadioButton, object>();
 
 		/// <summary>
+		/// Mapping of Achievement Focus radio buttons to AchievementType int values
+		/// </summary>
+		private readonly Dictionary<RadioButton, int> _achievementFocusMap = new Dictionary<RadioButton, int>();
+
+		/// <summary>
 		/// Setup unified event handlers for all achievement checkboxes
 		/// </summary>
 		private void SetupAchievementCheckboxHandlers()
@@ -305,10 +337,48 @@ namespace Ocean_Trip
 			_radioButtonEnumMap[fishExchangeDesynthesize] = ExchangeFish.Desynth;
 			_radioButtonEnumMap[fishExchangeSell] = ExchangeFish.Sell;
 
+			// Lure Mode radio buttons
+			_radioButtonEnumMap[lureOff] = LureMode.Off;
+			_radioButtonEnumMap[lureModest] = LureMode.Modest;
+			_radioButtonEnumMap[lureAmbitious] = LureMode.Ambitious;
+			_radioButtonEnumMap[lureAuto] = LureMode.Auto;
+
+			// Target Fish radio buttons — handled separately (maps to uint, not enum)
+			targetFishNone.CheckedChanged += TargetFish_CheckedChanged;
+			targetFishJinbei.CheckedChanged += TargetFish_CheckedChanged;
+
+			// Achievement Focus radio buttons — maps to AchievementType int
+			_achievementFocusMap[indigoMantas] = (int)AchievementType.Mantas;
+			_achievementFocusMap[radioButtonFlat1] = (int)AchievementType.Octopods;
+			_achievementFocusMap[radioButtonFlat2] = (int)AchievementType.Sharks;
+			_achievementFocusMap[radioButtonFlat3] = (int)AchievementType.Jellyfish;
+			_achievementFocusMap[radioButtonFlat4] = (int)AchievementType.Seadragons;
+			_achievementFocusMap[radioButtonFlat5] = (int)AchievementType.Balloons;
+			_achievementFocusMap[radioButtonFlat6] = (int)AchievementType.Crabs;
+			_achievementFocusMap[radioButtonFlat7] = (int)AchievementType.Shrimp;
+			_achievementFocusMap[radioButtonFlat8] = (int)AchievementType.Shellfish;
+			_achievementFocusMap[radioButtonFlat9] = (int)AchievementType.Squid;
+			_achievementFocusMap[thavnairMantis] = (int)AchievementType.MantisShrimp;
+			_achievementFocusMap[thavnairPrehistoric] = (int)AchievementType.Prehistoric;
+
+			foreach (var rb in _achievementFocusMap.Keys)
+				rb.CheckedChanged += AchievementFocus_CheckedChanged;
+
 			// Wire up single event handler for all radio buttons
 			foreach (var radioButton in _radioButtonEnumMap.Keys)
 			{
 				radioButton.CheckedChanged += RadioButton_CheckedChanged;
+			}
+
+			// Restore saved achievement focus for both routes
+			int savedIndigo = OceanTripNewSettings.Instance.IndigoAchievementFocus;
+			int savedRuby = OceanTripNewSettings.Instance.RubyAchievementFocus;
+			foreach (var kvp in _achievementFocusMap)
+			{
+				if (kvp.Key.Parent == groupBox1 && kvp.Value == savedIndigo)
+					kvp.Key.Checked = true;
+				else if (kvp.Key.Parent == groupBox2 && kvp.Value == savedRuby)
+					kvp.Key.Checked = true;
 			}
 		}
 
@@ -340,8 +410,36 @@ namespace Ocean_Trip
 						case ExchangeFish exchangeFish:
 							OceanTripNewSettings.Instance.ExchangeFish = exchangeFish;
 							break;
+						case LureMode lureMode:
+							OceanTripNewSettings.Instance.LureMode = lureMode;
+							break;
 					}
 				}
+			}
+		}
+
+		private void AchievementFocus_CheckedChanged(object sender, EventArgs e)
+		{
+			if (sender is RadioButton rb && rb.Checked)
+			{
+				if (_achievementFocusMap.TryGetValue(rb, out var achievementType))
+				{
+					if (rb.Parent == groupBox1)
+						OceanTripNewSettings.Instance.IndigoAchievementFocus = achievementType;
+					else
+						OceanTripNewSettings.Instance.RubyAchievementFocus = achievementType;
+				}
+			}
+		}
+
+		private void TargetFish_CheckedChanged(object sender, EventArgs e)
+		{
+			if (sender is RadioButton rb && rb.Checked)
+			{
+				if (rb == targetFishJinbei)
+					OceanTripNewSettings.Instance.TargetFishId = 51236;
+				else
+					OceanTripNewSettings.Instance.TargetFishId = 0;
 			}
 		}
 

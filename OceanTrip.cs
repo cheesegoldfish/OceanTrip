@@ -873,6 +873,16 @@ namespace OceanTripPlanner
 		/// </summary>
 		private async Task SelectAndApplyBait(bool spectraled, string location, string timeOfDay, ulong baitId, ulong spectralbaitId, RouteWithFish currentRoute)
 		{
+			// Determine if target fish is available in this zone
+			uint targetFishId = OceanTripNewSettings.Instance.TargetFishId;
+			uint contextTargetFishId = 0;
+			if (targetFishId != 0)
+			{
+				var targetFish = FishDataCache.GetFish().FirstOrDefault(f => f.FishID == (int)targetFishId);
+				if (targetFish != null && targetFish.RouteShortName == location)
+					contextTargetFishId = targetFishId;
+			}
+
 			var context = new BaitSelectionContext
 			{
 				Location = location,
@@ -882,7 +892,8 @@ namespace OceanTripPlanner
 				MissingFish = FishingLog.MissingFish(),
 				CaughtFish = caughtFish,
 				FocusFishLog = FocusFishLog,
-				CurrentWeather = gameCache.CurrentWeather
+				CurrentWeather = gameCache.CurrentWeather,
+				TargetFishId = contextTargetFishId
 			};
 
 			// Use achievement bait selector when in achievement mode

@@ -44,8 +44,19 @@ namespace OceanTripPlanner.Strategies
 			uint selectedBait = 0;
 			string baitReason = null;
 
+			// Step 0: Target fish override — use target fish's bait when in its zone
+			if (context.TargetFishId != 0)
+			{
+				var targetFish = availableNormalFish.FirstOrDefault(f => f.FishID == (int)context.TargetFishId);
+				if (targetFish != null)
+				{
+					selectedBait = targetFish.FavoriteBait;
+					baitReason = $"Target fish mode — using {_gameCache.GetItemName(targetFish.FavoriteBait)} for {targetFish.FishName}";
+				}
+			}
+
 			// Step 1: Intuition buff active — use highest-points fish bait (always the Intuition fish)
-			if (Core.Player.HasAura(CharacterAuras.FishersIntuition))
+			if (selectedBait == 0 && Core.Player.HasAura(CharacterAuras.FishersIntuition))
 			{
 				var topFish = availableNormalFish.OrderByDescending(f => f.Points).FirstOrDefault();
 				if (topFish != null)
@@ -54,7 +65,8 @@ namespace OceanTripPlanner.Strategies
 					baitReason = $"Fisher's Intuition active — targeting {topFish.FishName} ({topFish.Points} pts)";
 				}
 			}
-			else if (focusFishLog)
+
+			if (selectedBait == 0 && focusFishLog)
 			{
 				// Step 2: Chase missing Intuition fish prereqs
 				var missingIntuitionFish = availableNormalFish

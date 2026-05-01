@@ -55,6 +55,14 @@ namespace OceanTripPlanner
 		None
 	}
 
+	public enum LureMode : int
+	{
+		Off = 0,
+		Modest = 1,
+		Ambitious = 2,
+		Auto = 3
+	}
+
 	#endregion
 
 	/// <summary>
@@ -736,6 +744,36 @@ namespace OceanTripPlanner
 		{
 			get => _settings.ExchangeFish;
 			set => _settings.ExchangeFish = value;
+		}
+
+		public LureMode LureMode
+		{
+			get => _settings.LureMode;
+			set => _settings.LureMode = value;
+		}
+
+		public int LureStackCount
+		{
+			get => _settings.LureStackCount;
+			set => _settings.LureStackCount = value;
+		}
+
+		public uint TargetFishId
+		{
+			get => _settings.TargetFishId;
+			set => _settings.TargetFishId = value;
+		}
+
+		public int IndigoAchievementFocus
+		{
+			get => _settings.IndigoAchievementFocus;
+			set => _settings.IndigoAchievementFocus = value;
+		}
+
+		public int RubyAchievementFocus
+		{
+			get => _settings.RubyAchievementFocus;
+			set => _settings.RubyAchievementFocus = value;
 		}
 
 		#endregion

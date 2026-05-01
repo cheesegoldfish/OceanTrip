@@ -148,7 +148,20 @@
 			octopodsPicture = new System.Windows.Forms.CheckBox();
 			mantasLabel = new System.Windows.Forms.Label();
 			mantasPicture = new System.Windows.Forms.CheckBox();
+			lureGroupBox = new System.Windows.Forms.GroupBox();
+			lureOff = new UI.Controls.RadioButtonFlat();
+			lureModest = new UI.Controls.RadioButtonFlat();
+			lureAmbitious = new UI.Controls.RadioButtonFlat();
+			lureAuto = new UI.Controls.RadioButtonFlat();
+			lureStackLabel = new System.Windows.Forms.Label();
+			numericLureStacks = new System.Windows.Forms.NumericUpDown();
+			targetFishGroupBox = new System.Windows.Forms.GroupBox();
+			targetFishNone = new UI.Controls.RadioButtonFlat();
+			targetFishJinbei = new UI.Controls.RadioButtonFlat();
 			exitIcon = new System.Windows.Forms.PictureBox();
+			lureGroupBox.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)numericLureStacks).BeginInit();
+			targetFishGroupBox.SuspendLayout();
 			groupBox1.SuspendLayout();
 			groupBox2.SuspendLayout();
 			groupBox3.SuspendLayout();
@@ -209,7 +222,7 @@
 			groupBox1.Controls.Add(radioButtonFlat1);
 			groupBox1.Controls.Add(indigoMantas);
 			groupBox1.ForeColor = System.Drawing.Color.Gainsboro;
-			groupBox1.Location = new System.Drawing.Point(20, 342);
+			groupBox1.Location = new System.Drawing.Point(20, 404);
 			groupBox1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
 			groupBox1.Name = "groupBox1";
 			groupBox1.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
@@ -339,7 +352,7 @@
 			groupBox2.Controls.Add(radioButtonFlat8);
 			groupBox2.Controls.Add(radioButtonFlat7);
 			groupBox2.ForeColor = System.Drawing.Color.Gainsboro;
-			groupBox2.Location = new System.Drawing.Point(20, 434);
+			groupBox2.Location = new System.Drawing.Point(20, 496);
 			groupBox2.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
 			groupBox2.Name = "groupBox2";
 			groupBox2.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
@@ -1208,7 +1221,7 @@
 			groupBox7.Controls.Add(PrehistoricLabel);
 			groupBox7.Controls.Add(prehistoricPicture);
 			groupBox7.ForeColor = System.Drawing.Color.Gainsboro;
-			groupBox7.Location = new System.Drawing.Point(20, 496);
+			groupBox7.Location = new System.Drawing.Point(20, 558);
 			groupBox7.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
 			groupBox7.Name = "groupBox7";
 			groupBox7.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
@@ -1826,15 +1839,170 @@
 			prehistoricPicture.TabIndex = 43;
 			prehistoricPicture.UseVisualStyleBackColor = true;
 			//
+			// lureGroupBox
+			//
+			lureGroupBox.Controls.Add(lureOff);
+			lureGroupBox.Controls.Add(lureModest);
+			lureGroupBox.Controls.Add(lureAmbitious);
+			lureGroupBox.Controls.Add(lureAuto);
+			lureGroupBox.Controls.Add(lureStackLabel);
+			lureGroupBox.Controls.Add(numericLureStacks);
+			lureGroupBox.ForeColor = System.Drawing.Color.Gainsboro;
+			lureGroupBox.Location = new System.Drawing.Point(20, 342);
+			lureGroupBox.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+			lureGroupBox.Name = "lureGroupBox";
+			lureGroupBox.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
+			lureGroupBox.Size = new System.Drawing.Size(400, 55);
+			lureGroupBox.TabIndex = 50;
+			lureGroupBox.TabStop = false;
+			lureGroupBox.Text = "Fishing Lure";
+			lureGroupBox.MouseDown += FormOceanSettings_MouseDown;
+			//
+			// lureOff
+			//
+			lureOff.AutoSize = true;
+			lureOff.CheckedColor = System.Drawing.Color.FromArgb(0, 137, 198);
+			lureOff.DisabledColor = System.Drawing.Color.SlateGray;
+			lureOff.Location = new System.Drawing.Point(8, 22);
+			lureOff.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+			lureOff.MinimumSize = new System.Drawing.Size(0, 17);
+			lureOff.Name = "lureOff";
+			lureOff.Size = new System.Drawing.Size(45, 19);
+			lureOff.TabIndex = 0;
+			lureOff.TabStop = true;
+			lureOff.Text = "Off";
+			lureOff.UnCheckedColor = System.Drawing.Color.Gray;
+			lureOff.UseVisualStyleBackColor = true;
+			//
+			// lureModest
+			//
+			lureModest.AutoSize = true;
+			lureModest.CheckedColor = System.Drawing.Color.FromArgb(0, 137, 198);
+			lureModest.DisabledColor = System.Drawing.Color.SlateGray;
+			lureModest.Location = new System.Drawing.Point(60, 22);
+			lureModest.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+			lureModest.MinimumSize = new System.Drawing.Size(0, 17);
+			lureModest.Name = "lureModest";
+			lureModest.Size = new System.Drawing.Size(72, 19);
+			lureModest.TabIndex = 1;
+			lureModest.TabStop = true;
+			lureModest.Text = "Modest";
+			lureModest.UnCheckedColor = System.Drawing.Color.Gray;
+			lureModest.UseVisualStyleBackColor = true;
+			//
+			// lureAmbitious
+			//
+			lureAmbitious.AutoSize = true;
+			lureAmbitious.CheckedColor = System.Drawing.Color.FromArgb(0, 137, 198);
+			lureAmbitious.DisabledColor = System.Drawing.Color.SlateGray;
+			lureAmbitious.Location = new System.Drawing.Point(140, 22);
+			lureAmbitious.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+			lureAmbitious.MinimumSize = new System.Drawing.Size(0, 17);
+			lureAmbitious.Name = "lureAmbitious";
+			lureAmbitious.Size = new System.Drawing.Size(86, 19);
+			lureAmbitious.TabIndex = 2;
+			lureAmbitious.TabStop = true;
+			lureAmbitious.Text = "Ambitious";
+			lureAmbitious.UnCheckedColor = System.Drawing.Color.Gray;
+			lureAmbitious.UseVisualStyleBackColor = true;
+			//
+			// lureAuto
+			//
+			lureAuto.AutoSize = true;
+			lureAuto.CheckedColor = System.Drawing.Color.FromArgb(0, 137, 198);
+			lureAuto.DisabledColor = System.Drawing.Color.SlateGray;
+			lureAuto.Location = new System.Drawing.Point(232, 22);
+			lureAuto.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+			lureAuto.MinimumSize = new System.Drawing.Size(0, 17);
+			lureAuto.Name = "lureAuto";
+			lureAuto.Size = new System.Drawing.Size(52, 19);
+			lureAuto.TabIndex = 3;
+			lureAuto.TabStop = true;
+			lureAuto.Text = "Auto";
+			lureAuto.UnCheckedColor = System.Drawing.Color.Gray;
+			lureAuto.UseVisualStyleBackColor = true;
+			//
+			// lureStackLabel
+			//
+			lureStackLabel.AutoSize = true;
+			lureStackLabel.Location = new System.Drawing.Point(296, 24);
+			lureStackLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+			lureStackLabel.Name = "lureStackLabel";
+			lureStackLabel.Size = new System.Drawing.Size(43, 15);
+			lureStackLabel.TabIndex = 4;
+			lureStackLabel.Text = "Stacks";
+			//
+			// numericLureStacks
+			//
+			numericLureStacks.BackColor = System.Drawing.Color.FromArgb(45, 45, 60);
+			numericLureStacks.ForeColor = System.Drawing.Color.Gainsboro;
+			numericLureStacks.Location = new System.Drawing.Point(345, 21);
+			numericLureStacks.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+			numericLureStacks.Maximum = new decimal(new int[] { 3, 0, 0, 0 });
+			numericLureStacks.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
+			numericLureStacks.Name = "numericLureStacks";
+			numericLureStacks.Size = new System.Drawing.Size(40, 23);
+			numericLureStacks.TabIndex = 5;
+			numericLureStacks.Value = new decimal(new int[] { 1, 0, 0, 0 });
+			//
+			// targetFishGroupBox
+			//
+			targetFishGroupBox.Controls.Add(targetFishNone);
+			targetFishGroupBox.Controls.Add(targetFishJinbei);
+			targetFishGroupBox.ForeColor = System.Drawing.Color.Gainsboro;
+			targetFishGroupBox.Location = new System.Drawing.Point(427, 342);
+			targetFishGroupBox.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+			targetFishGroupBox.Name = "targetFishGroupBox";
+			targetFishGroupBox.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
+			targetFishGroupBox.Size = new System.Drawing.Size(244, 55);
+			targetFishGroupBox.TabIndex = 51;
+			targetFishGroupBox.TabStop = false;
+			targetFishGroupBox.Text = "Target Fish";
+			targetFishGroupBox.MouseDown += FormOceanSettings_MouseDown;
+			//
+			// targetFishNone
+			//
+			targetFishNone.AutoSize = true;
+			targetFishNone.CheckedColor = System.Drawing.Color.FromArgb(0, 137, 198);
+			targetFishNone.DisabledColor = System.Drawing.Color.SlateGray;
+			targetFishNone.Location = new System.Drawing.Point(8, 22);
+			targetFishNone.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+			targetFishNone.MinimumSize = new System.Drawing.Size(0, 17);
+			targetFishNone.Name = "targetFishNone";
+			targetFishNone.Size = new System.Drawing.Size(54, 19);
+			targetFishNone.TabIndex = 0;
+			targetFishNone.TabStop = true;
+			targetFishNone.Text = "None";
+			targetFishNone.UnCheckedColor = System.Drawing.Color.Gray;
+			targetFishNone.UseVisualStyleBackColor = true;
+			//
+			// targetFishJinbei
+			//
+			targetFishJinbei.AutoSize = true;
+			targetFishJinbei.CheckedColor = System.Drawing.Color.FromArgb(0, 137, 198);
+			targetFishJinbei.DisabledColor = System.Drawing.Color.SlateGray;
+			targetFishJinbei.Location = new System.Drawing.Point(70, 22);
+			targetFishJinbei.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+			targetFishJinbei.MinimumSize = new System.Drawing.Size(0, 17);
+			targetFishJinbei.Name = "targetFishJinbei";
+			targetFishJinbei.Size = new System.Drawing.Size(120, 19);
+			targetFishJinbei.TabIndex = 1;
+			targetFishJinbei.TabStop = true;
+			targetFishJinbei.Text = "Junior Jinbei";
+			targetFishJinbei.UnCheckedColor = System.Drawing.Color.Gray;
+			targetFishJinbei.UseVisualStyleBackColor = true;
+			//
 			// FormOceanSettings
 			// 
 			AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
 			AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			BackColor = System.Drawing.Color.FromArgb(30, 30, 44);
-			ClientSize = new System.Drawing.Size(852, 700);
+			ClientSize = new System.Drawing.Size(852, 762);
 			Controls.Add(exitIcon);
 			Controls.Add(groupBox7);
 			Controls.Add(tackleboxGroup);
+			Controls.Add(targetFishGroupBox);
+			Controls.Add(lureGroupBox);
 			Controls.Add(groupBox4);
 			Controls.Add(groupBox5);
 			Controls.Add(fullGPAction);
@@ -1869,6 +2037,11 @@
 			groupBox5.PerformLayout();
 			groupBox4.ResumeLayout(false);
 			groupBox4.PerformLayout();
+			lureGroupBox.ResumeLayout(false);
+			lureGroupBox.PerformLayout();
+			((System.ComponentModel.ISupportInitialize)numericLureStacks).EndInit();
+			targetFishGroupBox.ResumeLayout(false);
+			targetFishGroupBox.PerformLayout();
 			tackleboxGroup.ResumeLayout(false);
 			tackleboxGroup.PerformLayout();
 			((System.ComponentModel.ISupportInitialize)pictureBoxStoneflyNymph).EndInit();
@@ -2013,5 +2186,15 @@
 		private System.Windows.Forms.CheckBox overall500kPicture;
 		private System.Windows.Forms.Label Overall100kLabel;
 		private System.Windows.Forms.CheckBox overall100kPicture;
+		private System.Windows.Forms.GroupBox lureGroupBox;
+		private UI.Controls.RadioButtonFlat lureOff;
+		private UI.Controls.RadioButtonFlat lureModest;
+		private UI.Controls.RadioButtonFlat lureAmbitious;
+		private UI.Controls.RadioButtonFlat lureAuto;
+		private System.Windows.Forms.Label lureStackLabel;
+		private System.Windows.Forms.NumericUpDown numericLureStacks;
+		private System.Windows.Forms.GroupBox targetFishGroupBox;
+		private UI.Controls.RadioButtonFlat targetFishNone;
+		private UI.Controls.RadioButtonFlat targetFishJinbei;
 	}
 }
