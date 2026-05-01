@@ -27,6 +27,7 @@ namespace Ocean_Trip.Definitions
 		public int IconX { get; set; }
 		public int IconY { get; set; }
 		public TugType BiteType { get; set; }
+		public TugType HooksetType { get; set; }
 		public string Rarity { get; set; }
 		public uint FavoriteBait { get; set; }
 		public bool CausesSpectral { get; set; }

@@ -102,20 +102,31 @@ namespace OceanTripPlanner.Strategies
 			{
 				Log("Player has patience on them. Need to use special hooking.", OceanLogLevel.Debug);
 
-				if (FishingManager.TugType == TugType.Light)
+				var predictedFish = context.Spectraled ? spectralFishToCatch : normalFishToCatch;
+				var hooksetFish = predictedFish.FirstOrDefault(f => (int)f.HooksetType != 0);
+
+				bool usePrecision;
+				if (hooksetFish != null)
+				{
+					usePrecision = hooksetFish.HooksetType == TugType.Light;
+					Log($"Hookset override from {_gameCache.GetItemName((uint)hooksetFish.FishID)}: {(usePrecision ? "Precision" : "Powerful")}");
+				}
+				else
+				{
+					usePrecision = FishingManager.TugType == TugType.Light;
+				}
+
+				if (usePrecision)
 				{
 					Log($"Using Precision Hookset!", OceanLogLevel.Debug);
-
 					ActionManager.DoAction(Actions.PrecisionHookset, Core.Me);
-					context.OnHookExecuted(false);
 				}
 				else
 				{
 					Log($"Using Powerful Hookset!", OceanLogLevel.Debug);
-
 					ActionManager.DoAction(Actions.PowerfulHookset, Core.Me);
-					context.OnHookExecuted(false);
 				}
+				context.OnHookExecuted(false);
 			}
 			else
 			{
