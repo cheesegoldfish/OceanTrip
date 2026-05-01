@@ -267,6 +267,8 @@ namespace OceanTripPlanner
 				{ nameof(achievementShrimp), () => Achievements.HasAchievement(Definitions.Achievement.Shrimp) },
 				{ nameof(achievementShellfish), () => Achievements.HasAchievement(Definitions.Achievement.Shellfish) },
 				{ nameof(achievementSquid), () => Achievements.HasAchievement(Definitions.Achievement.Squid) },
+				{ nameof(achievementMantisShrimp), () => Achievements.HasAchievement(Definitions.Achievement.MantisShrimp) },
+				{ nameof(achievementPrehistoric), () => Achievements.HasAchievement(Definitions.Achievement.Prehistoric) },
 				{ nameof(achievement5kruby), () => Achievements.HasAchievement(Definitions.Achievement.Ruby5kPoints) },
 				{ nameof(achievement10kruby), () => Achievements.HasAchievement(Definitions.Achievement.Ruby10kPoints) },
 				{ nameof(achievement16kruby), () => Achievements.HasAchievement(Definitions.Achievement.Ruby16kPoints) },

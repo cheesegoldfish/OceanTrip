@@ -74,8 +74,8 @@ namespace OceanTripPlanner
 		private FishingSessionManager achievementFishingSessionManager;
 		private BaitRestockStrategy baitRestockStrategy;
 		private CordialStrategy cordialStrategy;
-	private FishCatchLogger fishCatchLogger;
-	private SpectralDetector spectralDetector;
+		private FishCatchLogger fishCatchLogger;
+		private SpectralDetector spectralDetector;
 
 		public override string Name => "Ocean Trip";
 
@@ -195,13 +195,13 @@ namespace OceanTripPlanner
 			_root = new ActionRunCoroutine(r => Run());
 		}
 
-	/// <summary>
-	/// Calculate time remaining until next boat departure
-	/// </summary>
-	public static TimeSpan TimeUntilNextBoat()
-	{
-		return BoatScheduleCalculator.TimeUntilNextBoat(OceanTripNewSettings.Instance.LateBoatQueue);
-	}
+		/// <summary>
+		/// Calculate time remaining until next boat departure
+		/// </summary>
+		public static TimeSpan TimeUntilNextBoat()
+		{
+			return BoatScheduleCalculator.TimeUntilNextBoat(OceanTripNewSettings.Instance.LateBoatQueue);
+		}
 
 		private void KillLisbeth(object sender, ElapsedEventArgs e)
 		{
@@ -222,7 +222,7 @@ namespace OceanTripPlanner
 				}
 			}
 
-		// Timer will be restarted after voyage completes in HandleVoyageCompletion()
+			// Timer will be restarted after voyage completes in HandleVoyageCompletion()
 		}
 
 		public override void Stop()
@@ -392,7 +392,14 @@ namespace OceanTripPlanner
 		private async Task ExecuteVoyage()
 		{
 			int spot = rnd.Next(6);
-			schedule = Routes.GetSchedule();
+
+			// Auto-detect route from zone ID instead of relying on UI setting
+			string detectedRoute = WorldManager.RawZoneId == Zones.TheEndeavor ? "Indigo" : "Ruby";
+			var settingRoute = OceanTripNewSettings.Instance.FishingRoute == FishingRoute.Ruby ? "Ruby" : "Indigo";
+			if (detectedRoute != settingRoute)
+				Log($"Route auto-detected as {detectedRoute} (UI setting was {settingRoute})");
+
+			schedule = Routes.GetSchedule(route: detectedRoute);
 			string location = "";
 			string TimeOfDay = "";
 			string lastLoggedLocation = "";
@@ -447,29 +454,29 @@ namespace OceanTripPlanner
 				}
 
 				var fishingContext = new FishingSessionContext
-			{
-				Location = location,
-				TimeOfDay = TimeOfDay,
-				Spot = spot,
-				CurrentRoute = currentRoute,
-				BaitId = baitId,
-				SpectralBaitId = spectralbaitId,
-				ShouldContinueFishingCallback = () => OnBoat && Endeavor.shouldFish,
-				RefreshUICallback = () =>
 				{
-					FFXIV_Databinds.Instance.RefreshAchievements();
-					FFXIV_Databinds.Instance.RefreshCurrentRoute();
-				},
-				RefreshBaitCallback = () => FFXIV_Databinds.Instance.RefreshBait(),
-				ManageBuffsCallback = ManageBuffsAndConsumables,
-				ProcessCaughtFishCallback = ProcessCaughtFish,
-				SelectAndApplyBaitCallback = async (spectraled) =>
-				{
-					await SelectAndApplyBait(spectraled, location, TimeOfDay, baitId, spectralbaitId, currentRoute);
-				},
-				OnHookExecutedCallback = (logged) => caughtFishLogged = logged
-			};
-			await fishingSessionManager.ExecuteFishingSession(fishingContext);
+					Location = location,
+					TimeOfDay = TimeOfDay,
+					Spot = spot,
+					CurrentRoute = currentRoute,
+					BaitId = baitId,
+					SpectralBaitId = spectralbaitId,
+					ShouldContinueFishingCallback = () => OnBoat && Endeavor.shouldFish,
+					RefreshUICallback = () =>
+					{
+						FFXIV_Databinds.Instance.RefreshAchievements();
+						FFXIV_Databinds.Instance.RefreshCurrentRoute();
+					},
+					RefreshBaitCallback = () => FFXIV_Databinds.Instance.RefreshBait(),
+					ManageBuffsCallback = ManageBuffsAndConsumables,
+					ProcessCaughtFishCallback = ProcessCaughtFish,
+					SelectAndApplyBaitCallback = async (spectraled) =>
+					{
+						await SelectAndApplyBait(spectraled, location, TimeOfDay, baitId, spectralbaitId, currentRoute);
+					},
+					OnHookExecutedCallback = (logged) => caughtFishLogged = logged
+				};
+				await fishingSessionManager.ExecuteFishingSession(fishingContext);
 			}
 		}
 
@@ -511,28 +518,28 @@ namespace OceanTripPlanner
 					PassTheTime.freeToCraft = true;
 				}
 
-			// Restart the timer for the next boat
-			lock (timerLock)
-			{
-				if (execute != null)
+				// Restart the timer for the next boat
+				lock (timerLock)
 				{
-					TimeSpan timeLeftUntilNextRun = TimeUntilNextBoat();
-					if (timeLeftUntilNextRun.TotalMilliseconds < 0)
-						execute.Interval = 100;
-					else
-						execute.Interval = timeLeftUntilNextRun.TotalMilliseconds;
+					if (execute != null)
+					{
+						TimeSpan timeLeftUntilNextRun = TimeUntilNextBoat();
+						if (timeLeftUntilNextRun.TotalMilliseconds < 0)
+							execute.Interval = 100;
+						else
+							execute.Interval = timeLeftUntilNextRun.TotalMilliseconds;
 
-					execute.Start();
+						execute.Start();
+					}
 				}
-			}
 
 				await Coroutine.Sleep(FishingConstants.VOYAGE_COMPLETION_DELAY_MS);
 			}
 		}
 
 		private async Task OceanFishing()
-	{
-		await Coroutine.Sleep(FishingConstants.STANDARD_DELAY_MS);
+		{
+			await Coroutine.Sleep(FishingConstants.STANDARD_DELAY_MS);
 
 			//GetSchedule();
 			if (!OnBoat)
@@ -723,10 +730,10 @@ namespace OceanTripPlanner
 				return false;
 			}
 		}
-		
+
 		public static bool OnBoat
 		{
-			get 
+			get
 			{
 				if (WorldManager.RawZoneId == Zones.TheEndeavor || WorldManager.RawZoneId == Zones.TheEndeaver_Ruby || WorldManager.RawZoneId == Zones.TheEndeavor_Thavnair)
 					return true;

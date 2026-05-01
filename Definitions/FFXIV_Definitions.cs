@@ -185,9 +185,12 @@ namespace OceanTripPlanner.Definitions
 		public const int Shrimp = 3269;
 		public const int Shellfish = 3267;
 		public const int Squid = 3268;
+		public const int MantisShrimp = 3976;
+		public const int Prehistoric = 3975;
 		public const int Ruby5kPoints = 3264;
 		public const int Ruby10kPoints = 3265;
 		public const int Ruby16kPoints = 3266;
+		public const int Ruby20kPoints = 3974;
 
 		public const int Overall100kPoints = 2558;
 		public const int Overall500kPoints = 2559;

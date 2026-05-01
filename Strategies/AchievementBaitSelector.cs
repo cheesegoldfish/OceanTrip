@@ -93,12 +93,12 @@ namespace OceanTripPlanner.Strategies
 				var fishNames = string.Join(", ", availableFish.Where(f => f.PreferredBait == selectedBait).Select(f => f.FishName));
 
 				await _baitChanger.ChangeBait(selectedBait,
-					$"Targeting {targetAchievement} achievement: {fishNames}");
+					$"Achievement ({targetAchievement}) — targeting: {fishNames}");
 			}
 			else
 			{
-				// Fallback to default bait
-				await _baitChanger.ChangeBait(context.DefaultBaitId);
+				await _baitChanger.ChangeBait(context.DefaultBaitId,
+					$"Achievement ({targetAchievement}) — no matching fish, using default bait");
 			}
 
 			// Use Patience if appropriate
@@ -125,6 +125,8 @@ namespace OceanTripPlanner.Strategies
 			if (databinds.achievementShrimp) return AchievementType.Shrimp;
 			if (databinds.achievementShellfish) return AchievementType.Shellfish;
 			if (databinds.achievementSquid) return AchievementType.Squid;
+			if (databinds.achievementMantisShrimp) return AchievementType.MantisShrimp;
+			if (databinds.achievementPrehistoric) return AchievementType.Prehistoric;
 
 			return AchievementType.None;
 		}

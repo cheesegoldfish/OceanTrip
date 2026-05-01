@@ -21,6 +21,7 @@ namespace OceanTripPlanner.Strategies
 	{
 		private readonly GameStateCache _gameCache;
 		private readonly bool _loggingEnabled;
+		private string _lastLoggedReason;
 
 		public BaitChanger(GameStateCache gameCache, bool enableLogging = true)
 		{
@@ -38,17 +39,21 @@ namespace OceanTripPlanner.Strategies
 				&& (ItemDataCache.GetItemRequiredLevel((uint)baitId) <= Core.Me.ClassLevel))
 			{
 				if (!string.IsNullOrEmpty(logMessage))
-					Log(logMessage, OceanLogLevel.Debug);
+					Log($"Changing bait to {_gameCache.GetItemName((uint)baitId)}: {logMessage}");
 				else
-					Log($"Changing Bait!", OceanLogLevel.Debug);
+					Log($"Changing bait to {_gameCache.GetItemName((uint)baitId)}");
 
+				_lastLoggedReason = logMessage;
 				await FishingManager.ChangeBait((uint)baitId);
-
-				Log($"Finished Changing Bait!", OceanLogLevel.Debug);
 			}
 			else if (PassTheTime.inventoryCount((int)baitId) == 0)
 			{
 				Log($"Out of {_gameCache.GetItemName((uint)baitId)}! Cannot change bait.");
+			}
+			else if (!string.IsNullOrEmpty(logMessage) && logMessage != _lastLoggedReason)
+			{
+				Log($"Keeping {_gameCache.GetItemName((uint)baitId)}: {logMessage}");
+				_lastLoggedReason = logMessage;
 			}
 		}
 

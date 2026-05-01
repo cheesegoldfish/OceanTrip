@@ -224,7 +224,6 @@
 			radioButtonFlat6.AutoSize = true;
 			radioButtonFlat6.CheckedColor = System.Drawing.Color.FromArgb(0, 137, 198);
 			radioButtonFlat6.DisabledColor = System.Drawing.Color.SlateGray;
-			radioButtonFlat6.Enabled = false;
 			radioButtonFlat6.Location = new System.Drawing.Point(128, 48);
 			radioButtonFlat6.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
 			radioButtonFlat6.MinimumSize = new System.Drawing.Size(0, 17);
@@ -241,7 +240,6 @@
 			radioButtonFlat5.AutoSize = true;
 			radioButtonFlat5.CheckedColor = System.Drawing.Color.FromArgb(0, 137, 198);
 			radioButtonFlat5.DisabledColor = System.Drawing.Color.SlateGray;
-			radioButtonFlat5.Enabled = false;
 			radioButtonFlat5.Location = new System.Drawing.Point(8, 48);
 			radioButtonFlat5.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
 			radioButtonFlat5.MinimumSize = new System.Drawing.Size(0, 17);
@@ -258,7 +256,6 @@
 			radioButtonFlat4.AutoSize = true;
 			radioButtonFlat4.CheckedColor = System.Drawing.Color.FromArgb(0, 137, 198);
 			radioButtonFlat4.DisabledColor = System.Drawing.Color.SlateGray;
-			radioButtonFlat4.Enabled = false;
 			radioButtonFlat4.Location = new System.Drawing.Point(540, 23);
 			radioButtonFlat4.Margin = new System.Windows.Forms.Padding(0);
 			radioButtonFlat4.MinimumSize = new System.Drawing.Size(0, 17);
@@ -275,7 +272,6 @@
 			radioButtonFlat3.AutoSize = true;
 			radioButtonFlat3.CheckedColor = System.Drawing.Color.FromArgb(0, 137, 198);
 			radioButtonFlat3.DisabledColor = System.Drawing.Color.SlateGray;
-			radioButtonFlat3.Enabled = false;
 			radioButtonFlat3.Location = new System.Drawing.Point(385, 22);
 			radioButtonFlat3.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
 			radioButtonFlat3.MinimumSize = new System.Drawing.Size(0, 17);
@@ -292,7 +288,6 @@
 			radioButtonFlat2.AutoSize = true;
 			radioButtonFlat2.CheckedColor = System.Drawing.Color.FromArgb(0, 137, 198);
 			radioButtonFlat2.DisabledColor = System.Drawing.Color.SlateGray;
-			radioButtonFlat2.Enabled = false;
 			radioButtonFlat2.Location = new System.Drawing.Point(262, 22);
 			radioButtonFlat2.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
 			radioButtonFlat2.MinimumSize = new System.Drawing.Size(0, 17);
@@ -309,7 +304,6 @@
 			radioButtonFlat1.AutoSize = true;
 			radioButtonFlat1.CheckedColor = System.Drawing.Color.FromArgb(0, 137, 198);
 			radioButtonFlat1.DisabledColor = System.Drawing.Color.SlateGray;
-			radioButtonFlat1.Enabled = false;
 			radioButtonFlat1.Location = new System.Drawing.Point(128, 22);
 			radioButtonFlat1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
 			radioButtonFlat1.MinimumSize = new System.Drawing.Size(0, 17);
@@ -326,7 +320,6 @@
 			indigoMantas.AutoSize = true;
 			indigoMantas.CheckedColor = System.Drawing.Color.FromArgb(0, 137, 198);
 			indigoMantas.DisabledColor = System.Drawing.Color.SlateGray;
-			indigoMantas.Enabled = false;
 			indigoMantas.Location = new System.Drawing.Point(8, 22);
 			indigoMantas.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
 			indigoMantas.MinimumSize = new System.Drawing.Size(0, 17);
@@ -361,7 +354,6 @@
 			radioButtonFlat9.AutoSize = true;
 			radioButtonFlat9.CheckedColor = System.Drawing.Color.FromArgb(0, 137, 198);
 			radioButtonFlat9.DisabledColor = System.Drawing.Color.SlateGray;
-			radioButtonFlat9.Enabled = false;
 			radioButtonFlat9.Location = new System.Drawing.Point(262, 22);
 			radioButtonFlat9.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
 			radioButtonFlat9.MinimumSize = new System.Drawing.Size(0, 17);
@@ -378,7 +370,6 @@
 			radioButtonFlat8.AutoSize = true;
 			radioButtonFlat8.CheckedColor = System.Drawing.Color.FromArgb(0, 137, 198);
 			radioButtonFlat8.DisabledColor = System.Drawing.Color.SlateGray;
-			radioButtonFlat8.Enabled = false;
 			radioButtonFlat8.Location = new System.Drawing.Point(128, 22);
 			radioButtonFlat8.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
 			radioButtonFlat8.MinimumSize = new System.Drawing.Size(0, 17);
@@ -395,7 +386,6 @@
 			radioButtonFlat7.AutoSize = true;
 			radioButtonFlat7.CheckedColor = System.Drawing.Color.FromArgb(0, 137, 198);
 			radioButtonFlat7.DisabledColor = System.Drawing.Color.SlateGray;
-			radioButtonFlat7.Enabled = false;
 			radioButtonFlat7.Location = new System.Drawing.Point(8, 22);
 			radioButtonFlat7.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
 			radioButtonFlat7.MinimumSize = new System.Drawing.Size(0, 17);
@@ -412,7 +402,6 @@
 			thavnairMantis.AutoSize = true;
 			thavnairMantis.CheckedColor = System.Drawing.Color.FromArgb(0, 137, 198);
 			thavnairMantis.DisabledColor = System.Drawing.Color.SlateGray;
-			thavnairMantis.Enabled = false;
 			thavnairMantis.Location = new System.Drawing.Point(385, 22);
 			thavnairMantis.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
 			thavnairMantis.MinimumSize = new System.Drawing.Size(0, 17);
@@ -429,7 +418,6 @@
 			thavnairPrehistoric.AutoSize = true;
 			thavnairPrehistoric.CheckedColor = System.Drawing.Color.FromArgb(0, 137, 198);
 			thavnairPrehistoric.DisabledColor = System.Drawing.Color.SlateGray;
-			thavnairPrehistoric.Enabled = false;
 			thavnairPrehistoric.Location = new System.Drawing.Point(540, 22);
 			thavnairPrehistoric.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
 			thavnairPrehistoric.MinimumSize = new System.Drawing.Size(0, 17);
@@ -520,7 +508,6 @@
 			achievements.AutoSize = true;
 			achievements.CheckedColor = System.Drawing.Color.FromArgb(0, 137, 198);
 			achievements.DisabledColor = System.Drawing.Color.SlateGray;
-			achievements.Enabled = false;
 			achievements.Location = new System.Drawing.Point(385, 21);
 			achievements.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
 			achievements.MinimumSize = new System.Drawing.Size(0, 17);

@@ -189,6 +189,8 @@ namespace OceanTripPlanner.Strategies
 			if (databinds.achievementShrimp) return AchievementType.Shrimp;
 			if (databinds.achievementShellfish) return AchievementType.Shellfish;
 			if (databinds.achievementSquid) return AchievementType.Squid;
+			if (databinds.achievementMantisShrimp) return AchievementType.MantisShrimp;
+			if (databinds.achievementPrehistoric) return AchievementType.Prehistoric;
 
 			return AchievementType.None;
 		}

@@ -26,7 +26,9 @@ namespace Ocean_Trip.Definitions
 		// Ruby Route Achievements
 		Shrimp = 8,
 		Shellfish = 9,
-		Squid = 10
+		Squid = 10,
+		MantisShrimp = 11,
+		Prehistoric = 12
 	}
 
 	/// <summary>
@@ -79,12 +81,33 @@ namespace Ocean_Trip.Definitions
 	}
 
 	/// <summary>
-	/// Static cache for achievement fish data
-	/// TODO: Populate this with data from "Ocean Fishing Data.xlsx"
+	/// Static cache for achievement fish data, populated from fishList.json
 	/// </summary>
 	public static class AchievementFishDataCache
 	{
 		private static List<AchievementFishInfo> _achievementFishList;
+
+		private static readonly HashSet<string> IndigoZones = new HashSet<string>
+			{ "galadion", "south", "north", "rhotano", "ciel", "blood", "sound" };
+
+		/// <summary>
+		/// Maps the Achievement string in fishList.json to the AchievementType enum
+		/// </summary>
+		private static readonly Dictionary<string, AchievementType> AchievementStringMap = new Dictionary<string, AchievementType>
+		{
+			{ "Manta", AchievementType.Mantas },
+			{ "Octopus", AchievementType.Octopods },
+			{ "Shark", AchievementType.Sharks },
+			{ "Jellyfish", AchievementType.Jellyfish },
+			{ "Seadragon", AchievementType.Seadragons },
+			{ "Boxfish", AchievementType.Balloons },
+			{ "Crab", AchievementType.Crabs },
+			{ "Shrimp", AchievementType.Shrimp },
+			{ "Mussel", AchievementType.Shellfish },
+			{ "Squid", AchievementType.Squid },
+			{ "Mantis", AchievementType.MantisShrimp },
+			{ "Prehistoric", AchievementType.Prehistoric }
+		};
 
 		/// <summary>
 		/// Gets all achievement fish data
@@ -129,7 +152,7 @@ namespace Ocean_Trip.Definitions
 		}
 
 		/// <summary>
-		/// Determines which achievement type is valid for the given route
+		/// Determines which achievement types are valid for the given route
 		/// </summary>
 		public static List<AchievementType> GetValidAchievementsForRoute(FishingRoute route)
 		{
@@ -146,47 +169,43 @@ namespace Ocean_Trip.Definitions
 					AchievementType.Crabs
 				};
 			}
-			else // Ruby
+			else
 			{
 				return new List<AchievementType>
 				{
 					AchievementType.Shrimp,
 					AchievementType.Shellfish,
-					AchievementType.Squid
+					AchievementType.Squid,
+					AchievementType.MantisShrimp,
+					AchievementType.Prehistoric
 				};
 			}
 		}
 
 		/// <summary>
-		/// Initialize achievement fish data
-		/// TODO: Populate with actual data from "Ocean Fishing Data.xlsx"
-		/// This is a placeholder structure that should be filled with real data
+		/// Initialize achievement fish data from fishList.json via FishDataCache
 		/// </summary>
 		private static List<AchievementFishInfo> InitializeAchievementFishData()
 		{
-			var fishList = new List<AchievementFishInfo>();
+			var allFish = FishDataCache.GetFish();
 
-			// TODO: Add fish data from the XLSX spreadsheet
-			// Example structure (replace with actual data):
-			/*
-			fishList.Add(new AchievementFishInfo
-			{
-				FishId = (uint)OceanFish.CoralManta,
-				FishName = "Coral Manta",
-				Achievement = AchievementType.Mantas,
-				Location = "galadion", // or "rhotano", "sound", etc.
-				Route = FishingRoute.Indigo,
-				PreferredHookType = HookType.Triple,
-				PreferredBait = FishBait.Krill,
-				IsSpectral = true,
-				BiteType = TugType.Heavy,
-				BiteStart = 10.0f,
-				BiteEnd = 15.0f
-			});
-			*/
-
-			// Placeholder: Return empty list until data is populated
-			return fishList;
+			return allFish
+				.Where(f => !string.IsNullOrEmpty(f.Achievement) && AchievementStringMap.ContainsKey(f.Achievement))
+				.Select(f => new AchievementFishInfo
+				{
+					FishId = (uint)f.FishID,
+					FishName = f.FishName,
+					Achievement = AchievementStringMap[f.Achievement],
+					Location = f.RouteShortName,
+					Route = IndigoZones.Contains(f.RouteShortName) ? FishingRoute.Indigo : FishingRoute.Ruby,
+					PreferredHookType = f.THBonus > 0 ? HookType.Triple : f.DHBonus > 0 ? HookType.Double : HookType.Normal,
+					PreferredBait = f.FavoriteBait,
+					IsSpectral = f.SpectralFish,
+					BiteType = f.BiteType,
+					BiteStart = f.BiteStart,
+					BiteEnd = f.BiteEnd
+				})
+				.ToList();
 		}
 
 		/// <summary>
