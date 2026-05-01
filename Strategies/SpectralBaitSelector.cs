@@ -2,7 +2,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using ff14bot;
 using ff14bot.Managers;
-using Ocean_Trip;
 using Ocean_Trip.Definitions;
 using OceanTripPlanner.Definitions;
 using OceanTripPlanner.Helpers;
@@ -36,13 +35,6 @@ namespace OceanTripPlanner.Strategies
 			var currentRoute = context.CurrentRoute;
 			var caughtFish = context.CaughtFish;
 			var focusFishLog = context.FocusFishLog;
-
-			// Build Spectral Fish List
-			var spectralFishToCatch = (currentRoute == null
-				? new System.Collections.Generic.List<Fish>()
-				: currentRoute.SpectralFish.Where(x => missingFish.Contains((uint)x.FishID)
-					&& x.TimeOfDayExclusion1 != timeOfDay
-					&& x.TimeOfDayExclusion2 != timeOfDay).ToList());
 
 			// Check if we need to use Patience
 			if (OceanTripNewSettings.Instance.Patience == ShouldUsePatience.AlwaysUsePatience
@@ -185,71 +177,39 @@ namespace OceanTripPlanner.Strategies
 					await _baitChanger.ChangeBait(FishBait.Ragworm, $"Switching bait to {_gameCache.GetItemName((uint)FishBait.Ragworm)} in order to catch 3x {_gameCache.GetItemName((uint)OceanFish.Satrapsaurus)}");
 				}
 			}
-			// Fallback to favorite bait for spectral fish
-			else if (focusFishLog && spectralFishToCatch.Any(x => x.FavoriteBait == FishBait.PlumpWorm) && PassTheTime.inventoryCount((int)FishBait.PlumpWorm) > 0)
-			{
-				await _baitChanger.ChangeBait(FishBait.PlumpWorm);
-			}
-			else if (focusFishLog && spectralFishToCatch.Any(x => x.FavoriteBait == FishBait.Krill) && PassTheTime.inventoryCount((int)FishBait.Krill) > 0)
-			{
-				await _baitChanger.ChangeBait(FishBait.Krill);
-			}
-			else if (focusFishLog && spectralFishToCatch.Any(x => x.FavoriteBait == FishBait.Ragworm) && PassTheTime.inventoryCount((int)FishBait.Ragworm) > 0)
-			{
-				await _baitChanger.ChangeBait(FishBait.Ragworm);
-			}
-			// Location/time based default spectral bait
-			else if (
-				((location == "galadion") && (timeOfDay == "Sunset"))
-				|| ((location == "rhotano") && (timeOfDay == "Day"))
-				|| ((location == "north") && (timeOfDay == "Day"))
-				|| ((location == "south") && (timeOfDay == "Night"))
-				|| ((location == "ciel") && (timeOfDay == "Sunset"))
-				|| ((location == "blood") && (timeOfDay == "Sunset"))
-				|| ((location == "rubysea"))
-			)
-			{
-				await _baitChanger.ChangeBait(FishBait.PlumpWorm);
-			}
-			else if (
-				((location == "south") && (timeOfDay == "Day"))
-				|| ((location == "rhotano") && (timeOfDay == "Night")
-					&& (!focusFishLog || !missingFish.Contains((uint)OceanFish.Slipsnail)))
-				|| ((location == "north") && (timeOfDay == "Sunset")
-					&& missingFish.Contains((uint)OceanFish.TheFallenOne)
-					&& focusFishLog)
-				|| ((location == "north") && (timeOfDay == "Night")
-					&& (!focusFishLog
-					|| !missingFish.Contains((uint)OceanFish.BartholomewTheChopper)))
-				|| ((location == "galadion") && (timeOfDay == "Night"))
-				|| ((location == "ciel") && (timeOfDay == "Day" || timeOfDay == "Night"))
-				|| ((location == "blood") && (timeOfDay == "Night"))
-				|| ((location == "sound"))
-				|| ((location == "kugane"))
-				|| ((location == "sirensong"))
-				|| ((location == "oneriver"))
-				|| ((location == "unnamed") && (timeOfDay == "Day"))
-			)
-			{
-				await _baitChanger.ChangeBait(FishBait.Krill);
-			}
-			else if (
-				((location == "galadion") && (timeOfDay == "Day"))
-				|| ((location == "south") && (timeOfDay == "Sunset"))
-				|| ((location == "north") && (timeOfDay == "Sunset"))
-				|| ((location == "north") && (timeOfDay == "Sunset"))
-				|| ((location == "rhotano") && (timeOfDay == "Sunset"))
-				|| ((location == "blood") && (timeOfDay == "Day"))
-				|| ((location == "unnamed") && (timeOfDay == "Sunset"))
-				|| ((location == "unnamed") && (timeOfDay == "Night"))
-				|| ((location == "thavnair"))
-			)
-			{
-				await _baitChanger.ChangeBait(FishBait.Ragworm);
-			}
 			else
 			{
-				await _baitChanger.ChangeBait(spectralbaitId);
+				var availableSpectralFish = currentRoute?.SpectralFish
+					.Where(f => f.TimeOfDayExclusion1 != timeOfDay
+						&& f.TimeOfDayExclusion2 != timeOfDay)
+					.ToList() ?? new System.Collections.Generic.List<Fish>();
+
+				uint spectralBait = 0;
+				string baitReason = null;
+
+				if (focusFishLog)
+				{
+					spectralBait = BaitRanker.SelectBaitForMissingFish(availableSpectralFish, missingFish);
+					if (spectralBait != 0)
+					{
+						var targetedFish = availableSpectralFish
+							.Where(f => missingFish.Contains((uint)f.FishID) && !f.RequiresIntuition && f.FavoriteBait == spectralBait)
+							.Select(f => f.FishName);
+						baitReason = $"Spectral — targeting missing fish: {string.Join(", ", targetedFish)}";
+					}
+				}
+
+				if (spectralBait == 0)
+				{
+					spectralBait = BaitRanker.SelectBaitForPoints(availableSpectralFish);
+					if (spectralBait != 0)
+						baitReason = "Spectral — optimizing for points";
+				}
+
+				if (spectralBait == 0)
+					spectralBait = (uint)spectralbaitId;
+
+				await _baitChanger.ChangeBait(spectralBait, baitReason);
 			}
 		}
 	}

@@ -1,4 +1,4 @@
-﻿using ff14bot.Enums;
+using ff14bot.Enums;
 using ff14bot.Helpers;
 using Newtonsoft.Json;
 using Ocean_Trip.Definitions;
@@ -11,6 +11,13 @@ using System.Threading.Tasks;
 
 namespace Ocean_Trip.Definitions
 {
+	public class IntuitionPrereq
+	{
+		public int FishID { get; set; }
+		public int Count { get; set; }
+		public bool IsMooch { get; set; }
+	}
+
 	public class Fish
 	{
 		public uint RouteID { get; set; }
@@ -34,6 +41,8 @@ namespace Ocean_Trip.Definitions
 		public string WeatherExclusion2 { get; set; }
 		public string TimeOfDayExclusion1 { get; set; }
 		public string TimeOfDayExclusion2 { get; set; }
+		public bool RequiresIntuition { get; set; }
+		public List<IntuitionPrereq> IntuitionPrereqs { get; set; }
 	}
 
 	public static class FishDataCache
@@ -81,9 +90,8 @@ namespace Ocean_Trip.Definitions
 			}
 			catch (Exception ex)
 			{
-				// Log the exception or handle it as needed
 				Logging.Write($"[Ocean Trip] Error loading fish list: {ex.Message}");
-				return new List<Fish>(); // Return an empty list in case of error
+				return new List<Fish>();
 			}
 		}
 

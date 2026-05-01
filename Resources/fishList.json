@@ -51,7 +51,7 @@
     "BiteEnd": 17,
     "Points": 34,
     "DHBonus": 4,
-    "THBonus": 6
+    "THBonus": 7
   },
   {
     "RouteID": 1,
@@ -91,7 +91,9 @@
     "BiteEnd": 24,
     "Points": 40,
     "DHBonus": 2,
-    "THBonus": 3
+    "THBonus": 3,
+    "TimeOfDayExclusion1": "Night",
+    "TimeOfDayExclusion2": "Sunset"
   },
   {
     "RouteID": 1,
@@ -166,7 +168,15 @@
     "BiteEnd": 26,
     "Points": 253,
     "DHBonus": 1,
-    "THBonus": 1
+    "THBonus": 1,
+    "RequiresIntuition": true,
+    "IntuitionPrereqs": [
+      {
+        "FishID": 28938,
+        "Count": 3,
+        "IsMooch": false
+      }
+    ]
   },
   {
     "RouteID": 1,
@@ -508,7 +518,7 @@
     "BiteEnd": 5,
     "Points": 10,
     "DHBonus": 4,
-    "THBonus": 6
+    "THBonus": 7
   },
   {
     "RouteID": 11,
@@ -529,7 +539,9 @@
     "BiteEnd": 20,
     "Points": 35,
     "DHBonus": 4,
-    "THBonus": 7
+    "THBonus": 7,
+    "TimeOfDayExclusion1": "Night",
+    "TimeOfDayExclusion2": "Sunset"
   },
   {
     "RouteID": 11,
@@ -547,7 +559,15 @@
     "BiteEnd": 26,
     "Points": 204,
     "DHBonus": 1,
-    "THBonus": 1
+    "THBonus": 1,
+    "RequiresIntuition": true,
+    "IntuitionPrereqs": [
+      {
+        "FishID": 29727,
+        "Count": 1,
+        "IsMooch": true
+      }
+    ]
   },
   {
     "RouteID": 11,
@@ -830,7 +850,7 @@
     "BiteEnd": 18,
     "Points": 32,
     "DHBonus": 4,
-    "THBonus": 6
+    "THBonus": 7
   },
   {
     "RouteID": 3,
@@ -869,7 +889,9 @@
     "BiteEnd": 18,
     "Points": 38,
     "DHBonus": 2,
-    "THBonus": 3
+    "THBonus": 3,
+    "TimeOfDayExclusion1": "Night",
+    "TimeOfDayExclusion2": "Sunset"
   },
   {
     "RouteID": 3,
@@ -924,7 +946,15 @@
     "BiteEnd": 19,
     "Points": 204,
     "DHBonus": 1,
-    "THBonus": 1
+    "THBonus": 1,
+    "RequiresIntuition": true,
+    "IntuitionPrereqs": [
+      {
+        "FishID": 29731,
+        "Count": 2,
+        "IsMooch": false
+      }
+    ]
   },
   {
     "RouteID": 3,
@@ -1059,7 +1089,7 @@
     "SpectralFish": true,
     "BiteStart": 4,
     "BiteEnd": 8,
-    "Points": 85,
+    "Points": 95,
     "DHBonus": 2,
     "THBonus": 3
   },
@@ -1158,7 +1188,9 @@
     "BiteEnd": 23,
     "Points": 43,
     "DHBonus": 2,
-    "THBonus": 3
+    "THBonus": 3,
+    "TimeOfDayExclusion1": "Night",
+    "TimeOfDayExclusion2": "Sunset"
   },
   {
     "RouteID": 6,
@@ -1304,7 +1336,15 @@
     "BiteEnd": 26,
     "Points": 226,
     "DHBonus": 1,
-    "THBonus": 1
+    "THBonus": 1,
+    "RequiresIntuition": true,
+    "IntuitionPrereqs": [
+      {
+        "FishID": 29743,
+        "Count": 1,
+        "IsMooch": true
+      }
+    ]
   },
   {
     "RouteID": 6,
@@ -1378,7 +1418,7 @@
     "SpectralFish": true,
     "BiteStart": 3,
     "BiteEnd": 8,
-    "Points": 73,
+    "Points": 79,
     "DHBonus": 2,
     "THBonus": 3
   },
@@ -1476,7 +1516,7 @@
     "BiteEnd": 8,
     "Points": 79,
     "DHBonus": 4,
-    "THBonus": 6
+    "THBonus": 7
   },
   {
     "RouteID": 6,
@@ -1632,7 +1672,9 @@
     "BiteEnd": 12,
     "Points": 39,
     "DHBonus": 2,
-    "THBonus": 3
+    "THBonus": 3,
+    "TimeOfDayExclusion1": "Night",
+    "TimeOfDayExclusion2": "Sunset"
   },
   {
     "RouteID": 5,
@@ -1705,7 +1747,15 @@
     "BiteEnd": 27,
     "Points": 246,
     "DHBonus": 1,
-    "THBonus": 1
+    "THBonus": 1,
+    "RequiresIntuition": true,
+    "IntuitionPrereqs": [
+      {
+        "FishID": 32057,
+        "Count": 3,
+        "IsMooch": false
+      }
+    ]
   },
   {
     "RouteID": 5,
@@ -2013,7 +2063,9 @@
     "BiteEnd": 10,
     "Points": 30,
     "DHBonus": 2,
-    "THBonus": 3
+    "THBonus": 3,
+    "TimeOfDayExclusion1": "Night",
+    "TimeOfDayExclusion2": "Sunset"
   },
   {
     "RouteID": 4,
@@ -2086,7 +2138,15 @@
     "BiteEnd": 12,
     "Points": 326,
     "DHBonus": 1,
-    "THBonus": 1
+    "THBonus": 1,
+    "RequiresIntuition": true,
+    "IntuitionPrereqs": [
+      {
+        "FishID": 32082,
+        "Count": 1,
+        "IsMooch": false
+      }
+    ]
   },
   {
     "RouteID": 4,
@@ -2314,7 +2374,7 @@
     "BiteEnd": 11,
     "Points": 10,
     "DHBonus": 4,
-    "THBonus": 6
+    "THBonus": 7
   },
   {
     "RouteID": 8,
@@ -2374,7 +2434,9 @@
     "BiteEnd": 26,
     "Points": 29,
     "DHBonus": 2,
-    "THBonus": 3
+    "THBonus": 3,
+    "TimeOfDayExclusion1": "Night",
+    "TimeOfDayExclusion2": "Sunset"
   },
   {
     "RouteID": 8,
@@ -2467,7 +2529,15 @@
     "BiteEnd": 18,
     "Points": 238,
     "DHBonus": 1,
-    "THBonus": 1
+    "THBonus": 1,
+    "RequiresIntuition": true,
+    "IntuitionPrereqs": [
+      {
+        "FishID": 32096,
+        "Count": 3,
+        "IsMooch": false
+      }
+    ]
   },
   {
     "RouteID": 8,
@@ -2770,7 +2840,9 @@
     "BiteEnd": 20,
     "Points": 38,
     "DHBonus": 4,
-    "THBonus": 7
+    "THBonus": 7,
+    "TimeOfDayExclusion1": "Night",
+    "TimeOfDayExclusion2": "Sunset"
   },
   {
     "RouteID": 10,
@@ -2843,7 +2915,15 @@
     "BiteEnd": 23,
     "Points": 263,
     "DHBonus": 1,
-    "THBonus": 1
+    "THBonus": 1,
+    "RequiresIntuition": true,
+    "IntuitionPrereqs": [
+      {
+        "FishID": 40527,
+        "Count": 2,
+        "IsMooch": false
+      }
+    ]
   },
   {
     "RouteID": 10,
@@ -3152,7 +3232,9 @@
     "BiteEnd": 9,
     "Points": 33,
     "DHBonus": 2,
-    "THBonus": 3
+    "THBonus": 3,
+    "TimeOfDayExclusion1": "Night",
+    "TimeOfDayExclusion2": "Sunset"
   },
   {
     "RouteID": 2,
@@ -3224,7 +3306,15 @@
     "BiteEnd": 26,
     "Points": 263,
     "DHBonus": 1,
-    "THBonus": 1
+    "THBonus": 1,
+    "RequiresIntuition": true,
+    "IntuitionPrereqs": [
+      {
+        "FishID": 40548,
+        "Count": 2,
+        "IsMooch": true
+      }
+    ]
   },
   {
     "RouteID": 2,
@@ -3506,9 +3596,9 @@
     "SpectralFish": false,
     "BiteStart": 10,
     "BiteEnd": 18,
-    "Points": 33,
-    "DHBonus": 3,
-    "THBonus": 5
+    "Points": 57,
+    "DHBonus": 2,
+    "THBonus": 3
   },
   {
     "RouteID": 9,
@@ -3517,7 +3607,7 @@
     "FishName": "Sanbaso",
     "IconX": 6,
     "IconY": 19,
-    "BiteType": 36,
+    "BiteType": 37,
     "Rarity": "Common",
     "FavoriteBait": 29714,
     "CausesSpectral": false,
@@ -3526,9 +3616,11 @@
     "WeatherExclusion2": "Fog",
     "BiteStart": 19,
     "BiteEnd": 31,
-    "Points": 57,
+    "Points": 38,
     "DHBonus": 2,
-    "THBonus": 3
+    "THBonus": 3,
+    "TimeOfDayExclusion1": "Night",
+    "TimeOfDayExclusion2": "Sunset"
   },
   {
     "RouteID": 9,
@@ -3538,16 +3630,16 @@
     "IconX": 7,
     "IconY": 19,
     "Achievement": "Shrimp",
-    "BiteType": 37,
+    "BiteType": 36,
     "Rarity": "Common",
     "FavoriteBait": 29716,
     "CausesSpectral": false,
     "SpectralFish": false,
     "BiteStart": 14,
     "BiteEnd": 25,
-    "Points": 38,
-    "DHBonus": 2,
-    "THBonus": 3
+    "Points": 33,
+    "DHBonus": 3,
+    "THBonus": 5
   },
   {
     "RouteID": 9,
@@ -3602,7 +3694,15 @@
     "BiteEnd": 27,
     "Points": 227,
     "DHBonus": 1,
-    "THBonus": 1
+    "THBonus": 1,
+    "RequiresIntuition": true,
+    "IntuitionPrereqs": [
+      {
+        "FishID": 40561,
+        "Count": 3,
+        "IsMooch": false
+      }
+    ]
   },
   {
     "RouteID": 9,
@@ -3871,7 +3971,9 @@
     "BiteEnd": 9,
     "Points": 37,
     "DHBonus": 2,
-    "THBonus": 3
+    "THBonus": 3,
+    "TimeOfDayExclusion1": "Night",
+    "TimeOfDayExclusion2": "Sunset"
   },
   {
     "RouteID": 7,
@@ -3982,7 +4084,15 @@
     "BiteEnd": 28,
     "Points": 223,
     "DHBonus": 1,
-    "THBonus": 1
+    "THBonus": 1,
+    "RequiresIntuition": true,
+    "IntuitionPrereqs": [
+      {
+        "FishID": 40581,
+        "Count": 3,
+        "IsMooch": false
+      }
+    ]
   },
   {
     "RouteID": 7,
@@ -4267,7 +4377,8 @@
     "BiteEnd": 24,
     "Points": 35,
     "DHBonus": 2,
-    "THBonus": 3
+    "THBonus": 3,
+    "TimeOfDayExclusion1": "Night"
   },
   {
     "RouteID": 12,
@@ -4287,7 +4398,9 @@
     "BiteEnd": 25,
     "Points": 40,
     "DHBonus": 2,
-    "THBonus": 3
+    "THBonus": 3,
+    "TimeOfDayExclusion1": "Night",
+    "TimeOfDayExclusion2": "Sunset"
   },
   {
     "RouteID": 12,
@@ -4360,8 +4473,16 @@
     "BiteStart": 10,
     "BiteEnd": 14,
     "Points": 236,
-    "DHBonus": 0,
-    "THBonus": 1
+    "DHBonus": 1,
+    "THBonus": 1,
+    "RequiresIntuition": true,
+    "IntuitionPrereqs": [
+      {
+        "FishID": 51212,
+        "Count": 3,
+        "IsMooch": false
+      }
+    ]
   },
   {
     "RouteID": 12,
@@ -4380,7 +4501,8 @@
     "BiteEnd": 3,
     "Points": 86,
     "DHBonus": 4,
-    "THBonus": 7
+    "THBonus": 7,
+    "TimeOfDayExclusion1": "Sunset"
   },
   {
     "RouteID": 12,
@@ -4490,7 +4612,8 @@
     "BiteEnd": 6,
     "Points": 100,
     "DHBonus": 2,
-    "THBonus": 3
+    "THBonus": 3,
+    "TimeOfDayExclusion1": "Night"
   },
   {
     "RouteID": 12,
@@ -4545,7 +4668,7 @@
     "Rarity": "Legendary",
     "CausesSpectral": false,
     "SpectralFish": true,
-    "TimeOfDayExclusion1": "Sunset",
+    "TimeOfDayExclusion1": "Day",
     "TimeOfDayExclusion2": "Night",
     "BiteStart": 8,
     "BiteEnd": 12,
@@ -4608,7 +4731,8 @@
     "BiteEnd": 5,
     "Points": 13,
     "DHBonus": 2,
-    "THBonus": 3
+    "THBonus": 3,
+    "TimeOfDayExclusion1": "Night"
   },
   {
     "RouteID": 13,
@@ -4627,7 +4751,8 @@
     "BiteEnd": 20,
     "Points": 36,
     "DHBonus": 2,
-    "THBonus": 0
+    "THBonus": 0,
+    "TimeOfDayExclusion1": "Night"
   },
   {
     "RouteID": 13,
@@ -4646,7 +4771,9 @@
     "BiteEnd": 10,
     "Points": 31,
     "DHBonus": 2,
-    "THBonus": 3
+    "THBonus": 3,
+    "TimeOfDayExclusion1": "Night",
+    "TimeOfDayExclusion2": "Sunset"
   },
   {
     "RouteID": 13,
@@ -4702,7 +4829,8 @@
     "BiteEnd": 11,
     "Points": 300,
     "DHBonus": 1,
-    "THBonus": 0
+    "THBonus": 1,
+    "TimeOfDayExclusion1": "Night"
   },
   {
     "RouteID": 13,
@@ -4738,7 +4866,16 @@
     "BiteEnd": 14,
     "Points": 210,
     "DHBonus": 0,
-    "THBonus": 0
+    "THBonus": 0,
+    "RequiresIntuition": true,
+    "IntuitionPrereqs": [
+      {
+        "FishID": 51229,
+        "Count": 3,
+        "IsMooch": false
+      }
+    ],
+    "TimeOfDayExclusion1": "Night"
   },
   {
     "RouteID": 13,
@@ -4814,8 +4951,8 @@
     "BiteStart": 6,
     "BiteEnd": 6,
     "Points": 164,
-    "DHBonus": 0,
-    "THBonus": 0
+    "DHBonus": 2,
+    "THBonus": 3
   },
   {
     "RouteID": 13,
@@ -4909,7 +5046,7 @@
     "CausesSpectral": false,
     "SpectralFish": true,
     "TimeOfDayExclusion1": "Day",
-    "TimeOfDayExclusion2": "Night",
+    "TimeOfDayExclusion2": "Sunset",
     "BiteStart": 10,
     "BiteEnd": 10,
     "Points": 500,
