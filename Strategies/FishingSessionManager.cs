@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Media;
@@ -11,7 +10,6 @@ using ff14bot.Helpers;
 using ff14bot.Managers;
 using ff14bot.Navigation;
 using Ocean_Trip.Definitions;
-using OceanTrip;
 using OceanTripPlanner.Definitions;
 using OceanTripPlanner.Helpers;
 
@@ -71,21 +69,6 @@ namespace OceanTripPlanner.Strategies
 					context.RefreshBaitCallback();
 				}
 
-				if (FishingManager.State == FishingState.None || FishingManager.State == FishingState.PoleReady)
-				{
-					hookExecuted = false;
-					// Process caught fish and check for Identical Cast BEFORE buff management
-					// (Thaliak's Favor can trigger a GCD that blocks Identical Cast)
-					bool identicalCastUsed = await context.ProcessCaughtFishCallback();
-
-					// If Identical Cast was used, skip everything else
-					if (identicalCastUsed)
-					{
-						await Coroutine.Yield();
-						continue;
-					}
-				}
-
 				// Manage buffs and consumables (IMPORTANT: Always check, not just on first cast!)
 				// This will detect and log spectral changes
 				await context.ManageBuffsCallback(spectraled);
@@ -96,7 +79,11 @@ namespace OceanTripPlanner.Strategies
 				if (FishingManager.State == FishingState.None || FishingManager.State == FishingState.PoleReady)
 				{
 					hookExecuted = false;
+					// Process caught fish and check for Identical Cast
+					bool identicalCastUsed = await context.ProcessCaughtFishCallback();
 
+					// If Identical Cast was used, skip mooch/bait selection (cast already started)
+					if (!identicalCastUsed)
 					{
 						// Check for Mooch before using Mooch II
 						Log("Checking for Mooch before moving into bait checks.", OceanLogLevel.Debug);
@@ -121,9 +108,6 @@ namespace OceanTripPlanner.Strategies
 
 							FishingManager.Cast();
 							context.SetLastCastMooch(false);
-
-							// Apply lure after cast if configured
-							await ApplyLure(context);
 						}
 					}
 
@@ -246,124 +230,6 @@ namespace OceanTripPlanner.Strategies
 			Core.Me.SetFacing(FishingConstants.Headings[spot]);
 
 			await Coroutine.Yield();
-		}
-
-		/// <summary>
-		/// Determine the appropriate lure action for the current context
-		/// </summary>
-		private uint GetLureAction(FishingSessionContext context)
-		{
-			var lureMode = OceanTripNewSettings.Instance.LureMode;
-			if (lureMode == LureMode.Off)
-				return 0;
-
-			if (lureMode == LureMode.Modest)
-				return Actions.ModestLure;
-			if (lureMode == LureMode.Ambitious)
-				return Actions.AmbitiousLure;
-
-			// Auto mode: pick lure based on what the bot is currently chasing
-			// Each check tries in priority order; first match wins
-
-			// 1. Target fish override — only in the target zone
-			uint targetFishId = OceanTripNewSettings.Instance.TargetFishId;
-			if (targetFishId != 0)
-			{
-				var targetFish = FishDataCache.GetFish().FirstOrDefault(f => f.FishID == (int)targetFishId);
-				if (targetFish != null && targetFish.RouteShortName == context.Location)
-					return LureForBiteType(targetFish.BiteType);
-			}
-
-			// 2. Achievement focus — match achievement category fish at this zone
-			var currentAchievement = GetCurrentAchievementType();
-			if (currentAchievement != AchievementType.None)
-			{
-				var achievementFish = AchievementFishDataCache.GetFishForLocation(context.Location, currentAchievement);
-				if (achievementFish != null && achievementFish.Any())
-					return LureForMajorityBiteType(achievementFish.Select(f => f.BiteType));
-			}
-
-			// 3. Missing fish at this zone
-			var missingFish = FishingLog.MissingFish();
-			if (missingFish.Count > 0)
-			{
-				var missingHere = FishDataCache.GetFish()
-					.Where(f => f.RouteShortName == context.Location && missingFish.Contains((uint)f.FishID) && !f.RequiresIntuition)
-					.ToList();
-				if (missingHere.Any())
-					return LureForMajorityBiteType(missingHere.Select(f => f.BiteType));
-			}
-
-			// 4. Fallback — match highest-value fish at this zone
-			var zoneFish = FishDataCache.GetFish()
-				.Where(f => f.RouteShortName == context.Location && !f.RequiresIntuition)
-				.OrderByDescending(f => f.Points)
-				.Take(5)
-				.ToList();
-			if (zoneFish.Any())
-				return LureForMajorityBiteType(zoneFish.Select(f => f.BiteType));
-
-			return 0;
-		}
-
-		private static uint LureForBiteType(TugType biteType)
-		{
-			return biteType == TugType.Light ? Actions.ModestLure : Actions.AmbitiousLure;
-		}
-
-		private static uint LureForMajorityBiteType(IEnumerable<TugType> biteTypes)
-		{
-			int lightCount = biteTypes.Count(t => t == TugType.Light);
-			int otherCount = biteTypes.Count(t => t != TugType.Light);
-			return lightCount > otherCount ? Actions.ModestLure : Actions.AmbitiousLure;
-		}
-
-		private AchievementType GetCurrentAchievementType()
-		{
-			int focus = OceanTripNewSettings.Instance.FishingRoute == FishingRoute.Indigo
-				? OceanTripNewSettings.Instance.IndigoAchievementFocus
-				: OceanTripNewSettings.Instance.RubyAchievementFocus;
-			if (Enum.IsDefined(typeof(AchievementType), focus))
-				return (AchievementType)focus;
-			return AchievementType.None;
-		}
-
-		/// <summary>
-		/// Apply Modest or Ambitious Lure after casting (not on mooch)
-		/// </summary>
-		private async Task ApplyLure(FishingSessionContext context)
-		{
-			uint lureAction = GetLureAction(context);
-			if (lureAction == 0)
-				return;
-
-			int stackCount = OceanTripNewSettings.Instance.LureStackCount;
-			string lureName = lureAction == Actions.ModestLure ? "Modest Lure" : "Ambitious Lure";
-
-			// Wait for cast animation to settle before applying lure
-			await Coroutine.Sleep(500);
-
-			for (int i = 0; i < stackCount; i++)
-			{
-				if (!context.ShouldContinueFishingCallback())
-					break;
-
-				// Don't apply lure if a bite already landed
-				if (FishingManager.State == FishingState.Bite || FishingManager.State == FishingState.PoleReady)
-					break;
-
-				if (!ActionManager.CanCast(lureAction, Core.Me))
-				{
-					Log($"Cannot cast {lureName} (insufficient GP or not available).", OceanLogLevel.Debug);
-					break;
-				}
-
-				Log($"Using {lureName} (stack {i + 1}/{stackCount}).");
-				ActionManager.DoAction(lureAction, Core.Me);
-
-				// Wait for lure animation + grace period
-				await Coroutine.Sleep(2000);
-			}
 		}
 
 		/// <summary>

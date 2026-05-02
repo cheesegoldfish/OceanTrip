@@ -108,26 +108,6 @@ namespace Ocean_Trip
 					break;
 			}
 
-			// Lure Mode
-			switch (OceanTripNewSettings.Instance.LureMode)
-			{
-				case OceanTripPlanner.LureMode.Off:
-					lureOff.Select();
-					break;
-				case OceanTripPlanner.LureMode.Modest:
-					lureModest.Select();
-					break;
-				case OceanTripPlanner.LureMode.Ambitious:
-					lureAmbitious.Select();
-					break;
-				case OceanTripPlanner.LureMode.Auto:
-					lureAuto.Select();
-					break;
-			}
-
-			// Lure Stack Count
-			numericLureStacks.DataBindings.Add("Value", OceanTripPlanner.OceanTripNewSettings.Instance, "LureStackCount", false, DataSourceUpdateMode.OnPropertyChanged);
-
 			// Target Fish
 			if (OceanTripNewSettings.Instance.TargetFishId == 51236)
 				targetFishJinbei.Select();
@@ -337,12 +317,6 @@ namespace Ocean_Trip
 			_radioButtonEnumMap[fishExchangeDesynthesize] = ExchangeFish.Desynth;
 			_radioButtonEnumMap[fishExchangeSell] = ExchangeFish.Sell;
 
-			// Lure Mode radio buttons
-			_radioButtonEnumMap[lureOff] = LureMode.Off;
-			_radioButtonEnumMap[lureModest] = LureMode.Modest;
-			_radioButtonEnumMap[lureAmbitious] = LureMode.Ambitious;
-			_radioButtonEnumMap[lureAuto] = LureMode.Auto;
-
 			// Target Fish radio buttons — handled separately (maps to uint, not enum)
 			targetFishNone.CheckedChanged += TargetFish_CheckedChanged;
 			targetFishJinbei.CheckedChanged += TargetFish_CheckedChanged;
@@ -409,9 +383,6 @@ namespace Ocean_Trip
 							break;
 						case ExchangeFish exchangeFish:
 							OceanTripNewSettings.Instance.ExchangeFish = exchangeFish;
-							break;
-						case LureMode lureMode:
-							OceanTripNewSettings.Instance.LureMode = lureMode;
 							break;
 					}
 				}

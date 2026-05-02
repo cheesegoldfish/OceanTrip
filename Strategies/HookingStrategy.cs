@@ -64,7 +64,7 @@ namespace OceanTripPlanner.Strategies
 			Log("Checking if we should double hook based on bite timer and current fishing conditions!", OceanLogLevel.Debug);
 
 			// Determine if Double/Triple Hook should be used for points
-			if (OceanTripNewSettings.Instance.FishPriority != FishPriority.IgnoreBoat)
+			if (OceanTripNewSettings.Instance.FishPriority == FishPriority.Points || OceanTripNewSettings.Instance.FishPriority == FishPriority.Auto)
 			{
 				// Special handling for South's lastMooch rule - Always DH/TH after a Mooch in South if spectral.
 				if (context.Location == "south" && context.LastCastMooch && (context.TimeOfDay == "Sunset" || context.TimeOfDay == "Night") && context.Spectraled)

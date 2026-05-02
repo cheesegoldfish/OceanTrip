@@ -123,20 +123,6 @@ namespace OceanTripPlanner.Settings
 			set => SetProperty(ref _baitRestockAmount, value);
 		}
 
-		private LureMode _lureMode;
-		public LureMode LureMode
-		{
-			get => _lureMode;
-			set => SetProperty(ref _lureMode, value);
-		}
-
-		private int _lureStackCount = 1;
-		public int LureStackCount
-		{
-			get => _lureStackCount;
-			set => SetProperty(ref _lureStackCount, Math.Max(1, Math.Min(3, value)));
-		}
-
 		private uint _targetFishId;
 		public uint TargetFishId
 		{

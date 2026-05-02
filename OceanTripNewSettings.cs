@@ -55,14 +55,6 @@ namespace OceanTripPlanner
 		None
 	}
 
-	public enum LureMode : int
-	{
-		Off = 0,
-		Modest = 1,
-		Ambitious = 2,
-		Auto = 3
-	}
-
 	#endregion
 
 	/// <summary>
@@ -744,18 +736,6 @@ namespace OceanTripPlanner
 		{
 			get => _settings.ExchangeFish;
 			set => _settings.ExchangeFish = value;
-		}
-
-		public LureMode LureMode
-		{
-			get => _settings.LureMode;
-			set => _settings.LureMode = value;
-		}
-
-		public int LureStackCount
-		{
-			get => _settings.LureStackCount;
-			set => _settings.LureStackCount = value;
 		}
 
 		public uint TargetFishId
