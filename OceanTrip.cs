@@ -834,9 +834,9 @@ namespace OceanTripPlanner
 				ActionManager.DoAction(Actions.ThaliaksFavor, Core.Me);
 				await Coroutine.Wait(1000, () => !ActionManager.CanCast(Actions.ThaliaksFavor, Core.Me));
 			}
-			else if (!spectraled && gameCache.NeedsGPRecovery(FishingConstants.THALIAK_GP_THRESHOLD) && ActionManager.CanCast(Actions.ThaliaksFavor, Core.Me) && Core.Player.Auras.Any(x => x.Id == CharacterAuras.AnglersArt && x.Value >= 7))
+			else if (!spectraled && gameCache.NeedsGPRecovery(FishingConstants.THALIAK_GP_THRESHOLD) && ActionManager.CanCast(Actions.ThaliaksFavor, Core.Me) && Core.Player.Auras.Any(x => x.Id == CharacterAuras.AnglersArt && x.Value >= 3))
 			{
-				Log("Currently at >7 Angler's Art Stacks - Using Thaliak's Favor!");
+				Log("Using Thaliak's Favor!");
 				ActionManager.DoAction(Actions.ThaliaksFavor, Core.Me);
 				await Coroutine.Wait(1000, () => !ActionManager.CanCast(Actions.ThaliaksFavor, Core.Me));
 			}

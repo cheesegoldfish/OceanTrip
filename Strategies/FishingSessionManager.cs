@@ -25,6 +25,7 @@ namespace OceanTripPlanner.Strategies
 		private readonly HookingStrategy _hookingStrategy;
 		private readonly LureStrategy _lureStrategy;
 		private readonly bool _loggingEnabled;
+		private double _moochCastOffset;
 
 		public FishingSessionManager(GameStateCache gameCache, HookingStrategy hookingStrategy, bool enableLogging = true)
 		{
@@ -82,6 +83,7 @@ namespace OceanTripPlanner.Strategies
 				if (FishingManager.State == FishingState.None || FishingManager.State == FishingState.PoleReady)
 				{
 					hookExecuted = false;
+					_moochCastOffset = 0;
 					_lureStrategy.ResetForNewCast();
 					// Process caught fish and check for Identical Cast
 					bool identicalCastUsed = await context.ProcessCaughtFishCallback();
@@ -94,12 +96,14 @@ namespace OceanTripPlanner.Strategies
 						if (FishingManager.CanMoochAny == FishingManager.AvailableMooch.Mooch || FishingManager.CanMoochAny == FishingManager.AvailableMooch.Both)
 						{
 							Log("Using Mooch!");
+							_moochCastOffset = FishingManager.TimeSinceCast.TotalSeconds;
 							FishingManager.Mooch();
 							context.SetLastCastMooch(true);
 						}
 						else if (FishingManager.CanMoochAny == FishingManager.AvailableMooch.MoochTwo)
 						{
 							Log("Using Mooch II!");
+							_moochCastOffset = FishingManager.TimeSinceCast.TotalSeconds;
 							FishingManager.MoochTwo();
 							context.SetLastCastMooch(true);
 						}
@@ -151,9 +155,13 @@ namespace OceanTripPlanner.Strategies
 					if (FishingManager.CanHook && FishingManager.State == FishingState.Bite && !hookExecuted)
 					{
 						hookExecuted = true;
+						double rawTime = FishingManager.TimeSinceCast.TotalSeconds;
+						double biteTime = context.GetLastCastMooch()
+							? (rawTime - _moochCastOffset)
+							: rawTime;
 						var hookContext = new HookContext
 						{
-							BiteElapsedSeconds = FishingManager.TimeSinceCast.TotalSeconds + FishingConstants.BITE_TIMER_OFFSET,
+							BiteElapsedSeconds = biteTime + FishingConstants.BITE_TIMER_OFFSET,
 							Spectraled = spectraled,
 							Location = context.Location,
 							TimeOfDay = context.TimeOfDay,

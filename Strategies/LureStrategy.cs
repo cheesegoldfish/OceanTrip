@@ -108,6 +108,11 @@ namespace OceanTripPlanner.Strategies
 			if (pref == LurePreference.None)
 				return false;
 
+			// Never during spectral — lures group all fast-biting spectral fish together,
+			// making bite-time identification impossible
+			if (context.Spectraled)
+				return false;
+
 			// Never during Fisher's Intuition — could lose rare Intuition fish
 			if (Core.Player.HasAura(CharacterAuras.FishersIntuition))
 				return false;

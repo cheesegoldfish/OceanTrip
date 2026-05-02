@@ -35,6 +35,10 @@ namespace OceanTripPlanner.Strategies
 		{
 			double biteElapsed = Math.Round(context.BiteElapsedSeconds, 1);
 			bool doubleHook = false;
+			bool hasChum = Core.Player.HasAura(CharacterAuras.Chum);
+
+			// Chum reduces bite time by ~50% — double observed time to match our database windows
+			double matchElapsed = hasChum ? biteElapsed * 2.0 : biteElapsed;
 
 			// Cache current weather to avoid repeated API calls in LINQ queries
 			string currentWeather = _gameCache.CurrentWeather;
@@ -42,24 +46,34 @@ namespace OceanTripPlanner.Strategies
 			// Build fish lists for bite prediction - first try exact match, then fallback to nearest
 			List<Fish> spectralFishToCatch = FindMatchingFish(
 				context.CurrentRoute?.SpectralFish,
-				biteElapsed,
+				matchElapsed,
 				context.TimeOfDay,
 				currentWeather,
 				excludeWeather: false);
 
 			List<Fish> normalFishToCatch = FindMatchingFish(
 				context.CurrentRoute?.NormalFish,
-				biteElapsed,
+				matchElapsed,
 				context.TimeOfDay,
 				currentWeather,
 				excludeWeather: true);
 
-			var potentialFish = String.Join(", ", (context.Spectraled ? spectralFishToCatch : normalFishToCatch).Select(x => _gameCache.GetItemName((uint)x.FishID)).ToList());
+			var matchedFish = context.Spectraled ? spectralFishToCatch : normalFishToCatch;
+			var potentialFish = String.Join(", ", matchedFish.Select(x => _gameCache.GetItemName((uint)x.FishID)).ToList());
 
-			if (Core.Player.HasAura(CharacterAuras.Chum))
-				potentialFish = "Cannot predict due to Chum.";
+			// Check if this is a fuzzy match (nearest fish outside its expected window)
+			bool isFuzzy = false;
+			if (matchedFish.Any())
+			{
+				var firstFish = matchedFish.First();
+				var (start, end) = firstFish.GetBiteRange(FishingManager.SelectedBaitItemId);
+				isFuzzy = matchElapsed < start || matchElapsed > end;
+			}
 
-			Log($"Bite Time: {biteElapsed:F1}s, Potential Fish: {(String.IsNullOrWhiteSpace(potentialFish) ? "Unable to determine" : potentialFish)}");
+			string tugName = FishingManager.TugType == TugType.Light ? "!" : FishingManager.TugType == TugType.Medium ? "!!" : "!!!";
+			string fuzzyTag = isFuzzy ? " (fuzzy)" : "";
+			string chumTag = hasChum ? $" (Chum: raw {biteElapsed:F1}s)" : "";
+			Log($"Bite Time: {matchElapsed:F1}s, Tug: {tugName}, Potential Fish: {(String.IsNullOrWhiteSpace(potentialFish) ? "Unable to determine" : potentialFish)}{fuzzyTag}{chumTag}");
 
 			Log("Checking if we should double hook based on bite timer and current fishing conditions!", OceanLogLevel.Debug);
 
@@ -72,7 +86,7 @@ namespace OceanTripPlanner.Strategies
 					var achievementFocus = AchievementFishDataCache.GetCurrentAchievementFocus();
 					if (achievementFocus != AchievementType.None)
 					{
-						var matchingFish = FindMatchingFishForHook(context.Location, biteElapsed, context.TimeOfDay, currentWeather);
+						var matchingFish = FindMatchingFishForHook(context.Location, matchElapsed, context.TimeOfDay, currentWeather);
 						doubleHook = matchingFish.Any(f =>
 							!string.IsNullOrEmpty(f.Achievement) &&
 							AchievementFishDataCache.MapAchievementString(f.Achievement) == achievementFocus);
@@ -88,7 +102,7 @@ namespace OceanTripPlanner.Strategies
 					else
 					{
 						// Find matching fish for DH/TH decision with fallback to nearest
-						var matchingFish = FindMatchingFishForHook(context.Location, biteElapsed, context.TimeOfDay, currentWeather);
+						var matchingFish = FindMatchingFishForHook(context.Location, matchElapsed, context.TimeOfDay, currentWeather);
 						doubleHook = matchingFish.Any(x =>
 							((x.Points * x.THBonus > 600 && x.THBonus > 1) || (x.Points * x.DHBonus > 400 && x.DHBonus > 1)) || (x.THBonus > 5 || x.DHBonus > 3));
 					}
@@ -172,7 +186,6 @@ namespace OceanTripPlanner.Strategies
 
 			Log("Refreshing UI for Bait and Achievements in case something changed.", OceanLogLevel.Debug);
 
-			context.OnHookExecuted(true); // Mark fish as caught and ready to log
 			FFXIV_Databinds.Instance.RefreshBait();
 
 			return Task.CompletedTask;
@@ -241,7 +254,8 @@ namespace OceanTripPlanner.Strategies
 		}
 
 		/// <summary>
-		/// Find the nearest fish by bite time within the configured tolerance
+		/// Find the nearest fish by bite time — always returns the closest match(es)
+		/// since the caught fish must be one of the known fish at this location
 		/// </summary>
 		private List<Fish> FindNearestFish(List<Fish> eligibleFish, double biteElapsed, uint currentBait = 0)
 		{
@@ -265,10 +279,6 @@ namespace OceanTripPlanner.Strategies
 
 			// Find minimum distance
 			double minDistance = fishWithDistance.Min(x => x.Distance);
-
-			// Only return fish within tolerance
-			if (minDistance > FishingConstants.BITE_TIME_TOLERANCE)
-				return new List<Fish>();
 
 			// Return all fish at the minimum distance (could be multiple with same bite time)
 			return fishWithDistance.Where(x => Math.Abs(x.Distance - minDistance) < 0.001).Select(x => x.Fish).ToList();

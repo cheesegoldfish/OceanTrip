@@ -94,11 +94,6 @@ namespace OceanTripPlanner.Definitions
 		/// </summary>
 		public const double BITE_TIMER_OFFSET = -0.3;
 
-		/// <summary>
-		/// Tolerance for matching fish by bite time (0.1s)
-		/// Used as fallback when no exact match is found
-		/// </summary>
-		public const double BITE_TIME_TOLERANCE = 0.1;
 
 		/// <summary>
 		/// Buff check interval in milliseconds (5000ms = 5 seconds)
