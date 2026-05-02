@@ -84,7 +84,9 @@ namespace OceanTripPlanner.Strategies
 					{
 						await _baitChanger.ChangeBait(spectralTrigger.FavoriteBait,
 							$"Achievement ({targetAchievement}) — popping spectral, {spectralCount} achievement fish need it");
-						await _patienceManager.UsePatience();
+						if (OceanTripNewSettings.Instance.Patience == ShouldUsePatience.AlwaysUsePatience)
+							await _patienceManager.UsePatience();
+						// Note: not spectral here (we're trying to pop it), so SpectralOnly doesn't apply
 						return;
 					}
 				}
@@ -122,21 +124,14 @@ namespace OceanTripPlanner.Strategies
 					$"Achievement ({targetAchievement}) — no matching fish, using default bait");
 			}
 
-			// Use Patience if appropriate
-			await _patienceManager.UsePatience();
+			if (OceanTripNewSettings.Instance.Patience == ShouldUsePatience.AlwaysUsePatience
+				|| (isSpectral && OceanTripNewSettings.Instance.Patience == ShouldUsePatience.SpectralOnly))
+				await _patienceManager.UsePatience();
 		}
 
-		/// <summary>
-		/// Determines which achievement the user has selected based on the current route
-		/// </summary>
 		private AchievementType GetSelectedAchievement()
 		{
-			int focus = OceanTripNewSettings.Instance.FishingRoute == FishingRoute.Indigo
-				? OceanTripNewSettings.Instance.IndigoAchievementFocus
-				: OceanTripNewSettings.Instance.RubyAchievementFocus;
-			if (Enum.IsDefined(typeof(AchievementType), focus))
-				return (AchievementType)focus;
-			return AchievementType.None;
+			return AchievementFishDataCache.GetCurrentAchievementFocus();
 		}
 
 		/// <summary>

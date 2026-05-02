@@ -63,20 +63,35 @@ namespace OceanTripPlanner.Strategies
 
 			Log("Checking if we should double hook based on bite timer and current fishing conditions!", OceanLogLevel.Debug);
 
-			// Determine if Double/Triple Hook should be used for points
-			if (OceanTripNewSettings.Instance.FishPriority == FishPriority.Points || OceanTripNewSettings.Instance.FishPriority == FishPriority.Auto)
+			// DH/TH cannot be used during Patience — fish always escapes without Precision/Powerful Hookset
+			if (!FishingManager.HasPatience)
 			{
-				// Special handling for South's lastMooch rule - Always DH/TH after a Mooch in South if spectral.
-				if (context.Location == "south" && context.LastCastMooch && (context.TimeOfDay == "Sunset" || context.TimeOfDay == "Night") && context.Spectraled)
+				if (OceanTripNewSettings.Instance.FishPriority == FishPriority.Achievements)
 				{
-					doubleHook = true;
+					// Achievement mode: DH/TH only when predicted fish matches the target achievement category
+					var achievementFocus = AchievementFishDataCache.GetCurrentAchievementFocus();
+					if (achievementFocus != AchievementType.None)
+					{
+						var matchingFish = FindMatchingFishForHook(context.Location, biteElapsed, context.TimeOfDay, currentWeather);
+						doubleHook = matchingFish.Any(f =>
+							!string.IsNullOrEmpty(f.Achievement) &&
+							AchievementFishDataCache.MapAchievementString(f.Achievement) == achievementFocus);
+					}
 				}
-				else
+				else if (OceanTripNewSettings.Instance.FishPriority == FishPriority.Points || OceanTripNewSettings.Instance.FishPriority == FishPriority.Auto)
 				{
-					// Find matching fish for DH/TH decision with fallback to nearest
-					var matchingFish = FindMatchingFishForHook(context.Location, biteElapsed, context.TimeOfDay, currentWeather);
-					doubleHook = matchingFish.Any(x =>
-						((x.Points * x.THBonus > 600 && x.THBonus > 1) || (x.Points * x.DHBonus > 400 && x.DHBonus > 1)) || (x.THBonus > 5 || x.DHBonus > 3));
+					// Special handling for South's lastMooch rule - Always DH/TH after a Mooch in South if spectral.
+					if (context.Location == "south" && context.LastCastMooch && (context.TimeOfDay == "Sunset" || context.TimeOfDay == "Night") && context.Spectraled)
+					{
+						doubleHook = true;
+					}
+					else
+					{
+						// Find matching fish for DH/TH decision with fallback to nearest
+						var matchingFish = FindMatchingFishForHook(context.Location, biteElapsed, context.TimeOfDay, currentWeather);
+						doubleHook = matchingFish.Any(x =>
+							((x.Points * x.THBonus > 600 && x.THBonus > 1) || (x.Points * x.DHBonus > 400 && x.DHBonus > 1)) || (x.THBonus > 5 || x.DHBonus > 3));
+					}
 				}
 			}
 

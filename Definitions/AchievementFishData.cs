@@ -183,6 +183,30 @@ namespace Ocean_Trip.Definitions
 		}
 
 		/// <summary>
+		/// Returns the user's currently selected achievement focus based on the active route
+		/// </summary>
+		public static AchievementType GetCurrentAchievementFocus()
+		{
+			int focus = OceanTripNewSettings.Instance.FishingRoute == FishingRoute.Indigo
+				? OceanTripNewSettings.Instance.IndigoAchievementFocus
+				: OceanTripNewSettings.Instance.RubyAchievementFocus;
+			if (Enum.IsDefined(typeof(AchievementType), focus))
+				return (AchievementType)focus;
+			return AchievementType.None;
+		}
+
+		/// <summary>
+		/// Maps an Achievement string from fishList.json to the AchievementType enum.
+		/// Returns AchievementType.None if the string doesn't match.
+		/// </summary>
+		public static AchievementType MapAchievementString(string achievement)
+		{
+			if (achievement != null && AchievementStringMap.TryGetValue(achievement, out var type))
+				return type;
+			return AchievementType.None;
+		}
+
+		/// <summary>
 		/// Initialize achievement fish data from fishList.json via FishDataCache
 		/// </summary>
 		private static List<AchievementFishInfo> InitializeAchievementFishData()
