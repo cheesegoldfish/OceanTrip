@@ -55,6 +55,14 @@ namespace OceanTripPlanner
 		None
 	}
 
+	public enum LurePreference : int
+	{
+		None = 0,
+		Modest = 1,
+		Ambitious = 2,
+		Auto = 3
+	}
+
 	#endregion
 
 	/// <summary>
@@ -742,6 +750,18 @@ namespace OceanTripPlanner
 		{
 			get => _settings.TargetFishId;
 			set => _settings.TargetFishId = value;
+		}
+
+		public LurePreference LurePreference
+		{
+			get => _settings.LurePreference;
+			set => _settings.LurePreference = value;
+		}
+
+		public int LureMaxStacks
+		{
+			get => _settings.LureMaxStacks;
+			set => _settings.LureMaxStacks = value;
 		}
 
 		public int IndigoAchievementFocus

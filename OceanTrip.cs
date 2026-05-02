@@ -278,12 +278,12 @@ namespace OceanTripPlanner
 				if (OceanTripNewSettings.Instance.ExchangeFish == ExchangeFish.Sell)
 				{
 					await Coroutine.Sleep(FishingConstants.FISH_EXCHANGE_DELAY_MS);
-					await LandSell(FishDataCache.GetFish().Where(x => x.Rarity != "Rare").Select(x => x.FishID).ToList());
+					await LandSell(GetExchangeableFishIds());
 				}
 				else if (OceanTripNewSettings.Instance.ExchangeFish == ExchangeFish.Desynth)
 				{
 					await Coroutine.Sleep(FishingConstants.FISH_EXCHANGE_DELAY_MS);
-					await PassTheTime.DesynthOcean(FishDataCache.GetFish().Where(x => x.Rarity != "Rare").Select(x => x.FishID).ToList());
+					await PassTheTime.DesynthOcean(GetExchangeableFishIds());
 				}
 
 				//await Lisbeth.SelfRepairWithMenderFallback();
@@ -557,9 +557,21 @@ namespace OceanTripPlanner
 			{
 				FFXIV_Databinds.Instance.RefreshBait();
 
-				if ((Core.Me.MaxGP - Core.Me.CurrentGP) > 200 && ActionManager.CanCast(Actions.ThaliaksFavor, Core.Me))
+				if ((Core.Me.MaxGP - Core.Me.CurrentGP) > FishingConstants.THALIAK_GP_THRESHOLD && ActionManager.CanCast(Actions.ThaliaksFavor, Core.Me))
 				{
 					ActionManager.DoAction(Actions.ThaliaksFavor, Core.Me);
+				}
+
+				// Cordial for GP recovery
+				if (gameCache.NeedsGPRecovery(FishingConstants.CORDIAL_GP_THRESHOLD))
+				{
+					await UseCordial();
+				}
+
+				// Apply Patience if enabled and not already active
+				if (OceanTripNewSettings.Instance.Patience != ShouldUsePatience.OnlyForSpecificFish && !FishingManager.HasPatience)
+				{
+					await patienceManager.UsePatience();
 				}
 
 				if (FishingManager.CanMoochAny == FishingManager.AvailableMooch.Mooch || FishingManager.CanMoochAny == FishingManager.AvailableMooch.Both)
@@ -576,20 +588,55 @@ namespace OceanTripPlanner
 				}
 			}
 
-			if ((Core.Me.MaxGP - Core.Me.CurrentGP) > FishingConstants.THALIAK_GP_THRESHOLD && ActionManager.CanCast(Actions.ThaliaksFavor, Core.Me))
-			{
-				ActionManager.DoAction(Actions.ThaliaksFavor, Core.Me);
-			}
+			var openWorldLureStrategy = new LureStrategy(gameCache);
+			openWorldLureStrategy.ResetForNewCast();
+			bool hookExecuted = false;
 
 			while (FishingManager.State != FishingState.PoleReady)
 			{
-				if (FishingManager.CanHook && FishingManager.State == FishingState.Bite)
+				// Apply lure while line is in water
+				if (FishingManager.State != FishingState.Bite && FishingManager.State != FishingState.PoleReady)
 				{
-					Log($"Bite Time: {FishingManager.TimeSinceCast.TotalSeconds + FishingConstants.BITE_TIMER_OFFSET:F1}s");
-					FishingManager.Hook();
+					var lureContext = new LureContext
+					{
+						Location = "",
+						TimeOfDay = "",
+						Spectraled = false,
+						LastCastMooch = false,
+						TargetFishId = 0,
+						MissingFish = null
+					};
+					await openWorldLureStrategy.TryApplyLure(lureContext);
 				}
 
-				FFXIV_Databinds.Instance.RefreshBait();
+				// Auto-accept collectable preservation dialog
+				if (SelectYesno.IsOpen)
+					SelectYesno.Yes();
+
+				if (FishingManager.CanHook && FishingManager.State == FishingState.Bite && !hookExecuted)
+				{
+					hookExecuted = true;
+					Log($"Bite Time: {FishingManager.TimeSinceCast.TotalSeconds + FishingConstants.BITE_TIMER_OFFSET:F1}s, Tug: {FishingManager.TugType}");
+
+					if (FishingManager.HasPatience)
+					{
+						if (FishingManager.TugType == TugType.Light)
+						{
+							Log("Using Precision Hookset!");
+							ActionManager.DoAction(Actions.PrecisionHookset, Core.Me);
+						}
+						else
+						{
+							Log("Using Powerful Hookset!");
+							ActionManager.DoAction(Actions.PowerfulHookset, Core.Me);
+						}
+					}
+					else
+					{
+						FishingManager.Hook();
+					}
+				}
+
 				await Coroutine.Yield();
 			}
 		}
@@ -770,12 +817,7 @@ namespace OceanTripPlanner
 			// Should we Cordial?
 			Log("Checking for Hi-Cordial Use.", OceanLogLevel.Debug);
 
-			if (gameCache.NeedsGPRecovery(FishingConstants.CORDIAL_GP_THRESHOLD) && spectraled)
-			{
-				await UseCordial();
-				await Coroutine.Yield();
-			}
-			else if (gameCache.NeedsGPRecovery(FishingConstants.CORDIAL_GP_THRESHOLD) && gameCache.CurrentGPPercent < FishingConstants.LOW_GP_PERCENT)
+			if (gameCache.NeedsGPRecovery(FishingConstants.CORDIAL_GP_THRESHOLD))
 			{
 				await UseCordial();
 				await Coroutine.Yield();
@@ -854,6 +896,20 @@ namespace OceanTripPlanner
 			{
 				shouldIdenticalCast = true;
 			}
+			// Achievement mode: IC on any fish matching the target achievement
+			else if (OceanTripNewSettings.Instance.FishPriority == FishPriority.Achievements)
+			{
+				var focus = AchievementFishDataCache.GetCurrentAchievementFocus();
+				if (focus != AchievementType.None)
+				{
+					var caughtFishData = FishDataCache.GetFish().FirstOrDefault(f => f.FishID == (int)lastCaughtFish);
+					if (caughtFishData != null && !string.IsNullOrEmpty(caughtFishData.Achievement) &&
+						AchievementFishDataCache.MapAchievementString(caughtFishData.Achievement) == focus)
+					{
+						shouldIdenticalCast = true;
+					}
+				}
+			}
 
 			if (shouldIdenticalCast && ActionManager.CanCast(Actions.IdenticalCast, Core.Me) && !Core.Player.HasAura(CharacterAuras.FishersIntuition))
 			{
@@ -909,6 +965,20 @@ namespace OceanTripPlanner
 			{
 				await normalBaitSelector.SelectBait(context);
 			}
+		}
+
+		private static readonly HashSet<int> NeverExchangeFish = new HashSet<int>
+		{
+			OceanFish.JuniorJinbei
+		};
+
+		private List<int> GetExchangeableFishIds()
+		{
+			uint targetFish = OceanTripNewSettings.Instance.TargetFishId;
+			return FishDataCache.GetFish()
+				.Where(x => x.Rarity != "Rare" && !NeverExchangeFish.Contains(x.FishID) && x.FishID != (int)targetFish)
+				.Select(x => x.FishID)
+				.ToList();
 		}
 
 		private static bool PartyLeaderWaitConditions()

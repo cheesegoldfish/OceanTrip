@@ -70,6 +70,13 @@
 			GPActionChum = new UI.Controls.RadioButtonFlat();
 			GPActionDoubleHook = new UI.Controls.RadioButtonFlat();
 			GPActionNothing = new UI.Controls.RadioButtonFlat();
+			lureGroup = new System.Windows.Forms.GroupBox();
+			lureAuto = new UI.Controls.RadioButtonFlat();
+			lureAmbitious = new UI.Controls.RadioButtonFlat();
+			lureModest = new UI.Controls.RadioButtonFlat();
+			lureNone = new UI.Controls.RadioButtonFlat();
+			lureStacksLabel = new System.Windows.Forms.Label();
+			lureStacksNumeric = new System.Windows.Forms.NumericUpDown();
 			groupBox5 = new System.Windows.Forms.GroupBox();
 			patienceAlways = new UI.Controls.RadioButtonFlat();
 			patienceSpectralOnly = new UI.Controls.RadioButtonFlat();
@@ -160,6 +167,8 @@
 			fishingRoute.SuspendLayout();
 			lateQueue.SuspendLayout();
 			fullGPAction.SuspendLayout();
+			lureGroup.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)lureStacksNumeric).BeginInit();
 			groupBox5.SuspendLayout();
 			groupBox4.SuspendLayout();
 			tackleboxGroup.SuspendLayout();
@@ -413,7 +422,7 @@
 			thavnairMantis.Size = new System.Drawing.Size(113, 19);
 			thavnairMantis.TabIndex = 0;
 			thavnairMantis.TabStop = true;
-			thavnairMantis.Text = "Mantis Shrimp";
+			thavnairMantis.Text = "Mantis Shrimp (Solo)";
 			thavnairMantis.UnCheckedColor = System.Drawing.Color.Gray;
 			thavnairMantis.UseVisualStyleBackColor = true;
 			//
@@ -748,7 +757,109 @@
 			GPActionNothing.Text = "Nothing";
 			GPActionNothing.UnCheckedColor = System.Drawing.Color.Gray;
 			GPActionNothing.UseVisualStyleBackColor = true;
-			// 
+			//
+			// lureGroup
+			//
+			lureGroup.Controls.Add(lureAuto);
+			lureGroup.Controls.Add(lureAmbitious);
+			lureGroup.Controls.Add(lureModest);
+			lureGroup.Controls.Add(lureNone);
+			lureGroup.Controls.Add(lureStacksLabel);
+			lureGroup.Controls.Add(lureStacksNumeric);
+			lureGroup.ForeColor = System.Drawing.Color.Gainsboro;
+			lureGroup.Location = new System.Drawing.Point(274, 341);
+			lureGroup.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+			lureGroup.Name = "lureGroup";
+			lureGroup.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
+			lureGroup.Size = new System.Drawing.Size(397, 75);
+			lureGroup.TabIndex = 30;
+			lureGroup.TabStop = false;
+			lureGroup.Text = "Lure";
+			lureGroup.MouseDown += FormOceanSettings_MouseDown;
+			//
+			// lureAuto
+			//
+			lureAuto.AutoSize = true;
+			lureAuto.CheckedColor = System.Drawing.Color.FromArgb(0, 137, 198);
+			lureAuto.DisabledColor = System.Drawing.Color.SlateGray;
+			lureAuto.Location = new System.Drawing.Point(287, 20);
+			lureAuto.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+			lureAuto.MinimumSize = new System.Drawing.Size(0, 17);
+			lureAuto.Name = "lureAuto";
+			lureAuto.Size = new System.Drawing.Size(60, 19);
+			lureAuto.TabIndex = 5;
+			lureAuto.Text = "Auto";
+			lureAuto.UnCheckedColor = System.Drawing.Color.Gray;
+			lureAuto.UseVisualStyleBackColor = true;
+			//
+			// lureAmbitious
+			//
+			lureAmbitious.AutoSize = true;
+			lureAmbitious.CheckedColor = System.Drawing.Color.FromArgb(0, 137, 198);
+			lureAmbitious.DisabledColor = System.Drawing.Color.SlateGray;
+			lureAmbitious.Location = new System.Drawing.Point(178, 20);
+			lureAmbitious.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+			lureAmbitious.MinimumSize = new System.Drawing.Size(0, 17);
+			lureAmbitious.Name = "lureAmbitious";
+			lureAmbitious.Size = new System.Drawing.Size(100, 19);
+			lureAmbitious.TabIndex = 4;
+			lureAmbitious.Text = "Ambitious";
+			lureAmbitious.UnCheckedColor = System.Drawing.Color.Gray;
+			lureAmbitious.UseVisualStyleBackColor = true;
+			//
+			// lureModest
+			//
+			lureModest.AutoSize = true;
+			lureModest.CheckedColor = System.Drawing.Color.FromArgb(0, 137, 198);
+			lureModest.DisabledColor = System.Drawing.Color.SlateGray;
+			lureModest.Location = new System.Drawing.Point(93, 20);
+			lureModest.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+			lureModest.MinimumSize = new System.Drawing.Size(0, 17);
+			lureModest.Name = "lureModest";
+			lureModest.Size = new System.Drawing.Size(80, 19);
+			lureModest.TabIndex = 3;
+			lureModest.Text = "Modest";
+			lureModest.UnCheckedColor = System.Drawing.Color.Gray;
+			lureModest.UseVisualStyleBackColor = true;
+			//
+			// lureNone
+			//
+			lureNone.AutoSize = true;
+			lureNone.CheckedColor = System.Drawing.Color.FromArgb(0, 137, 198);
+			lureNone.DisabledColor = System.Drawing.Color.SlateGray;
+			lureNone.Location = new System.Drawing.Point(8, 20);
+			lureNone.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+			lureNone.MinimumSize = new System.Drawing.Size(0, 17);
+			lureNone.Name = "lureNone";
+			lureNone.Size = new System.Drawing.Size(70, 19);
+			lureNone.TabIndex = 2;
+			lureNone.TabStop = true;
+			lureNone.Text = "None";
+			lureNone.UnCheckedColor = System.Drawing.Color.Gray;
+			lureNone.UseVisualStyleBackColor = true;
+			//
+			// lureStacksLabel
+			//
+			lureStacksLabel.AutoSize = true;
+			lureStacksLabel.ForeColor = System.Drawing.Color.Gainsboro;
+			lureStacksLabel.Location = new System.Drawing.Point(8, 47);
+			lureStacksLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+			lureStacksLabel.Name = "lureStacksLabel";
+			lureStacksLabel.Size = new System.Drawing.Size(73, 15);
+			lureStacksLabel.TabIndex = 6;
+			lureStacksLabel.Text = "Max Stacks:";
+			//
+			// lureStacksNumeric
+			//
+			lureStacksNumeric.Location = new System.Drawing.Point(93, 44);
+			lureStacksNumeric.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+			lureStacksNumeric.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
+			lureStacksNumeric.Maximum = new decimal(new int[] { 3, 0, 0, 0 });
+			lureStacksNumeric.Value = new decimal(new int[] { 3, 0, 0, 0 });
+			lureStacksNumeric.Name = "lureStacksNumeric";
+			lureStacksNumeric.Size = new System.Drawing.Size(45, 23);
+			lureStacksNumeric.TabIndex = 7;
+			//
 			// groupBox5
 			// 
 			groupBox5.Controls.Add(patienceAlways);
@@ -1889,6 +2000,7 @@
 			Controls.Add(targetFishGroupBox);
 			Controls.Add(groupBox4);
 			Controls.Add(groupBox5);
+			Controls.Add(lureGroup);
 			Controls.Add(fullGPAction);
 			Controls.Add(lateQueue);
 			Controls.Add(fishingRoute);
@@ -1917,6 +2029,9 @@
 			lateQueue.PerformLayout();
 			fullGPAction.ResumeLayout(false);
 			fullGPAction.PerformLayout();
+			lureGroup.ResumeLayout(false);
+			lureGroup.PerformLayout();
+			((System.ComponentModel.ISupportInitialize)lureStacksNumeric).EndInit();
 			groupBox5.ResumeLayout(false);
 			groupBox5.PerformLayout();
 			groupBox4.ResumeLayout(false);
@@ -1979,6 +2094,13 @@
 		private UI.Controls.RadioButtonFlat GPActionNothing;
 		private UI.Controls.RadioButtonFlat GPActionDoubleHook;
 		private UI.Controls.RadioButtonFlat GPActionChum;
+		private System.Windows.Forms.GroupBox lureGroup;
+		private UI.Controls.RadioButtonFlat lureNone;
+		private UI.Controls.RadioButtonFlat lureModest;
+		private UI.Controls.RadioButtonFlat lureAmbitious;
+		private UI.Controls.RadioButtonFlat lureAuto;
+		private System.Windows.Forms.Label lureStacksLabel;
+		private System.Windows.Forms.NumericUpDown lureStacksNumeric;
 		private UI.Controls.RadioButtonFlat patienceAlways;
 		private UI.Controls.RadioButtonFlat patienceSpectralOnly;
 		private UI.Controls.RadioButtonFlat patienceDefaultLogic;

@@ -10,6 +10,7 @@ using ff14bot.Helpers;
 using ff14bot.Managers;
 using ff14bot.Navigation;
 using Ocean_Trip.Definitions;
+using OceanTrip;
 using OceanTripPlanner.Definitions;
 using OceanTripPlanner.Helpers;
 
@@ -22,12 +23,14 @@ namespace OceanTripPlanner.Strategies
 	{
 		private readonly GameStateCache _gameCache;
 		private readonly HookingStrategy _hookingStrategy;
+		private readonly LureStrategy _lureStrategy;
 		private readonly bool _loggingEnabled;
 
 		public FishingSessionManager(GameStateCache gameCache, HookingStrategy hookingStrategy, bool enableLogging = true)
 		{
 			_gameCache = gameCache;
 			_hookingStrategy = hookingStrategy;
+			_lureStrategy = new LureStrategy(gameCache);
 			_loggingEnabled = enableLogging;
 		}
 
@@ -79,6 +82,7 @@ namespace OceanTripPlanner.Strategies
 				if (FishingManager.State == FishingState.None || FishingManager.State == FishingState.PoleReady)
 				{
 					hookExecuted = false;
+					_lureStrategy.ResetForNewCast();
 					// Process caught fish and check for Identical Cast
 					bool identicalCastUsed = await context.ProcessCaughtFishCallback();
 
@@ -127,6 +131,21 @@ namespace OceanTripPlanner.Strategies
 
 						if (FishingManager.CanHook)
 							FishingManager.Hook();
+					}
+
+					// Apply lure while line is in water, before a bite occurs
+					if (FishingManager.State != FishingState.Bite && FishingManager.State != FishingState.PoleReady)
+					{
+						var lureContext = new LureContext
+						{
+							Location = context.Location,
+							TimeOfDay = context.TimeOfDay,
+							Spectraled = spectraled,
+							LastCastMooch = context.GetLastCastMooch(),
+							TargetFishId = OceanTripNewSettings.Instance.TargetFishId,
+							MissingFish = FishingLog.MissingFish()
+						};
+						await _lureStrategy.TryApplyLure(lureContext);
 					}
 
 					if (FishingManager.CanHook && FishingManager.State == FishingState.Bite && !hookExecuted)
