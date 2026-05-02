@@ -186,6 +186,8 @@ namespace OceanTripPlanner.Strategies
 			if (fishList == null)
 				return new List<Fish>();
 
+			uint currentBait = FishingManager.SelectedBaitItemId;
+
 			// Filter by time of day, weather (if applicable), and tug type
 			var eligibleFish = fishList.Where(x =>
 				x.TimeOfDayExclusion1 != timeOfDay &&
@@ -193,15 +195,18 @@ namespace OceanTripPlanner.Strategies
 				x.BiteType == FishingManager.TugType &&
 				(!excludeWeather || (x.WeatherExclusion1 != currentWeather && x.WeatherExclusion2 != currentWeather))).ToList();
 
-			// First try exact match (within bite range)
+			// First try exact match using bite range for current bait
 			var exactMatches = eligibleFish.Where(x =>
-				x.BiteStart <= biteElapsed && x.BiteEnd >= biteElapsed).ToList();
+			{
+				var (start, end) = x.GetBiteRange(currentBait);
+				return start <= biteElapsed && end >= biteElapsed;
+			}).ToList();
 
 			if (exactMatches.Any())
 				return exactMatches;
 
 			// No exact match - find nearest fish within tolerance
-			return FindNearestFish(eligibleFish, biteElapsed);
+			return FindNearestFish(eligibleFish, biteElapsed, currentBait);
 		}
 
 		/// <summary>
@@ -210,6 +215,7 @@ namespace OceanTripPlanner.Strategies
 		private List<Fish> FindMatchingFishForHook(string location, double biteElapsed, string timeOfDay, string currentWeather)
 		{
 			var allFish = FishDataCache.GetFish();
+			uint currentBait = FishingManager.SelectedBaitItemId;
 
 			// Filter by location, time of day, weather, and tug type
 			var eligibleFish = allFish.Where(x =>
@@ -220,35 +226,39 @@ namespace OceanTripPlanner.Strategies
 				x.WeatherExclusion2 != currentWeather &&
 				x.BiteType == FishingManager.TugType).ToList();
 
-			// First try exact match (within bite range)
+			// First try exact match using bite range for current bait
 			var exactMatches = eligibleFish.Where(x =>
-				x.BiteStart <= biteElapsed && x.BiteEnd >= biteElapsed).ToList();
+			{
+				var (start, end) = x.GetBiteRange(currentBait);
+				return start <= biteElapsed && end >= biteElapsed;
+			}).ToList();
 
 			if (exactMatches.Any())
 				return exactMatches;
 
 			// No exact match - find nearest fish within tolerance
-			return FindNearestFish(eligibleFish, biteElapsed);
+			return FindNearestFish(eligibleFish, biteElapsed, currentBait);
 		}
 
 		/// <summary>
 		/// Find the nearest fish by bite time within the configured tolerance
 		/// </summary>
-		private List<Fish> FindNearestFish(List<Fish> eligibleFish, double biteElapsed)
+		private List<Fish> FindNearestFish(List<Fish> eligibleFish, double biteElapsed, uint currentBait = 0)
 		{
 			if (!eligibleFish.Any())
 				return new List<Fish>();
 
-			// Calculate distance to each fish's bite range
+			// Calculate distance to each fish's bite range for the current bait
 			var fishWithDistance = eligibleFish.Select(x =>
 			{
+				var (start, end) = currentBait > 0 ? x.GetBiteRange(currentBait) : (x.BiteStart, x.BiteEnd);
 				double distance;
-				if (biteElapsed < x.BiteStart)
-					distance = x.BiteStart - biteElapsed;
-				else if (biteElapsed > x.BiteEnd)
-					distance = biteElapsed - x.BiteEnd;
+				if (biteElapsed < start)
+					distance = start - biteElapsed;
+				else if (biteElapsed > end)
+					distance = biteElapsed - end;
 				else
-					distance = 0; // Within range (shouldn't happen as we check exact matches first)
+					distance = 0;
 
 				return new { Fish = x, Distance = distance };
 			}).ToList();

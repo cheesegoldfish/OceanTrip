@@ -78,6 +78,16 @@ namespace Ocean_Trip.Definitions
 
 		/// <summary>Maximum bite time in seconds</summary>
 		public float BiteEnd { get; set; }
+
+		/// <summary>Per-bait bite timers keyed by bait item ID</summary>
+		public Dictionary<string, float[]> BiteTimers { get; set; }
+
+		public (float start, float end) GetBiteRange(uint baitId)
+		{
+			if (BiteTimers != null && BiteTimers.TryGetValue(baitId.ToString(), out var range) && range.Length >= 2)
+				return (range[0], range[1]);
+			return (BiteStart, BiteEnd);
+		}
 	}
 
 	/// <summary>
@@ -227,7 +237,8 @@ namespace Ocean_Trip.Definitions
 					IsSpectral = f.SpectralFish,
 					BiteType = f.BiteType,
 					BiteStart = f.BiteStart,
-					BiteEnd = f.BiteEnd
+					BiteEnd = f.BiteEnd,
+					BiteTimers = f.BiteTimers
 				})
 				.ToList();
 		}

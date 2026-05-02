@@ -44,6 +44,17 @@ namespace Ocean_Trip.Definitions
 		public string TimeOfDayExclusion2 { get; set; }
 		public bool RequiresIntuition { get; set; }
 		public List<IntuitionPrereq> IntuitionPrereqs { get; set; }
+		public Dictionary<string, float[]> BiteTimers { get; set; }
+
+		/// <summary>
+		/// Get bite range for a specific bait. Falls back to BiteStart/BiteEnd if no BiteTimers entry.
+		/// </summary>
+		public (float start, float end) GetBiteRange(uint baitId)
+		{
+			if (BiteTimers != null && BiteTimers.TryGetValue(baitId.ToString(), out var range) && range.Length >= 2)
+				return (range[0], range[1]);
+			return (BiteStart, BiteEnd);
+		}
 	}
 
 	public static class FishDataCache

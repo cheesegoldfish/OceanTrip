@@ -68,10 +68,14 @@ namespace OceanTripPlanner.Strategies
 
 			// Find matching fish based on bite characteristics
 			var currentTug = FishingManager.TugType;
+			uint currentBait = FishingManager.SelectedBaitItemId;
 			var matchingFish = achievementFish
-				.Where(f => f.BiteType == currentTug
-					&& (f.BiteStart - Tolerance) <= biteElapsed
-					&& (f.BiteEnd + Tolerance) >= biteElapsed)
+				.Where(f =>
+				{
+					if (f.BiteType != currentTug) return false;
+					var (start, end) = f.GetBiteRange(currentBait);
+					return (start - Tolerance) <= biteElapsed && (end + Tolerance) >= biteElapsed;
+				})
 				.ToList();
 
 			if (!matchingFish.Any())
