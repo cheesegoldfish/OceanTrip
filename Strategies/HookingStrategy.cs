@@ -85,7 +85,7 @@ namespace OceanTripPlanner.Strategies
 			{
 				if (OceanTripNewSettings.Instance.FishPriority == FishPriority.Achievements)
 				{
-					// Achievement mode: DH/TH only when predicted fish matches the target achievement category
+					// Achievement mode: DH/TH when predicted fish matches the target achievement category
 					var achievementFocus = AchievementFishDataCache.GetCurrentAchievementFocus();
 					if (achievementFocus != AchievementType.None)
 					{
@@ -93,6 +93,14 @@ namespace OceanTripPlanner.Strategies
 						doubleHook = matchingFish.Any(f =>
 							!string.IsNullOrEmpty(f.Achievement) &&
 							AchievementFishDataCache.MapAchievementString(f.Achievement) == achievementFocus);
+					}
+
+					// No achievement fish matched — fall through to points-based DH/TH
+					if (!doubleHook)
+					{
+						var matchingFish = FindMatchingFishForHook(context.Location, matchElapsed, context.TimeOfDay, currentWeather);
+						doubleHook = matchingFish.Any(x =>
+							((x.Points * x.THBonus > 600 && x.THBonus > 1) || (x.Points * x.DHBonus > 400 && x.DHBonus > 1)) || (x.THBonus > 5 || x.DHBonus > 3));
 					}
 				}
 				else if (OceanTripNewSettings.Instance.FishPriority == FishPriority.Points || OceanTripNewSettings.Instance.FishPriority == FishPriority.Auto)

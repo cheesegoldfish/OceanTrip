@@ -403,6 +403,30 @@ namespace OceanTripPlanner
 			string TimeOfDay = "";
 			string lastLoggedLocation = "";
 
+			// Warn if selected achievement has few fish available across this route
+			if (OceanTripNewSettings.Instance.FishPriority == FishPriority.Achievements)
+			{
+				var focus = AchievementFishDataCache.GetCurrentAchievementFocus();
+				if (focus != AchievementType.None)
+				{
+					int stopsWithFish = 0;
+					for (int i = 0; i < 3; i++)
+					{
+						string stopLocation = schedule[i].Item1;
+						string stopTime = schedule[i].Item2;
+						var fish = AchievementFishDataCache.GetFishForLocation(stopLocation, focus)
+							.Where(f => f.TimeOfDayExclusion1 != stopTime && f.TimeOfDayExclusion2 != stopTime)
+							.ToList();
+						if (fish.Any())
+							stopsWithFish++;
+					}
+					if (stopsWithFish == 0)
+						Log($"WARNING: No {focus} fish available on this route! Consider switching to Points or Fish Log mode.");
+					else if (stopsWithFish == 1)
+						Log($"WARNING: {focus} fish only available at 1/3 stops on this route. Achievement progress will be limited.");
+				}
+			}
+
 			// Cache the director if needed
 			if (OnBoat)
 				Endeavor.CheckDirector();
@@ -956,10 +980,23 @@ namespace OceanTripPlanner
 				TargetFishId = contextTargetFishId
 			};
 
-			// Use achievement bait selector when in achievement mode
+			// Use achievement bait selector when in achievement mode AND achievement fish exist here
 			if (OceanTripNewSettings.Instance.FishPriority == FishPriority.Achievements)
 			{
-				await achievementBaitSelector.SelectBait(context);
+				var focus = AchievementFishDataCache.GetCurrentAchievementFocus();
+				var achievementFish = AchievementFishDataCache.GetFishForLocation(location, focus);
+				if (achievementFish != null && achievementFish.Any())
+				{
+					await achievementBaitSelector.SelectBait(context);
+				}
+				else if (spectraled)
+				{
+					await spectralBaitSelector.SelectBait(context);
+				}
+				else
+				{
+					await normalBaitSelector.SelectBait(context);
+				}
 			}
 			else if (spectraled)
 			{
