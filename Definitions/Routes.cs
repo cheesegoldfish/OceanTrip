@@ -25,6 +25,18 @@ namespace Ocean_Trip.Definitions
 		// Indigo
 		public static readonly string[] fullPattern = new[] { "BD", "TD", "ND", "RD", "BS", "TS", "NS", "RS", "BN", "TN", "NN", "RN", "TD", "ND", "RD", "BS", "TS", "NS", "RS", "BN", "TN", "NN", "RN", "BD", "ND", "RD", "BS", "TS", "NS", "RS", "BN", "TN", "NN", "RN", "BD", "TD", "RD", "BS", "TS", "NS", "RS", "BN", "TN", "NN", "RN", "BD", "TD", "ND", "BS", "TS", "NS", "RS", "BN", "TN", "NN", "RN", "BD", "TD", "ND", "RD", "TS", "NS", "RS", "BN", "TN", "NN", "RN", "BD", "TD", "ND", "RD", "BS", "NS", "RS", "BN", "TN", "NN", "RN", "BD", "TD", "ND", "RD", "BS", "TS", "RS", "BN", "TN", "NN", "RN", "BD", "TD", "ND", "RD", "BS", "TS", "NS", "BN", "TN", "NN", "RN", "BD", "TD", "ND", "RD", "BS", "TS", "NS", "RS", "TN", "NN", "RN", "BD", "TD", "ND", "RD", "BS", "TS", "NS", "RS", "BN", "NN", "RN", "BD", "TD", "ND", "RD", "BS", "TS", "NS", "RS", "BN", "TN", "RN", "BD", "TD", "ND", "RD", "BS", "TS", "NS", "RS", "BN", "TN", "NN" };
 
+#if RB_TC
+		// Ruby (pre-7.5): 1=OD, 2=RD, 3=OS, 4=RS, 5=ON, 6=RN
+		public static readonly int[] ruby_fullPattern = new[]
+		{
+			1,2,3,4,5,6,1,2,3,4,5,6,
+			2,3,4,5,6,1,2,3,4,5,6,1,
+			3,4,5,6,1,2,3,4,5,6,1,2,
+			4,5,6,1,2,3,4,5,6,1,2,3,
+			5,6,1,2,3,4,5,6,1,2,3,4,
+			6,1,2,3,4,5,6,1,2,3,4,5
+		};
+#else
 		// Ruby + Thavnair (updated in 7.5)
 		// 1=TD, 2=OD, 3=RD, 4=TS, 5=OS, 6=RS, 7=TN, 8=ON, 9=RN
 		public static readonly int[] ruby_fullPattern = new[]
@@ -42,6 +54,7 @@ namespace Ocean_Trip.Definitions
 			7,9,1,2,1,3,4,5,4,6,7,8,
 			9,1,2,1,3,4,5,4,6,7,8,7
 		};
+#endif
 
 		// Indigo
 		public static readonly Tuple<string, string>[] NS = new Tuple<string, string>[3]
@@ -160,6 +173,7 @@ namespace Ocean_Trip.Definitions
 			new Tuple<string, string>("oneriver", "Day")
 		};
 
+#if !RB_TC
 		// Thavnair (7.5)
 		public static readonly Tuple<string, string>[] Thav_TD = new Tuple<string, string>[3]
 		{
@@ -181,6 +195,7 @@ namespace Ocean_Trip.Definitions
 			new Tuple<string, string>("sirensong", "Sunset"),
 			new Tuple<string, string>("thavnair", "Night")
 		};
+#endif
 
 		public static Tuple<string, string>[] GetSchedule(DateTime? time = null, string route = null)
 		{
@@ -196,12 +211,30 @@ namespace Ocean_Trip.Definitions
 
 			if ((route is null && OceanTripNewSettings.Instance.FishingRoute == FishingRoute.Ruby) || (route == "Ruby"))
 			{
-				// Updated for 7.5 Thavnair expansion. Pattern from oceanfishing.boats/scripts/rubyoceancalculator.js
 				int twoHourChunk = ((epoch / 7200) + 88) % Routes.ruby_fullPattern.Length;
 
 				if (twoHourChunk >= ruby_fullPattern.Length)
 					twoHourChunk = twoHourChunk - ruby_fullPattern.Length;
 
+#if RB_TC
+				// Pre-7.5: 1=OD, 2=RD, 3=OS, 4=RS, 5=ON, 6=RN
+				switch (ruby_fullPattern[twoHourChunk])
+				{
+					case 1:
+						return Ruby_OD;
+					case 2:
+						return Ruby_RD;
+					case 3:
+						return Ruby_OS;
+					case 4:
+						return Ruby_RS;
+					case 5:
+						return Ruby_ON;
+					case 6:
+						return Ruby_RN;
+				}
+#else
+				// 7.5: 1=TD, 2=OD, 3=RD, 4=TS, 5=OS, 6=RS, 7=TN, 8=ON, 9=RN
 				switch (ruby_fullPattern[twoHourChunk])
 				{
 					case 1:
@@ -223,6 +256,7 @@ namespace Ocean_Trip.Definitions
 					case 9:
 						return Ruby_RN;
 				}
+#endif
 			}
 			else
 			{

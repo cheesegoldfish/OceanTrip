@@ -195,8 +195,10 @@ namespace Ocean_Trip
 			ruby10kPicture.Image = ImageExtensions.ToGrayScale(UIElements.getIconImage(9, 27));
 			ruby16kPicture.Image = ImageExtensions.ToGrayScale(UIElements.getIconImage(9, 27));
 
+#if !RB_TC
 			mantisPicture.Image = ImageExtensions.ToGrayScale(UIElements.getIconImage(5, 34));
 			prehistoricPicture.Image = ImageExtensions.ToGrayScale(UIElements.getIconImage(6, 34));
+#endif
 
 			overall100kPicture.Image = ImageExtensions.ToGrayScale(UIElements.getIconImage(1, 27));
 			overall500kPicture.Image = ImageExtensions.ToGrayScale(UIElements.getIconImage(1, 27));
@@ -219,8 +221,10 @@ namespace Ocean_Trip
 			shrimpPicture.DataBindings.Add("Checked", OceanTripPlanner.FFXIV_Databinds.Instance, "achievementShrimp", false, DataSourceUpdateMode.OnPropertyChanged);
 			shellfishPicture.DataBindings.Add("Checked", OceanTripPlanner.FFXIV_Databinds.Instance, "achievementShellfish", false, DataSourceUpdateMode.OnPropertyChanged);
 			squidPicture.DataBindings.Add("Checked", OceanTripPlanner.FFXIV_Databinds.Instance, "achievementSquid", false, DataSourceUpdateMode.OnPropertyChanged);
+#if !RB_TC
 			mantisPicture.DataBindings.Add("Checked", OceanTripPlanner.FFXIV_Databinds.Instance, "achievementMantisShrimp", false, DataSourceUpdateMode.OnPropertyChanged);
 			prehistoricPicture.DataBindings.Add("Checked", OceanTripPlanner.FFXIV_Databinds.Instance, "achievementPrehistoric", false, DataSourceUpdateMode.OnPropertyChanged);
+#endif
 			ruby5kPicture.DataBindings.Add("Checked", OceanTripPlanner.FFXIV_Databinds.Instance, "achievement5kruby", false, DataSourceUpdateMode.OnPropertyChanged);
 			ruby10kPicture.DataBindings.Add("Checked", OceanTripPlanner.FFXIV_Databinds.Instance, "achievement10kruby", false, DataSourceUpdateMode.OnPropertyChanged);
 			ruby16kPicture.DataBindings.Add("Checked", OceanTripPlanner.FFXIV_Databinds.Instance, "achievement16kruby", false, DataSourceUpdateMode.OnPropertyChanged);
@@ -275,8 +279,10 @@ namespace Ocean_Trip
 			_achievementIconMap[ruby5kPicture] = (9, 27);
 			_achievementIconMap[ruby10kPicture] = (9, 27);
 			_achievementIconMap[ruby16kPicture] = (9, 27);
+#if !RB_TC
 			_achievementIconMap[mantisPicture] = (5, 34);
 			_achievementIconMap[prehistoricPicture] = (6, 34);
+#endif
 			_achievementIconMap[overall100kPicture] = (1, 27);
 			_achievementIconMap[overall500kPicture] = (1, 27);
 			_achievementIconMap[overall1mPicture] = (1, 27);
@@ -356,8 +362,10 @@ namespace Ocean_Trip
 			_achievementFocusMap[radioButtonFlat7] = (int)AchievementType.Shrimp;
 			_achievementFocusMap[radioButtonFlat8] = (int)AchievementType.Shellfish;
 			_achievementFocusMap[radioButtonFlat9] = (int)AchievementType.Squid;
+#if !RB_TC
 			_achievementFocusMap[thavnairMantis] = (int)AchievementType.MantisShrimp;
 			_achievementFocusMap[thavnairPrehistoric] = (int)AchievementType.Prehistoric;
+#endif
 
 			foreach (var rb in _achievementFocusMap.Keys)
 				rb.CheckedChanged += AchievementFocus_CheckedChanged;

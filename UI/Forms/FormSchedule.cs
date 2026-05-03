@@ -142,6 +142,7 @@ namespace Ocean_Trip
 					obj = UIElements.getIconImage(10, 22);
 					break;
 
+#if !RB_TC
 				// Thavnair
 				case "Mantis":
 					obj = UIElements.getIconImage(5, 34);
@@ -155,6 +156,7 @@ namespace Ocean_Trip
 				case "Manasvin":
 					obj = UIElements.getIconImage(8, 34);
 					break;
+#endif
 				default:
 					obj = Resources.blank;
 					break;

@@ -43,12 +43,14 @@
 			radioButtonFlat9 = new UI.Controls.RadioButtonFlat();
 			radioButtonFlat8 = new UI.Controls.RadioButtonFlat();
 			radioButtonFlat7 = new UI.Controls.RadioButtonFlat();
+#if !RB_TC
 			thavnairMantis = new UI.Controls.RadioButtonFlat();
 			thavnairPrehistoric = new UI.Controls.RadioButtonFlat();
 			MantisLabel = new System.Windows.Forms.Label();
 			mantisPicture = new System.Windows.Forms.CheckBox();
 			PrehistoricLabel = new System.Windows.Forms.Label();
 			prehistoricPicture = new System.Windows.Forms.CheckBox();
+#endif
 			groupBox3 = new System.Windows.Forms.GroupBox();
 			assistedFishingLabel = new System.Windows.Forms.Label();
 			assistedFishingToggle = new UI.Controls.ToggleButton();
@@ -346,8 +348,10 @@
 			// 
 			// groupBox2
 			// 
+#if !RB_TC
 			groupBox2.Controls.Add(thavnairPrehistoric);
 			groupBox2.Controls.Add(thavnairMantis);
+#endif
 			groupBox2.Controls.Add(radioButtonFlat9);
 			groupBox2.Controls.Add(radioButtonFlat8);
 			groupBox2.Controls.Add(radioButtonFlat7);
@@ -409,6 +413,7 @@
 			radioButtonFlat7.Text = "Shrimp (Solo)";
 			radioButtonFlat7.UnCheckedColor = System.Drawing.Color.Gray;
 			radioButtonFlat7.UseVisualStyleBackColor = true;
+#if !RB_TC
 			//
 			// thavnairMantis
 			//
@@ -441,6 +446,7 @@
 			thavnairPrehistoric.Text = "Primordial";
 			thavnairPrehistoric.UnCheckedColor = System.Drawing.Color.Gray;
 			thavnairPrehistoric.UseVisualStyleBackColor = true;
+#endif
 			//
 			// groupBox3
 			//
@@ -1318,10 +1324,12 @@
 			groupBox7.Controls.Add(octopodsPicture);
 			groupBox7.Controls.Add(mantasLabel);
 			groupBox7.Controls.Add(mantasPicture);
+#if !RB_TC
 			groupBox7.Controls.Add(MantisLabel);
 			groupBox7.Controls.Add(mantisPicture);
 			groupBox7.Controls.Add(PrehistoricLabel);
 			groupBox7.Controls.Add(prehistoricPicture);
+#endif
 			groupBox7.ForeColor = System.Drawing.Color.Gainsboro;
 			groupBox7.Location = new System.Drawing.Point(20, 574);
 			groupBox7.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
@@ -1888,6 +1896,7 @@
 			exitIcon.Size = new System.Drawing.Size(23, 23);
 			exitIcon.TabIndex = 17;
 			exitIcon.TabStop = false;
+#if !RB_TC
 			//
 			// MantisLabel
 			//
@@ -1940,6 +1949,7 @@
 			prehistoricPicture.Size = new System.Drawing.Size(47, 46);
 			prehistoricPicture.TabIndex = 43;
 			prehistoricPicture.UseVisualStyleBackColor = true;
+#endif
 			//
 			// targetFishGroupBox
 			//
@@ -2117,12 +2127,14 @@
 		private UI.Controls.RadioButtonFlat radioButtonFlat9;
 		private UI.Controls.RadioButtonFlat radioButtonFlat8;
 		private UI.Controls.RadioButtonFlat radioButtonFlat7;
+#if !RB_TC
 		private UI.Controls.RadioButtonFlat thavnairMantis;
 		private UI.Controls.RadioButtonFlat thavnairPrehistoric;
 		private System.Windows.Forms.Label MantisLabel;
 		private System.Windows.Forms.CheckBox mantisPicture;
 		private System.Windows.Forms.Label PrehistoricLabel;
 		private System.Windows.Forms.CheckBox prehistoricPicture;
+#endif
 		private System.Windows.Forms.PictureBox pictureBoxKrill;
 		private System.Windows.Forms.Label stoneflynymphLabel;
 		private System.Windows.Forms.Label mackerelstripLabel;

@@ -88,8 +88,10 @@ namespace Ocean_Trip.Definitions
 					AchievementType.Shrimp,
 					AchievementType.Shellfish,
 					AchievementType.Squid,
+#if !RB_TC
 					AchievementType.MantisShrimp,
-					AchievementType.Prehistoric
+					AchievementType.Prehistoric,
+#endif
 				};
 			}
 		}

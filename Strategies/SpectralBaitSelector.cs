@@ -163,6 +163,7 @@ namespace OceanTripPlanner.Strategies
 					await _baitChanger.ChangeBait(FishBait.Ragworm, $"Switching bait to {_gameCache.GetItemName((uint)FishBait.Ragworm)} in order to catch 1x {_gameCache.GetItemName((uint)OceanFish.GensuiShrimp)}");
 				}
 			}
+#if !RB_TC
 			else if ((location == "unnamed") && (timeOfDay == "Sunset") && missingFish.Contains((uint)OceanFish.Akupara) && focusFishLog)
 			{
 				if (caughtFish.Count(x => x == OceanFish.CieldalaesRoosterfish) < 2) // Needs 2x Cieldalaes Roosterfish (mooch from Captain's Pen)
@@ -177,6 +178,7 @@ namespace OceanTripPlanner.Strategies
 					await _baitChanger.ChangeBait(FishBait.Ragworm, $"Switching bait to {_gameCache.GetItemName((uint)FishBait.Ragworm)} in order to catch 3x {_gameCache.GetItemName((uint)OceanFish.Satrapsaurus)}");
 				}
 			}
+#endif
 			else
 			{
 				var availableSpectralFish = currentRoute?.SpectralFish
