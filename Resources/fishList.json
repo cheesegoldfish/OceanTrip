@@ -308,7 +308,6 @@
         "FavoriteBait": 29715,
         "CausesSpectral": true,
         "SpectralFish": false,
-        "WeatherExclusion1": "Clear",
         "BiteStart": 20,
         "BiteEnd": 37,
         "Points": 100,
@@ -327,7 +326,8 @@
                 20,
                 37
             ]
-        }
+        },
+        "WeatherExclusion1": "Clear Skies"
     },
     {
         "RouteID": 1,
@@ -615,7 +615,15 @@
         "BiteEnd": 12,
         "Points": 500,
         "DHBonus": 1,
-        "THBonus": 1
+        "THBonus": 1,
+        "RequiresIntuition": true,
+        "IntuitionPrereqs": [
+            {
+                "FishID": 29749,
+                "Count": 2,
+                "IsMooch": false
+            }
+        ]
     },
     {
         "RouteID": 11,
@@ -912,7 +920,6 @@
         "FavoriteBait": 29715,
         "CausesSpectral": true,
         "SpectralFish": false,
-        "WeatherExclusion1": "Clear",
         "BiteStart": 21,
         "BiteEnd": 37,
         "Points": 100,
@@ -931,7 +938,8 @@
                 21,
                 37
             ]
-        }
+        },
+        "WeatherExclusion1": "Clear Skies"
     },
     {
         "RouteID": 11,
@@ -1188,7 +1196,15 @@
         "BiteEnd": 12,
         "Points": 500,
         "DHBonus": 1,
-        "THBonus": 1
+        "THBonus": 1,
+        "RequiresIntuition": true,
+        "IntuitionPrereqs": [
+            {
+                "FishID": 29758,
+                "Count": 2,
+                "IsMooch": false
+            }
+        ]
     },
     {
         "RouteID": 3,
@@ -1500,7 +1516,6 @@
         "FavoriteBait": 29716,
         "CausesSpectral": true,
         "SpectralFish": false,
-        "WeatherExclusion1": "Clear",
         "BiteStart": 21,
         "BiteEnd": 36,
         "Points": 100,
@@ -1519,7 +1534,8 @@
                 21,
                 36
             ]
-        }
+        },
+        "WeatherExclusion1": "Clear Skies"
     },
     {
         "RouteID": 3,
@@ -1811,7 +1827,15 @@
         "BiteEnd": 12,
         "Points": 500,
         "DHBonus": 1,
-        "THBonus": 1
+        "THBonus": 1,
+        "RequiresIntuition": true,
+        "IntuitionPrereqs": [
+            {
+                "FishID": 29769,
+                "Count": 1,
+                "IsMooch": false
+            }
+        ]
     },
     {
         "RouteID": 6,
@@ -2108,7 +2132,6 @@
         "FavoriteBait": 29714,
         "CausesSpectral": true,
         "SpectralFish": false,
-        "WeatherExclusion1": "Clear",
         "BiteStart": 20,
         "BiteEnd": 36,
         "Points": 100,
@@ -2127,7 +2150,8 @@
                 20,
                 36
             ]
-        }
+        },
+        "WeatherExclusion1": "Clear Skies"
     },
     {
         "RouteID": 6,
@@ -2414,7 +2438,15 @@
         "BiteEnd": 12,
         "Points": 500,
         "DHBonus": 1,
-        "THBonus": 1
+        "THBonus": 1,
+        "RequiresIntuition": true,
+        "IntuitionPrereqs": [
+            {
+                "FishID": 29781,
+                "Count": 3,
+                "IsMooch": false
+            }
+        ]
     },
     {
         "RouteID": 5,
@@ -2695,7 +2727,6 @@
         "FavoriteBait": 29714,
         "CausesSpectral": true,
         "SpectralFish": false,
-        "WeatherExclusion1": "Clear",
         "BiteStart": 12,
         "BiteEnd": 18,
         "Points": 100,
@@ -2714,7 +2745,8 @@
                 12,
                 18
             ]
-        }
+        },
+        "WeatherExclusion1": "Clear Skies"
     },
     {
         "RouteID": 5,
@@ -3033,7 +3065,15 @@
         "BiteEnd": 12,
         "Points": 500,
         "DHBonus": 1,
-        "THBonus": 1
+        "THBonus": 1,
+        "RequiresIntuition": true,
+        "IntuitionPrereqs": [
+            {
+                "FishID": 32070,
+                "Count": 2,
+                "IsMooch": false
+            }
+        ]
     },
     {
         "RouteID": 4,
@@ -3312,7 +3352,6 @@
         "FavoriteBait": 29715,
         "CausesSpectral": true,
         "SpectralFish": false,
-        "WeatherExclusion1": "Clear",
         "BiteStart": 14,
         "BiteEnd": 22,
         "Points": 100,
@@ -3331,7 +3370,8 @@
                 14,
                 22
             ]
-        }
+        },
+        "WeatherExclusion1": "Clear Skies"
     },
     {
         "RouteID": 4,
@@ -3657,7 +3697,15 @@
         "BiteEnd": 12,
         "Points": 500,
         "DHBonus": 1,
-        "THBonus": 1
+        "THBonus": 1,
+        "RequiresIntuition": true,
+        "IntuitionPrereqs": [
+            {
+                "FishID": 32089,
+                "Count": 3,
+                "IsMooch": false
+            }
+        ]
     },
     {
         "RouteID": 8,
@@ -3938,7 +3986,6 @@
         "FavoriteBait": 29716,
         "CausesSpectral": true,
         "SpectralFish": false,
-        "WeatherExclusion1": "Clear",
         "BiteStart": 15,
         "BiteEnd": 24,
         "Points": 100,
@@ -3957,7 +4004,8 @@
                 15,
                 24
             ]
-        }
+        },
+        "WeatherExclusion1": "Clear Skies"
     },
     {
         "RouteID": 8,
@@ -4265,7 +4313,15 @@
         "BiteEnd": 12,
         "Points": 500,
         "DHBonus": 1,
-        "THBonus": 1
+        "THBonus": 1,
+        "RequiresIntuition": true,
+        "IntuitionPrereqs": [
+            {
+                "FishID": 32110,
+                "Count": 1,
+                "IsMooch": true
+            }
+        ]
     },
     {
         "RouteID": 10,
@@ -4378,8 +4434,6 @@
         "FavoriteBait": 29716,
         "CausesSpectral": false,
         "SpectralFish": false,
-        "WeatherExclusion1": "Showers",
-        "WeatherExclusion2": "Thunderstorms",
         "BiteStart": 5,
         "BiteEnd": 9,
         "Points": 15,
@@ -4398,7 +4452,9 @@
                 5,
                 9
             ]
-        }
+        },
+        "WeatherExclusion1": "Rain",
+        "WeatherExclusion2": "Thunderstorms"
     },
     {
         "RouteID": 10,
@@ -4545,7 +4601,6 @@
         "FavoriteBait": 29716,
         "CausesSpectral": true,
         "SpectralFish": false,
-        "WeatherExclusion1": "Clear",
         "BiteStart": 15,
         "BiteEnd": 25,
         "Points": 100,
@@ -4564,7 +4619,8 @@
                 15,
                 25
             ]
-        }
+        },
+        "WeatherExclusion1": "Clear Skies"
     },
     {
         "RouteID": 10,
@@ -5132,7 +5188,6 @@
         "FavoriteBait": 29715,
         "CausesSpectral": true,
         "SpectralFish": false,
-        "WeatherExclusion1": "Clear",
         "BiteStart": 17,
         "BiteEnd": 29,
         "Points": 100,
@@ -5151,7 +5206,8 @@
                 17,
                 29
             ]
-        }
+        },
+        "WeatherExclusion1": "Clear Skies"
     },
     {
         "RouteID": 2,
@@ -5469,7 +5525,15 @@
         "BiteEnd": 30,
         "Points": 500,
         "DHBonus": 1,
-        "THBonus": 1
+        "THBonus": 1,
+        "RequiresIntuition": true,
+        "IntuitionPrereqs": [
+            {
+                "FishID": 40558,
+                "Count": 2,
+                "IsMooch": true
+            }
+        ]
     },
     {
         "RouteID": 9,
@@ -5611,11 +5675,11 @@
         "IconY": 19,
         "BiteType": 36,
         "Rarity": "Common",
-        "FavoriteBait": 29716,
+        "FavoriteBait": 29714,
         "CausesSpectral": false,
         "SpectralFish": false,
-        "BiteStart": 14,
-        "BiteEnd": 25,
+        "BiteStart": 18,
+        "BiteEnd": 31,
         "Points": 57,
         "DHBonus": 2,
         "THBonus": 3,
@@ -5747,7 +5811,6 @@
         "FavoriteBait": 29715,
         "CausesSpectral": true,
         "SpectralFish": false,
-        "WeatherExclusion1": "Clear",
         "BiteStart": 15,
         "BiteEnd": 24,
         "Points": 100,
@@ -5766,7 +5829,8 @@
                 15,
                 24
             ]
-        }
+        },
+        "WeatherExclusion1": "Clear Skies"
     },
     {
         "RouteID": 9,
@@ -6085,7 +6149,15 @@
         "BiteEnd": 30,
         "Points": 500,
         "DHBonus": 1,
-        "THBonus": 1
+        "THBonus": 1,
+        "RequiresIntuition": true,
+        "IntuitionPrereqs": [
+            {
+                "FishID": 40571,
+                "Count": 2,
+                "IsMooch": false
+            }
+        ]
     },
     {
         "RouteID": 7,
@@ -6363,7 +6435,6 @@
         "FavoriteBait": 29715,
         "CausesSpectral": true,
         "SpectralFish": false,
-        "WeatherExclusion1": "Clear",
         "BiteStart": 17,
         "BiteEnd": 28,
         "Points": 100,
@@ -6382,7 +6453,8 @@
                 17,
                 28
             ]
-        }
+        },
+        "WeatherExclusion1": "Clear Skies"
     },
     {
         "RouteID": 7,
@@ -6699,7 +6771,15 @@
         "BiteEnd": 8,
         "Points": 500,
         "DHBonus": 1,
-        "THBonus": 1
+        "THBonus": 1,
+        "RequiresIntuition": true,
+        "IntuitionPrereqs": [
+            {
+                "FishID": 40595,
+                "Count": 2,
+                "IsMooch": false
+            }
+        ]
     },
     {
         "RouteID": 12,
@@ -7230,8 +7310,7 @@
         "BiteEnd": 6,
         "Points": 100,
         "DHBonus": 2,
-        "THBonus": 3,
-        "TimeOfDayExclusion1": "Night"
+        "THBonus": 3
     },
     {
         "RouteID": 12,
@@ -7304,7 +7383,15 @@
         "BiteEnd": 12,
         "Points": 500,
         "DHBonus": 1,
-        "THBonus": 1
+        "THBonus": 1,
+        "RequiresIntuition": true,
+        "IntuitionPrereqs": [
+            {
+                "FishID": 51225,
+                "Count": 2,
+                "IsMooch": true
+            }
+        ]
     },
     {
         "RouteID": 13,
@@ -7383,14 +7470,13 @@
         "FavoriteBait": 29714,
         "CausesSpectral": false,
         "SpectralFish": false,
-        "WeatherExclusion1": "Clouds",
-        "WeatherExclusion2": "Fog",
+        "WeatherExclusion1": "Rain",
+        "WeatherExclusion2": "Showers",
         "BiteStart": 4,
         "BiteEnd": 5,
         "Points": 13,
         "DHBonus": 2,
         "THBonus": 3,
-        "TimeOfDayExclusion1": "Night",
         "BiteTimers": {
             "29714": [
                 4,
@@ -7424,7 +7510,6 @@
         "Points": 36,
         "DHBonus": 2,
         "THBonus": 3,
-        "TimeOfDayExclusion1": "Night",
         "BiteTimers": {
             "29714": [
                 13,
@@ -7452,14 +7537,13 @@
         "FavoriteBait": 29715,
         "CausesSpectral": false,
         "SpectralFish": false,
-        "WeatherExclusion1": "Rain",
+        "WeatherExclusion1": "Clouds",
+        "WeatherExclusion2": "Fog",
         "BiteStart": 4,
         "BiteEnd": 5,
         "Points": 31,
         "DHBonus": 2,
         "THBonus": 3,
-        "TimeOfDayExclusion1": "Night",
-        "TimeOfDayExclusion2": "Sunset",
         "BiteTimers": {
             "29714": [
                 10,
@@ -7558,7 +7642,6 @@
         "Points": 300,
         "DHBonus": 1,
         "THBonus": 1,
-        "TimeOfDayExclusion1": "Night",
         "BiteTimers": {
             "29714": [
                 10,
@@ -7604,7 +7687,8 @@
                 11,
                 11
             ]
-        }
+        },
+        "WeatherExclusion1": "Clear Skies"
     },
     {
         "RouteID": 13,
@@ -7631,7 +7715,6 @@
                 "IsMooch": false
             }
         ],
-        "TimeOfDayExclusion1": "Night",
         "BiteTimers": {
             "29715": [
                 13,
@@ -7901,6 +7984,14 @@
         "BiteEnd": 10,
         "Points": 500,
         "DHBonus": 0,
-        "THBonus": 0
+        "THBonus": 0,
+        "RequiresIntuition": true,
+        "IntuitionPrereqs": [
+            {
+                "FishID": 51243,
+                "Count": 3,
+                "IsMooch": false
+            }
+        ]
     }
 ]

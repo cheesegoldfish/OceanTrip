@@ -68,10 +68,8 @@ namespace OceanTripPlanner
 		private NormalBaitSelector normalBaitSelector;
 		private AchievementBaitSelector achievementBaitSelector;
 		private HookingStrategy hookingStrategy;
-		private AchievementHookingStrategy achievementHookingStrategy;
 		private BoatBoardingHandler boatBoardingHandler;
 		private FishingSessionManager fishingSessionManager;
-		private FishingSessionManager achievementFishingSessionManager;
 		private BaitRestockStrategy baitRestockStrategy;
 		private CordialStrategy cordialStrategy;
 		private FishCatchLogger fishCatchLogger;
@@ -161,10 +159,8 @@ namespace OceanTripPlanner
 			normalBaitSelector = new NormalBaitSelector(baitChanger, patienceManager, gameCache);
 			achievementBaitSelector = new AchievementBaitSelector(baitChanger, patienceManager, gameCache);
 			hookingStrategy = new HookingStrategy(gameCache);
-			achievementHookingStrategy = new AchievementHookingStrategy(gameCache);
 			boatBoardingHandler = new BoatBoardingHandler();
 			fishingSessionManager = new FishingSessionManager(gameCache, hookingStrategy);
-			achievementFishingSessionManager = new FishingSessionManager(gameCache, hookingStrategy); // TODO: Update to use achievementHookingStrategy once interface is created
 			baitRestockStrategy = new BaitRestockStrategy();
 			cordialStrategy = new CordialStrategy(gameCache);
 			fishCatchLogger = new FishCatchLogger(gameCache, (text, level) => Log(text, level));
@@ -393,11 +389,14 @@ namespace OceanTripPlanner
 		{
 			int spot = rnd.Next(6);
 
-			// Auto-detect route from zone ID instead of relying on UI setting
+			// Auto-detect route from zone ID and sync the setting so achievement code reads the correct route
 			string detectedRoute = WorldManager.RawZoneId == Zones.TheEndeavor ? "Indigo" : "Ruby";
 			var settingRoute = OceanTripNewSettings.Instance.FishingRoute == FishingRoute.Ruby ? "Ruby" : "Indigo";
 			if (detectedRoute != settingRoute)
-				Log($"Route auto-detected as {detectedRoute} (UI setting was {settingRoute})");
+			{
+				Log($"Route auto-detected as {detectedRoute} (UI setting was {settingRoute}) — updating setting to match");
+				OceanTripNewSettings.Instance.FishingRoute = detectedRoute == "Ruby" ? FishingRoute.Ruby : FishingRoute.Indigo;
+			}
 
 			schedule = Routes.GetSchedule(route: detectedRoute);
 			string location = "";
@@ -474,7 +473,7 @@ namespace OceanTripPlanner
 					{
 						await SelectAndApplyBait(spectraled, location, TimeOfDay, baitId, spectralbaitId, currentRoute);
 					},
-					OnHookExecutedCallback = (logged) => caughtFishLogged = logged
+					OnHookExecutedCallback = (logged) => { caughtFishLogged = logged; lastCaughtFish = 0; }
 				};
 				await fishingSessionManager.ExecuteFishingSession(fishingContext);
 			}
@@ -592,7 +591,7 @@ namespace OceanTripPlanner
 			openWorldLureStrategy.ResetForNewCast();
 			bool hookExecuted = false;
 
-			while (FishingManager.State != FishingState.PoleReady)
+			while (FishingManager.State != FishingState.PoleReady && FishingManager.State != FishingState.None)
 			{
 				// Apply lure while line is in water
 				if (FishingManager.State != FishingState.Bite && FishingManager.State != FishingState.PoleReady)
@@ -863,10 +862,15 @@ namespace OceanTripPlanner
 				caughtFish.Add(currentFish);
 				caughtFishLogged = true;
 
-				// Use Catch.FishName if available, otherwise fall back to gameCache lookup
+				// Use Catch.FishName if available, fall back to gameCache, then fishList.json
 				string fishName = FishingLog.LastFishName;
 				if (string.IsNullOrEmpty(fishName))
 					fishName = gameCache.GetItemName(currentFish);
+				if (string.IsNullOrEmpty(fishName))
+				{
+					var fishData = FishDataCache.GetFish().FirstOrDefault(f => f.FishID == (int)currentFish);
+					fishName = fishData?.FishName ?? $"Unknown ({currentFish})";
+				}
 
 				Log($"Caught {fishName}.");
 

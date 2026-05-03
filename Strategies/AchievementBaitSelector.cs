@@ -70,12 +70,12 @@ namespace OceanTripPlanner.Strategies
 			bool isSpectral = (_gameCache.CurrentWeatherId == Weather.Spectral);
 
 			// Filter fish by spectral status
-			var availableFish = achievementFish.Where(f => f.IsSpectral == isSpectral).ToList();
+			var availableFish = achievementFish.Where(f => f.SpectralFish == isSpectral).ToList();
 
 			// Not in spectral but achievement fish here are mostly spectral? Pop spectral first.
 			if (!isSpectral && !availableFish.Any())
 			{
-				int spectralCount = achievementFish.Count(f => f.IsSpectral);
+				int spectralCount = achievementFish.Count(f => f.SpectralFish);
 				if (spectralCount > 0)
 				{
 					var allFish = FishDataCache.GetFish();
@@ -105,7 +105,7 @@ namespace OceanTripPlanner.Strategies
 
 			// Select the preferred bait for achievement fish
 			var baitCounts = availableFish
-				.GroupBy(f => f.PreferredBait)
+				.GroupBy(f => f.FavoriteBait)
 				.Select(g => new { Bait = g.Key, Count = g.Count() })
 				.OrderByDescending(x => x.Count)
 				.ToList();
@@ -113,7 +113,7 @@ namespace OceanTripPlanner.Strategies
 			if (baitCounts.Any())
 			{
 				var selectedBait = baitCounts.First().Bait;
-				var fishNames = string.Join(", ", availableFish.Where(f => f.PreferredBait == selectedBait).Select(f => f.FishName));
+				var fishNames = string.Join(", ", availableFish.Where(f => f.FavoriteBait == selectedBait).Select(f => f.FishName));
 
 				await _baitChanger.ChangeBait(selectedBait,
 					$"Achievement ({targetAchievement}) — targeting: {fishNames}");

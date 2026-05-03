@@ -222,7 +222,7 @@
 			groupBox1.Controls.Add(radioButtonFlat1);
 			groupBox1.Controls.Add(indigoMantas);
 			groupBox1.ForeColor = System.Drawing.Color.Gainsboro;
-			groupBox1.Location = new System.Drawing.Point(20, 404);
+			groupBox1.Location = new System.Drawing.Point(20, 420);
 			groupBox1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
 			groupBox1.Name = "groupBox1";
 			groupBox1.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
@@ -352,7 +352,7 @@
 			groupBox2.Controls.Add(radioButtonFlat8);
 			groupBox2.Controls.Add(radioButtonFlat7);
 			groupBox2.ForeColor = System.Drawing.Color.Gainsboro;
-			groupBox2.Location = new System.Drawing.Point(20, 496);
+			groupBox2.Location = new System.Drawing.Point(20, 512);
 			groupBox2.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
 			groupBox2.Name = "groupBox2";
 			groupBox2.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
@@ -438,7 +438,7 @@
 			thavnairPrehistoric.Size = new System.Drawing.Size(121, 19);
 			thavnairPrehistoric.TabIndex = 1;
 			thavnairPrehistoric.TabStop = true;
-			thavnairPrehistoric.Text = "Primordial Fish";
+			thavnairPrehistoric.Text = "Primordial";
 			thavnairPrehistoric.UnCheckedColor = System.Drawing.Color.Gray;
 			thavnairPrehistoric.UseVisualStyleBackColor = true;
 			//
@@ -1323,7 +1323,7 @@
 			groupBox7.Controls.Add(PrehistoricLabel);
 			groupBox7.Controls.Add(prehistoricPicture);
 			groupBox7.ForeColor = System.Drawing.Color.Gainsboro;
-			groupBox7.Location = new System.Drawing.Point(20, 558);
+			groupBox7.Location = new System.Drawing.Point(20, 574);
 			groupBox7.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
 			groupBox7.Name = "groupBox7";
 			groupBox7.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
@@ -1977,7 +1977,7 @@
 			targetFishJinbei.AutoSize = true;
 			targetFishJinbei.CheckedColor = System.Drawing.Color.FromArgb(0, 137, 198);
 			targetFishJinbei.DisabledColor = System.Drawing.Color.SlateGray;
-			targetFishJinbei.Location = new System.Drawing.Point(70, 22);
+			targetFishJinbei.Location = new System.Drawing.Point(85, 22);
 			targetFishJinbei.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
 			targetFishJinbei.MinimumSize = new System.Drawing.Size(0, 17);
 			targetFishJinbei.Name = "targetFishJinbei";

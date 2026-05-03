@@ -57,8 +57,8 @@ namespace OceanTripPlanner.Strategies
 					|| ((location == "kugane") && (timeOfDay == "Night"))
 					|| ((location == "rubysea") && (timeOfDay == "Sunset"))
 					|| ((location == "oneriver") && (timeOfDay == "Day"))
-					|| ((location == "unnamed") && (timeOfDay == "Day"))
-					|| ((location == "thavnair") && (timeOfDay == "Sunset"))
+					|| ((location == "unnamed") && (timeOfDay == "Sunset"))
+					|| ((location == "thavnair") && (timeOfDay == "Night"))
 				))
 			{
 				caughtFish.Clear();
@@ -163,14 +163,14 @@ namespace OceanTripPlanner.Strategies
 					await _baitChanger.ChangeBait(FishBait.Ragworm, $"Switching bait to {_gameCache.GetItemName((uint)FishBait.Ragworm)} in order to catch 1x {_gameCache.GetItemName((uint)OceanFish.GensuiShrimp)}");
 				}
 			}
-			else if ((location == "unnamed") && (timeOfDay == "Day") && missingFish.Contains((uint)OceanFish.Akupara) && focusFishLog)
+			else if ((location == "unnamed") && (timeOfDay == "Sunset") && missingFish.Contains((uint)OceanFish.Akupara) && focusFishLog)
 			{
 				if (caughtFish.Count(x => x == OceanFish.CieldalaesRoosterfish) < 2) // Needs 2x Cieldalaes Roosterfish (mooch from Captain's Pen)
 				{
 					await _baitChanger.ChangeBait(FishBait.Krill, $"Switching bait to {_gameCache.GetItemName((uint)FishBait.Krill)} in order to catch {_gameCache.GetItemName((uint)OceanFish.CaptainsPen)} to mooch into {_gameCache.GetItemName((uint)OceanFish.CieldalaesRoosterfish)}");
 				}
 			}
-			else if ((location == "thavnair") && (timeOfDay == "Sunset") && missingFish.Contains((uint)OceanFish.Manasvin) && focusFishLog)
+			else if ((location == "thavnair") && (timeOfDay == "Night") && missingFish.Contains((uint)OceanFish.Manasvin) && focusFishLog)
 			{
 				if (caughtFish.Count(x => x == OceanFish.Satrapsaurus) < 3) // Needs 3x Satrapsaurus
 				{

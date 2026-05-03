@@ -165,16 +165,29 @@ namespace OceanTripPlanner.Strategies
 
 				var achievementFish = FishDataCache.GetFish()
 					.Where(f => f.RouteShortName == context.Location &&
+						!f.SpectralFish &&
 						!string.IsNullOrEmpty(f.Achievement) &&
 						AchievementFishDataCache.MapAchievementString(f.Achievement) == focus)
 					.ToList();
 
-				if (!achievementFish.Any())
-					return 0;
+				if (achievementFish.Any())
+				{
+					int lightCount = achievementFish.Count(f => f.BiteType == TugType.Light);
+					return lightCount > achievementFish.Count / 2 ? Actions.ModestLure : Actions.AmbitiousLure;
+				}
 
-				// If most achievement fish are light tug, use Modest; otherwise Ambitious
-				int lightCount = achievementFish.Count(f => f.BiteType == TugType.Light);
-				return lightCount > achievementFish.Count / 2 ? Actions.ModestLure : Actions.AmbitiousLure;
+				// Achievement fish at this location are spectral-only — use Ambitious
+				// to help pop spectral (trigger fish are always heavy tug)
+				var spectralAchievementFish = FishDataCache.GetFish()
+					.Any(f => f.RouteShortName == context.Location &&
+						f.SpectralFish &&
+						!string.IsNullOrEmpty(f.Achievement) &&
+						AchievementFishDataCache.MapAchievementString(f.Achievement) == focus);
+
+				if (spectralAchievementFish)
+					return Actions.AmbitiousLure;
+
+				return 0;
 			}
 
 			// Target fish mode: match the target fish's bite type
@@ -190,6 +203,7 @@ namespace OceanTripPlanner.Strategies
 			{
 				var missingAtZone = FishDataCache.GetFish()
 					.Where(f => f.RouteShortName == context.Location &&
+						!f.SpectralFish &&
 						context.MissingFish != null &&
 						context.MissingFish.Contains((uint)f.FishID))
 					.ToList();
@@ -206,6 +220,7 @@ namespace OceanTripPlanner.Strategies
 		{
 			var zoneFish = FishDataCache.GetFish()
 				.Where(f => f.RouteShortName == context.Location &&
+					!f.SpectralFish &&
 					f.TimeOfDayExclusion1 != context.TimeOfDay &&
 					f.TimeOfDayExclusion2 != context.TimeOfDay)
 				.ToList();
