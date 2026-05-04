@@ -493,11 +493,12 @@ namespace OceanTripPlanner
 					RefreshBaitCallback = () => FFXIV_Databinds.Instance.RefreshBait(),
 					ManageBuffsCallback = ManageBuffsAndConsumables,
 					ProcessCaughtFishCallback = ProcessCaughtFish,
-					SelectAndApplyBaitCallback = async (spectraled) =>
-					{
-						await SelectAndApplyBait(spectraled, location, TimeOfDay, baitId, spectralbaitId, currentRoute);
-					},
 					OnHookExecutedCallback = (logged) => { caughtFishLogged = logged; lastCaughtFish = 0; }
+				};
+				fishingContext.SelectAndApplyBaitCallback = async (spectraled) =>
+				{
+					bool shouldMooch = await SelectAndApplyBait(spectraled, location, TimeOfDay, baitId, spectralbaitId, currentRoute);
+					fishingContext.SetShouldMooch(shouldMooch);
 				};
 				await fishingSessionManager.ExecuteFishingSession(fishingContext);
 			}
@@ -879,6 +880,8 @@ namespace OceanTripPlanner
 			// Now uses the new Catch API when available for better reliability
 			var currentFish = FishingLog.LastFishCaught;
 
+			Log($"ProcessCaughtFish: currentFish={currentFish}, lastCaughtFish={lastCaughtFish}, caughtFishLogged={caughtFishLogged}", OceanLogLevel.Debug);
+
 			// Did we catch a fish? Let's log it.
 			if (lastCaughtFish != currentFish && !caughtFishLogged)
 			{
@@ -900,7 +903,10 @@ namespace OceanTripPlanner
 
 				// Remove from missing fish list if needed
 				if (FishingLog.MissingFish().Contains(currentFish))
+				{
 					FishingLog.RemoveFish(currentFish);
+					FishingLog.SaveMissingFishLog();
+				}
 			}
 
 			Log("Done checking for a recently caught fish.", OceanLogLevel.Debug);
@@ -955,7 +961,7 @@ namespace OceanTripPlanner
 		/// <summary>
 		/// Select and apply the appropriate bait based on spectral status, location, time of day, and fish log
 		/// </summary>
-		private async Task SelectAndApplyBait(bool spectraled, string location, string timeOfDay, ulong baitId, ulong spectralbaitId, RouteWithFish currentRoute)
+		private async Task<bool> SelectAndApplyBait(bool spectraled, string location, string timeOfDay, ulong baitId, ulong spectralbaitId, RouteWithFish currentRoute)
 		{
 			// Determine if target fish is available in this zone
 			uint targetFishId = OceanTripNewSettings.Instance.TargetFishId;
@@ -1006,6 +1012,8 @@ namespace OceanTripPlanner
 			{
 				await normalBaitSelector.SelectBait(context);
 			}
+
+			return context.ShouldMooch;
 		}
 
 		private static readonly HashSet<int> NeverExchangeFish = new HashSet<int>

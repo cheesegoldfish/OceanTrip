@@ -91,21 +91,23 @@ namespace OceanTripPlanner.Strategies
 					// If Identical Cast was used, skip mooch/bait selection (cast already started)
 					if (!identicalCastUsed)
 					{
-						// Check for Mooch before using Mooch II
+						// Only mooch when the bait selector indicated a mooch chain is active
 						Log("Checking for Mooch before moving into bait checks.", OceanLogLevel.Debug);
-						if (FishingManager.CanMoochAny == FishingManager.AvailableMooch.Mooch || FishingManager.CanMoochAny == FishingManager.AvailableMooch.Both)
+						if (context.GetShouldMooch() && (FishingManager.CanMoochAny == FishingManager.AvailableMooch.Mooch || FishingManager.CanMoochAny == FishingManager.AvailableMooch.Both))
 						{
 							Log("Using Mooch!");
 							_moochCastOffset = FishingManager.TimeSinceCast.TotalSeconds;
 							FishingManager.Mooch();
 							context.SetLastCastMooch(true);
+							context.SetShouldMooch(false);
 						}
-						else if (FishingManager.CanMoochAny == FishingManager.AvailableMooch.MoochTwo)
+						else if (context.GetShouldMooch() && FishingManager.CanMoochAny == FishingManager.AvailableMooch.MoochTwo)
 						{
 							Log("Using Mooch II!");
 							_moochCastOffset = FishingManager.TimeSinceCast.TotalSeconds;
 							FishingManager.MoochTwo();
 							context.SetLastCastMooch(true);
+							context.SetShouldMooch(false);
 						}
 						else
 						{
@@ -134,7 +136,11 @@ namespace OceanTripPlanner.Strategies
 						spectraled = true;
 
 						if (FishingManager.CanHook)
+						{
 							FishingManager.Hook();
+							hookExecuted = true;
+							context.OnHookExecutedCallback?.Invoke(false);
+						}
 					}
 
 					// Apply lure while line is in water, before a bite occurs
@@ -299,8 +305,11 @@ namespace OceanTripPlanner.Strategies
 
 		// State management
 		private bool _lastCastMooch;
+		private bool _shouldMooch;
 
 		public bool GetLastCastMooch() => _lastCastMooch;
 		public void SetLastCastMooch(bool value) => _lastCastMooch = value;
+		public bool GetShouldMooch() => _shouldMooch;
+		public void SetShouldMooch(bool value) => _shouldMooch = value;
 	}
 }

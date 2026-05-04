@@ -36,5 +36,11 @@ namespace OceanTripPlanner.Strategies
 		/// Set from the Target Fish setting when the bot is in the target fish's zone.
 		/// </summary>
 		public uint TargetFishId { get; set; }
+
+		/// <summary>
+		/// Set by bait selectors when they are targeting a mooch chain (e.g., catch source fish → mooch → blue fish).
+		/// FishingSessionManager checks this before mooching — prevents blind mooch loops.
+		/// </summary>
+		public bool ShouldMooch { get; set; }
 	}
 }

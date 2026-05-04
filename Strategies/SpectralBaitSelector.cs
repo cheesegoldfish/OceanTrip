@@ -80,6 +80,7 @@ namespace OceanTripPlanner.Strategies
 			{
 				if (caughtFish.Count(x => x == OceanFish.GreatGrandmarlin) < 2) // Needs 2 Great Grandmarlin. Mooch from Hi-Aetherlouse.
 				{
+					context.ShouldMooch = true;
 					await _baitChanger.ChangeBait(FishBait.PlumpWorm, $"Switching bait to {_gameCache.GetItemName((uint)FishBait.PlumpWorm)} in order to catch 2x {_gameCache.GetItemName((uint)OceanFish.GreatGrandmarlin)} via mooching {_gameCache.GetItemName((uint)OceanFish.HiAetherlouse)}.");
 				}
 			}
@@ -121,6 +122,7 @@ namespace OceanTripPlanner.Strategies
 				await _patienceManager.UsePatience();
 
 				// Use Ragworm to catch Rothlyt Mussel, then Mooch to Trollfish to trigger intuition.
+				context.ShouldMooch = true;
 				await _baitChanger.ChangeBait(FishBait.Ragworm, $"Switching bait to {_gameCache.GetItemName((uint)FishBait.Ragworm)} in order to catch 1x {_gameCache.GetItemName((uint)OceanFish.RothlytMussel)} to mooch into {_gameCache.GetItemName((uint)OceanFish.Trollfish)}");
 			}
 			else if ((location == "sirensong") && (timeOfDay == "Day") && missingFish.Contains((uint)OceanFish.Taniwha) && focusFishLog)
@@ -138,6 +140,7 @@ namespace OceanTripPlanner.Strategies
 				}
 				else
 				{
+					context.ShouldMooch = true;
 					await _baitChanger.ChangeBait(FishBait.Krill, $"Switching bait to {_gameCache.GetItemName((uint)FishBait.Krill)} in order to catch 1x {_gameCache.GetItemName((uint)OceanFish.SnappingKoban)} to mooch into {_gameCache.GetItemName((uint)OceanFish.GlassDragon)}");
 				}
 			}
@@ -168,6 +171,7 @@ namespace OceanTripPlanner.Strategies
 			{
 				if (caughtFish.Count(x => x == OceanFish.CieldalaesRoosterfish) < 2) // Needs 2x Cieldalaes Roosterfish (mooch from Captain's Pen)
 				{
+					context.ShouldMooch = true;
 					await _baitChanger.ChangeBait(FishBait.Krill, $"Switching bait to {_gameCache.GetItemName((uint)FishBait.Krill)} in order to catch {_gameCache.GetItemName((uint)OceanFish.CaptainsPen)} to mooch into {_gameCache.GetItemName((uint)OceanFish.CieldalaesRoosterfish)}");
 				}
 			}
