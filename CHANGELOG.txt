@@ -1,3 +1,39 @@
+05/04/2026 -- This update brought to you by cheese_goldfish
+----------
+
+* Support for 7.5 — added Unnamed Margin and Thavnairian Coast routes with all 39 new fish, plus the MantisShrimp and Prehistoric achievements. TC builds (RB_TC) stay on the pre-7.5 Ruby rotation.
+
+* Achievement fishing actually works now. Achievement fish data was previously an empty placeholder, so the achievement bait selector and hooking strategy had nothing to act on.
+
+* BUGFIX: Missing fish list now persists between sessions instead of resetting on every startup. The cache also auto-rebuilds when fishList.json adds new fish.
+
+* BUGFIX: Bite timer for Mooch is now measured from the start of the mooch, not the original cast — fixes "Unable to determine" results on every moochcaught fish.
+
+* BUGFIX: Fish identification now uses the bite window for the equipped bait instead of the widest range across all baits, dramatically reducing "Unable to determine" results.
+
+* BUGFIX: Chum bites no longer skip prediction — observed bite time is doubled to match database windows (Chum reduces bite time by ~50%).
+
+* BUGFIX: DH/TH no longer fires while Patience is up. The game allowed the cast but the fish always escaped, silently wasting GP.
+
+* BUGFIX: Per-fish hookset overrides for the 10 fish that need Precision Hookset despite registering a heavy tug.
+
+* BUGFIX: Mooch is now gated by bait selector intent — no more blind mooch loops during spectral.
+
+* BUGFIX: Thaliak's Favor no longer double-fires, and now triggers at 3+ Angler's Art stacks (previously 7) outside spectral.
+
+* BUGFIX: Cordial usage no longer gated by spectral status or a hardcoded GP percentage.
+
+* BUGFIX: All 259 fish refreshed from the authoritative data sources — 155 bite windows corrected, 12 favorite-bait fixes, 6 DH/TH bonus fixes.
+
+* Achievement mode improvements: DH/TH only fires when the predicted fish matches the selected achievement category. Falls through to normal bait selection when the zone has no achievement fish. Warns at voyage start if the selected achievement has fish at 0 or 1 of 3 stops.
+
+* Added Modest/Ambitious Lure support with Off / Modest / Ambitious / Auto modes and configurable max stacks (1–3). Skipped during spectral and Fisher's Intuition. Auto mode picks lure type from achievement focus, target fish, or highest-value zone fish.
+
+* Added Target Fish mode — override the goal fish per zone (Junior Jinbei supported).
+
+* Route is now auto-detected from zone ID instead of relying on the UI setting.
+
+
 12/19/2025
 ----------
 

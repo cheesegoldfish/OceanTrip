@@ -73,7 +73,7 @@ namespace OceanTrip
 
 			// Fallback to legacy IKDFishingLog window reading
 			if (elementCount > 0)
-				return (uint)Elements[8].TrimmedData;
+				return (uint)Elements[8].Int;
 
 			return 0;
 		}
