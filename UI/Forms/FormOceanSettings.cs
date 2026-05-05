@@ -127,7 +127,7 @@ namespace Ocean_Trip
 			}
 
 			// Target Fish
-			if (OceanTripNewSettings.Instance.TargetFishId == 51236)
+			if (OceanTripNewSettings.Instance.TargetFishId == (uint)OceanFish.JuniorJinbei)
 				targetFishJinbei.Select();
 			else
 				targetFishNone.Select();
@@ -443,7 +443,7 @@ namespace Ocean_Trip
 			if (sender is RadioButton rb && rb.Checked)
 			{
 				if (rb == targetFishJinbei)
-					OceanTripNewSettings.Instance.TargetFishId = 51236;
+					OceanTripNewSettings.Instance.TargetFishId = (uint)OceanFish.JuniorJinbei;
 				else
 					OceanTripNewSettings.Instance.TargetFishId = 0;
 			}
