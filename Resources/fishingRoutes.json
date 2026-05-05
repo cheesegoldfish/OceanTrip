@@ -372,5 +372,73 @@
         "Fish10": 29789
       }
     ]
+  },
+  {
+    "RouteName": "The Unnamed Margin",
+    "RouteShortName": "unnamed",
+    "NormalBait": 29715,
+    "SpectralBait": 29715,
+    "normal": [
+      {
+        "Fish1": 51209,
+        "Fish2": 51210,
+        "Fish3": 51211,
+        "Fish4": 51212,
+        "Fish5": 51213,
+        "Fish6": 51214,
+        "Fish7": 51215,
+        "Fish8": 51216,
+        "Fish9": 51217,
+        "Fish10": 51218
+      }
+    ],
+    "spectral": [
+      {
+        "Fish1": 51219,
+        "Fish2": 51220,
+        "Fish3": 51221,
+        "Fish4": 51222,
+        "Fish5": 51223,
+        "Fish6": 51224,
+        "Fish7": 51225,
+        "Fish8": 51226,
+        "Fish9": 51227,
+        "Fish10": 51228
+      }
+    ]
+  },
+  {
+    "RouteName": "The Thavnairian Coast",
+    "RouteShortName": "thavnair",
+    "NormalBait": 29715,
+    "SpectralBait": 2591,
+    "normal": [
+      {
+        "Fish1": 51229,
+        "Fish2": 51230,
+        "Fish3": 51231,
+        "Fish4": 51232,
+        "Fish5": 51233,
+        "Fish6": 51234,
+        "Fish7": 51235,
+        "Fish8": 51236,
+        "Fish9": 51237,
+        "Fish10": 51238
+      }
+    ],
+    "spectral": [
+      {
+        "Fish1": 51239,
+        "Fish2": 51240,
+        "Fish3": 51241,
+        "Fish4": 51242,
+        "Fish5": 51243,
+        "Fish6": 51244,
+        "Fish7": 51245,
+        "Fish8": 51246,
+        "Fish9": 51236,
+        "Fish10": 51247
+      }
+    ]
   }
 ]

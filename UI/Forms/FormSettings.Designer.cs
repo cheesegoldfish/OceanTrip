@@ -153,6 +153,7 @@ namespace Ocean_Trip
 			// pictureBox3
 			// 
 			this.pictureBox3.Image = global::Ocean_Trip.Properties.Resources.LlamaMarket_Logo;
+			this.pictureBox3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
 			this.pictureBox3.Location = new System.Drawing.Point(-4, 550);
 			this.pictureBox3.Name = "pictureBox3";
 			this.pictureBox3.Size = new System.Drawing.Size(50, 50);
@@ -163,6 +164,7 @@ namespace Ocean_Trip
 			// pictureBox2
 			// 
 			this.pictureBox2.Image = global::Ocean_Trip.Properties.Resources.Lisbeth;
+			this.pictureBox2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
 			this.pictureBox2.Location = new System.Drawing.Point(0, 500);
 			this.pictureBox2.Name = "pictureBox2";
 			this.pictureBox2.Size = new System.Drawing.Size(46, 50);
@@ -249,7 +251,7 @@ namespace Ocean_Trip
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(30)))), ((int)(((byte)(44)))));
-			this.ClientSize = new System.Drawing.Size(905, 600);
+			this.ClientSize = new System.Drawing.Size(905, 716);
 			this.Controls.Add(this.panelMain);
 			this.Controls.Add(this.panelMenu);
 			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;

@@ -6,6 +6,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows.Media;
 using ff14bot.Helpers;
+using OceanTripPlanner;
 
 namespace OceanTripPlanner.Settings
 {
@@ -121,6 +122,41 @@ namespace OceanTripPlanner.Settings
 		{
 			get => _baitRestockAmount;
 			set => SetProperty(ref _baitRestockAmount, value);
+		}
+
+		private uint _targetFishId;
+		public uint TargetFishId
+		{
+			get => _targetFishId;
+			set => SetProperty(ref _targetFishId, value);
+		}
+
+		private LurePreference _lurePreference;
+		public LurePreference LurePreference
+		{
+			get => _lurePreference;
+			set => SetProperty(ref _lurePreference, value);
+		}
+
+		private int _lureMaxStacks = 3;
+		public int LureMaxStacks
+		{
+			get => _lureMaxStacks;
+			set => SetProperty(ref _lureMaxStacks, Math.Max(1, Math.Min(3, value)));
+		}
+
+		private int _indigoAchievementFocus;
+		public int IndigoAchievementFocus
+		{
+			get => _indigoAchievementFocus;
+			set => SetProperty(ref _indigoAchievementFocus, value);
+		}
+
+		private int _rubyAchievementFocus;
+		public int RubyAchievementFocus
+		{
+			get => _rubyAchievementFocus;
+			set => SetProperty(ref _rubyAchievementFocus, value);
 		}
 
 		#endregion

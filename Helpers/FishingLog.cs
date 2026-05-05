@@ -140,18 +140,41 @@ namespace OceanTrip
 
 		public static async Task InitializeFishLog()
 		{
-
 			if (_cachedMissingFishSet != null)
 				_cachedMissingFishSet = null;
 
-			if (!File.Exists(fileName))
+			bool needsReinit = !File.Exists(fileName);
+
+			if (!needsReinit)
 			{
+				var firstLine = File.ReadLines(fileName).FirstOrDefault();
+				var currentFishCount = FishDataCache.GetFish().Count;
+
+				if (firstLine != null && firstLine.StartsWith("#fishDataCount="))
+				{
+					var cachedCount = int.Parse(firstLine.Substring("#fishDataCount=".Length));
+					if (cachedCount != currentFishCount)
+					{
+						Logging.Write($"[Ocean Trip] Fish data updated ({cachedCount} → {currentFishCount} fish) — reinitializing fishing log...");
+						needsReinit = true;
+					}
+				}
+				else
+				{
+					Logging.Write("[Ocean Trip] Fishing log cache missing version header — reinitializing...");
+					needsReinit = true;
+				}
+			}
+
+			if (needsReinit)
+			{
+				if (File.Exists(fileName))
+					File.Delete(fileName);
 
 				var fishList = await AgentFishGuide2.Instance.GetFishList();
 				var recordedFish = fishList.Where(x => x.HasCaught).Select(x => (int)x.FishItem).ToList();
 				var oceanFish = FishDataCache.GetFish().Select(x => x.FishID).ToList();
 
-				// Convert to HashSet for O(1) lookups
 				var newOceanFishSet = new HashSet<uint>(oceanFish.Except(recordedFish).Select(x => (uint)x));
 
 				Logging.Write($"  Ocean Fish: {oceanFish.Count()}");
@@ -173,8 +196,9 @@ namespace OceanTrip
 			if (File.Exists(fileName))
 				File.Delete(fileName);
 
-			File.WriteAllLines(fileName, _cachedMissingFishSet.Select(x => x.ToString()));
-			return;
+			var lines = new List<string> { $"#fishDataCount={FishDataCache.GetFish().Count}" };
+			lines.AddRange(_cachedMissingFishSet.Select(x => x.ToString()));
+			File.WriteAllLines(fileName, lines);
 		}
 
 		public static void LoadMissingFishLog()
@@ -183,7 +207,10 @@ namespace OceanTrip
 				_cachedMissingFishSet = null;
 
 			if (File.Exists(fileName))
-				_cachedMissingFishSet = new HashSet<uint>(File.ReadAllLines(fileName).Select(x => (uint)Convert.ToInt32(x)));
+				_cachedMissingFishSet = new HashSet<uint>(
+					File.ReadAllLines(fileName)
+						.Where(x => !x.StartsWith("#"))
+						.Select(x => (uint)Convert.ToInt32(x)));
 		}
 	}
 }

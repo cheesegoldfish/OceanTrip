@@ -185,9 +185,12 @@ namespace OceanTripPlanner.Definitions
 		public const int Shrimp = 3269;
 		public const int Shellfish = 3267;
 		public const int Squid = 3268;
+		public const int MantisShrimp = 3976;
+		public const int Prehistoric = 3975;
 		public const int Ruby5kPoints = 3264;
 		public const int Ruby10kPoints = 3265;
 		public const int Ruby16kPoints = 3266;
+		public const int Ruby20kPoints = 3974;
 
 		public const int Overall100kPoints = 2558;
 		public const int Overall500kPoints = 2559;
@@ -210,6 +213,8 @@ namespace OceanTripPlanner.Definitions
 		public const uint IdenticalCast = 4596;
 		public const uint ThaliaksFavor = 26804;
 		public const uint TripleHook = 27523;
+		public const uint ModestLure = 37595;
+		public const uint AmbitiousLure = 37594;
 	}
 
 	public static class CharacterAuras
@@ -219,6 +224,8 @@ namespace OceanTripPlanner.Definitions
 		public static uint Chum = 763;
 		public static uint AnglersFortune = 850;
 		public static uint AnglersArt = 2778;
+		public static uint ModestLureProc = 4082;
+		public static uint AmbitiousLureProc = 4083;
 	}
 
 	public static class Crystals 
@@ -450,5 +457,6 @@ namespace OceanTripPlanner.Definitions
 
 		public const uint TheEndeavor = 900;
 		public const uint TheEndeaver_Ruby = 1163;
+		public const uint TheEndeavor_Thavnair = 1163; // Shares Ruby Endeavor instance; update if 7.5 uses a separate zone
 	}
 }

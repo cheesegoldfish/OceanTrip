@@ -30,5 +30,17 @@ namespace OceanTripPlanner.Strategies
 		public List<uint> CaughtFish { get; set; }
 		public bool FocusFishLog { get; set; }
 		public string CurrentWeather { get; set; }
+
+		/// <summary>
+		/// When non-zero, overrides the goal fish for bait selection in the matching zone.
+		/// Set from the Target Fish setting when the bot is in the target fish's zone.
+		/// </summary>
+		public uint TargetFishId { get; set; }
+
+		/// <summary>
+		/// Set by bait selectors when they are targeting a mooch chain (e.g., catch source fish → mooch → blue fish).
+		/// FishingSessionManager checks this before mooching — prevents blind mooch loops.
+		/// </summary>
+		public bool ShouldMooch { get; set; }
 	}
 }

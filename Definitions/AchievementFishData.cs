@@ -1,4 +1,3 @@
-using ff14bot.Enums;
 using OceanTripPlanner;
 using OceanTripPlanner.Definitions;
 using System;
@@ -26,110 +25,46 @@ namespace Ocean_Trip.Definitions
 		// Ruby Route Achievements
 		Shrimp = 8,
 		Shellfish = 9,
-		Squid = 10
+		Squid = 10,
+		MantisShrimp = 11,
+		Prehistoric = 12
 	}
 
 	/// <summary>
-	/// Hook type preference for catching specific fish
-	/// </summary>
-	public enum HookType
-	{
-		Normal = 0,
-		Double = 1,
-		Triple = 2
-	}
-
-	/// <summary>
-	/// Information about a fish that counts toward an achievement
-	/// </summary>
-	public class AchievementFishInfo
-	{
-		/// <summary>Fish ID from OceanFish definitions</summary>
-		public uint FishId { get; set; }
-
-		/// <summary>Display name of the fish</summary>
-		public string FishName { get; set; }
-
-		/// <summary>Which achievement category this fish belongs to</summary>
-		public AchievementType Achievement { get; set; }
-
-		/// <summary>Location/zone short name (e.g., "galadion", "rhotano", "south")</summary>
-		public string Location { get; set; }
-
-		/// <summary>Which route this fish appears on</summary>
-		public FishingRoute Route { get; set; }
-
-		/// <summary>Preferred hook type for catching this fish (Normal, Double, or Triple)</summary>
-		public HookType PreferredHookType { get; set; }
-
-		/// <summary>Preferred bait ID for catching this fish</summary>
-		public uint PreferredBait { get; set; }
-
-		/// <summary>Whether this is a spectral current fish</summary>
-		public bool IsSpectral { get; set; }
-
-		/// <summary>Expected bite type (Light, Medium, Heavy)</summary>
-		public TugType BiteType { get; set; }
-
-		/// <summary>Minimum bite time in seconds</summary>
-		public float BiteStart { get; set; }
-
-		/// <summary>Maximum bite time in seconds</summary>
-		public float BiteEnd { get; set; }
-	}
-
-	/// <summary>
-	/// Static cache for achievement fish data
-	/// TODO: Populate this with data from "Ocean Fishing Data.xlsx"
+	/// Static helpers for achievement fish data, operating on Fish objects from FishDataCache
 	/// </summary>
 	public static class AchievementFishDataCache
 	{
-		private static List<AchievementFishInfo> _achievementFishList;
+		private static readonly Dictionary<string, AchievementType> AchievementStringMap = new Dictionary<string, AchievementType>
+		{
+			{ "Manta", AchievementType.Mantas },
+			{ "Octopus", AchievementType.Octopods },
+			{ "Shark", AchievementType.Sharks },
+			{ "Jellyfish", AchievementType.Jellyfish },
+			{ "Seadragon", AchievementType.Seadragons },
+			{ "Boxfish", AchievementType.Balloons },
+			{ "Crab", AchievementType.Crabs },
+			{ "Shrimp", AchievementType.Shrimp },
+			{ "Mussel", AchievementType.Shellfish },
+			{ "Squid", AchievementType.Squid },
+			{ "Mantis", AchievementType.MantisShrimp },
+			{ "Prehistoric", AchievementType.Prehistoric }
+		};
 
 		/// <summary>
-		/// Gets all achievement fish data
+		/// Gets achievement fish for a specific location and achievement type
 		/// </summary>
-		public static List<AchievementFishInfo> GetAchievementFish()
+		public static List<Fish> GetFishForLocation(string location, AchievementType achievementType)
 		{
-			if (_achievementFishList == null)
-			{
-				_achievementFishList = InitializeAchievementFishData();
-			}
-			return _achievementFishList;
-		}
-
-		/// <summary>
-		/// Gets achievement fish for a specific achievement type
-		/// </summary>
-		public static List<AchievementFishInfo> GetFishForAchievement(AchievementType achievementType)
-		{
-			return GetAchievementFish()
-				.Where(f => f.Achievement == achievementType)
+			return FishDataCache.GetFish()
+				.Where(f => f.RouteShortName == location &&
+					!string.IsNullOrEmpty(f.Achievement) &&
+					MapAchievementString(f.Achievement) == achievementType)
 				.ToList();
 		}
 
 		/// <summary>
-		/// Gets achievement fish for a specific location and achievement
-		/// </summary>
-		public static List<AchievementFishInfo> GetFishForLocation(string location, AchievementType achievementType)
-		{
-			return GetAchievementFish()
-				.Where(f => f.Achievement == achievementType && f.Location == location)
-				.ToList();
-		}
-
-		/// <summary>
-		/// Gets achievement fish for a specific route
-		/// </summary>
-		public static List<AchievementFishInfo> GetFishForRoute(FishingRoute route)
-		{
-			return GetAchievementFish()
-				.Where(f => f.Route == route)
-				.ToList();
-		}
-
-		/// <summary>
-		/// Determines which achievement type is valid for the given route
+		/// Determines which achievement types are valid for the given route
 		/// </summary>
 		public static List<AchievementType> GetValidAchievementsForRoute(FishingRoute route)
 		{
@@ -146,55 +81,42 @@ namespace Ocean_Trip.Definitions
 					AchievementType.Crabs
 				};
 			}
-			else // Ruby
+			else
 			{
 				return new List<AchievementType>
 				{
 					AchievementType.Shrimp,
 					AchievementType.Shellfish,
-					AchievementType.Squid
+					AchievementType.Squid,
+#if !RB_TC
+					AchievementType.MantisShrimp,
+					AchievementType.Prehistoric,
+#endif
 				};
 			}
 		}
 
 		/// <summary>
-		/// Initialize achievement fish data
-		/// TODO: Populate with actual data from "Ocean Fishing Data.xlsx"
-		/// This is a placeholder structure that should be filled with real data
+		/// Returns the user's currently selected achievement focus based on the active route
 		/// </summary>
-		private static List<AchievementFishInfo> InitializeAchievementFishData()
+		public static AchievementType GetCurrentAchievementFocus()
 		{
-			var fishList = new List<AchievementFishInfo>();
-
-			// TODO: Add fish data from the XLSX spreadsheet
-			// Example structure (replace with actual data):
-			/*
-			fishList.Add(new AchievementFishInfo
-			{
-				FishId = (uint)OceanFish.CoralManta,
-				FishName = "Coral Manta",
-				Achievement = AchievementType.Mantas,
-				Location = "galadion", // or "rhotano", "sound", etc.
-				Route = FishingRoute.Indigo,
-				PreferredHookType = HookType.Triple,
-				PreferredBait = FishBait.Krill,
-				IsSpectral = true,
-				BiteType = TugType.Heavy,
-				BiteStart = 10.0f,
-				BiteEnd = 15.0f
-			});
-			*/
-
-			// Placeholder: Return empty list until data is populated
-			return fishList;
+			int focus = OceanTripNewSettings.Instance.FishingRoute == FishingRoute.Indigo
+				? OceanTripNewSettings.Instance.IndigoAchievementFocus
+				: OceanTripNewSettings.Instance.RubyAchievementFocus;
+			if (Enum.IsDefined(typeof(AchievementType), focus))
+				return (AchievementType)focus;
+			return AchievementType.None;
 		}
 
 		/// <summary>
-		/// Clears the cache to force reload
+		/// Maps an Achievement string from fishList.json to the AchievementType enum
 		/// </summary>
-		public static void InvalidateCache()
+		public static AchievementType MapAchievementString(string achievement)
 		{
-			_achievementFishList = null;
+			if (achievement != null && AchievementStringMap.TryGetValue(achievement, out var type))
+				return type;
+			return AchievementType.None;
 		}
 	}
 }

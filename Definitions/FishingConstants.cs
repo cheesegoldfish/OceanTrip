@@ -33,6 +33,35 @@ namespace OceanTripPlanner.Definitions
 		public const int FULL_GP_BUFFER = 100;
 
 		// ========================================
+		// LURE CONSTANTS
+		// ========================================
+
+		/// <summary>
+		/// Delay after cast lands before applying lure (ms). Line must be in water first.
+		/// </summary>
+		public const int LURE_POST_CAST_DELAY_MS = 1200;
+
+		/// <summary>
+		/// GP costs for each lure stack: 10 + 20 + 30 = 60 total
+		/// </summary>
+		public static readonly int[] LURE_GP_COSTS = { 10, 20, 30 };
+
+		/// <summary>
+		/// Grace period per lure stack where no bite can land (~5s each)
+		/// </summary>
+		public const double LURE_GRACE_PERIOD_SECONDS = 5.0;
+
+		/// <summary>
+		/// Threshold: skip lures if target hookset fish are this % or more of the pool
+		/// </summary>
+		public const float LURE_SKIP_DOMINANT_THRESHOLD = 0.6f;
+
+		/// <summary>
+		/// Maximum lure stacks per cast
+		/// </summary>
+		public const int LURE_MAX_STACKS = 3;
+
+		// ========================================
 		// INVENTORY MANAGEMENT CONSTANTS
 		// ========================================
 
@@ -65,11 +94,6 @@ namespace OceanTripPlanner.Definitions
 		/// </summary>
 		public const double BITE_TIMER_OFFSET = -0.3;
 
-		/// <summary>
-		/// Tolerance for matching fish by bite time (0.1s)
-		/// Used as fallback when no exact match is found
-		/// </summary>
-		public const double BITE_TIME_TOLERANCE = 0.1;
 
 		/// <summary>
 		/// Buff check interval in milliseconds (5000ms = 5 seconds)

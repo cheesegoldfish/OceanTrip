@@ -1,5 +1,6 @@
 ﻿using ff14bot.Managers;
 using Ocean_Trip.Properties;
+using Ocean_Trip.Definitions;
 using OceanTripPlanner;
 using OceanTripPlanner.Definitions;
 using System;
@@ -107,6 +108,30 @@ namespace Ocean_Trip
 					break;
 			}
 
+			// Lure
+			lureStacksNumeric.DataBindings.Add("Value", OceanTripPlanner.OceanTripNewSettings.Instance, "LureMaxStacks", false, DataSourceUpdateMode.OnPropertyChanged);
+			switch (OceanTripNewSettings.Instance.LurePreference)
+			{
+				case LurePreference.None:
+					lureNone.Select();
+					break;
+				case LurePreference.Modest:
+					lureModest.Select();
+					break;
+				case LurePreference.Ambitious:
+					lureAmbitious.Select();
+					break;
+				case LurePreference.Auto:
+					lureAuto.Select();
+					break;
+			}
+
+			// Target Fish
+			if (OceanTripNewSettings.Instance.TargetFishId == 51236)
+				targetFishJinbei.Select();
+			else
+				targetFishNone.Select();
+
 
 			// PictureBox Tooltips
 			new ToolTip().SetToolTip(pictureBoxRagworm, $"{DataManager.ItemCache[FishBait.Ragworm].CurrentLocaleName}");
@@ -170,6 +195,11 @@ namespace Ocean_Trip
 			ruby10kPicture.Image = ImageExtensions.ToGrayScale(UIElements.getIconImage(9, 27));
 			ruby16kPicture.Image = ImageExtensions.ToGrayScale(UIElements.getIconImage(9, 27));
 
+#if !RB_TC
+			mantisPicture.Image = ImageExtensions.ToGrayScale(UIElements.getIconImage(5, 34));
+			prehistoricPicture.Image = ImageExtensions.ToGrayScale(UIElements.getIconImage(6, 34));
+#endif
+
 			overall100kPicture.Image = ImageExtensions.ToGrayScale(UIElements.getIconImage(1, 27));
 			overall500kPicture.Image = ImageExtensions.ToGrayScale(UIElements.getIconImage(1, 27));
 			overall1mPicture.Image = ImageExtensions.ToGrayScale(UIElements.getIconImage(1, 27));
@@ -191,6 +221,10 @@ namespace Ocean_Trip
 			shrimpPicture.DataBindings.Add("Checked", OceanTripPlanner.FFXIV_Databinds.Instance, "achievementShrimp", false, DataSourceUpdateMode.OnPropertyChanged);
 			shellfishPicture.DataBindings.Add("Checked", OceanTripPlanner.FFXIV_Databinds.Instance, "achievementShellfish", false, DataSourceUpdateMode.OnPropertyChanged);
 			squidPicture.DataBindings.Add("Checked", OceanTripPlanner.FFXIV_Databinds.Instance, "achievementSquid", false, DataSourceUpdateMode.OnPropertyChanged);
+#if !RB_TC
+			mantisPicture.DataBindings.Add("Checked", OceanTripPlanner.FFXIV_Databinds.Instance, "achievementMantisShrimp", false, DataSourceUpdateMode.OnPropertyChanged);
+			prehistoricPicture.DataBindings.Add("Checked", OceanTripPlanner.FFXIV_Databinds.Instance, "achievementPrehistoric", false, DataSourceUpdateMode.OnPropertyChanged);
+#endif
 			ruby5kPicture.DataBindings.Add("Checked", OceanTripPlanner.FFXIV_Databinds.Instance, "achievement5kruby", false, DataSourceUpdateMode.OnPropertyChanged);
 			ruby10kPicture.DataBindings.Add("Checked", OceanTripPlanner.FFXIV_Databinds.Instance, "achievement10kruby", false, DataSourceUpdateMode.OnPropertyChanged);
 			ruby16kPicture.DataBindings.Add("Checked", OceanTripPlanner.FFXIV_Databinds.Instance, "achievement16kruby", false, DataSourceUpdateMode.OnPropertyChanged);
@@ -218,6 +252,11 @@ namespace Ocean_Trip
 		private readonly Dictionary<RadioButton, object> _radioButtonEnumMap = new Dictionary<RadioButton, object>();
 
 		/// <summary>
+		/// Mapping of Achievement Focus radio buttons to AchievementType int values
+		/// </summary>
+		private readonly Dictionary<RadioButton, int> _achievementFocusMap = new Dictionary<RadioButton, int>();
+
+		/// <summary>
 		/// Setup unified event handlers for all achievement checkboxes
 		/// </summary>
 		private void SetupAchievementCheckboxHandlers()
@@ -240,6 +279,10 @@ namespace Ocean_Trip
 			_achievementIconMap[ruby5kPicture] = (9, 27);
 			_achievementIconMap[ruby10kPicture] = (9, 27);
 			_achievementIconMap[ruby16kPicture] = (9, 27);
+#if !RB_TC
+			_achievementIconMap[mantisPicture] = (5, 34);
+			_achievementIconMap[prehistoricPicture] = (6, 34);
+#endif
 			_achievementIconMap[overall100kPicture] = (1, 27);
 			_achievementIconMap[overall500kPicture] = (1, 27);
 			_achievementIconMap[overall1mPicture] = (1, 27);
@@ -298,10 +341,50 @@ namespace Ocean_Trip
 			_radioButtonEnumMap[fishExchangeDesynthesize] = ExchangeFish.Desynth;
 			_radioButtonEnumMap[fishExchangeSell] = ExchangeFish.Sell;
 
+			// Lure radio buttons
+			_radioButtonEnumMap[lureNone] = LurePreference.None;
+			_radioButtonEnumMap[lureModest] = LurePreference.Modest;
+			_radioButtonEnumMap[lureAmbitious] = LurePreference.Ambitious;
+			_radioButtonEnumMap[lureAuto] = LurePreference.Auto;
+
+			// Target Fish radio buttons — handled separately (maps to uint, not enum)
+			targetFishNone.CheckedChanged += TargetFish_CheckedChanged;
+			targetFishJinbei.CheckedChanged += TargetFish_CheckedChanged;
+
+			// Achievement Focus radio buttons — maps to AchievementType int
+			_achievementFocusMap[indigoMantas] = (int)AchievementType.Mantas;
+			_achievementFocusMap[radioButtonFlat1] = (int)AchievementType.Octopods;
+			_achievementFocusMap[radioButtonFlat2] = (int)AchievementType.Sharks;
+			_achievementFocusMap[radioButtonFlat3] = (int)AchievementType.Jellyfish;
+			_achievementFocusMap[radioButtonFlat4] = (int)AchievementType.Seadragons;
+			_achievementFocusMap[radioButtonFlat5] = (int)AchievementType.Balloons;
+			_achievementFocusMap[radioButtonFlat6] = (int)AchievementType.Crabs;
+			_achievementFocusMap[radioButtonFlat7] = (int)AchievementType.Shrimp;
+			_achievementFocusMap[radioButtonFlat8] = (int)AchievementType.Shellfish;
+			_achievementFocusMap[radioButtonFlat9] = (int)AchievementType.Squid;
+#if !RB_TC
+			_achievementFocusMap[thavnairMantis] = (int)AchievementType.MantisShrimp;
+			_achievementFocusMap[thavnairPrehistoric] = (int)AchievementType.Prehistoric;
+#endif
+
+			foreach (var rb in _achievementFocusMap.Keys)
+				rb.CheckedChanged += AchievementFocus_CheckedChanged;
+
 			// Wire up single event handler for all radio buttons
 			foreach (var radioButton in _radioButtonEnumMap.Keys)
 			{
 				radioButton.CheckedChanged += RadioButton_CheckedChanged;
+			}
+
+			// Restore saved achievement focus for both routes
+			int savedIndigo = OceanTripNewSettings.Instance.IndigoAchievementFocus;
+			int savedRuby = OceanTripNewSettings.Instance.RubyAchievementFocus;
+			foreach (var kvp in _achievementFocusMap)
+			{
+				if (kvp.Key.Parent == groupBox1 && kvp.Value == savedIndigo)
+					kvp.Key.Checked = true;
+				else if (kvp.Key.Parent == groupBox2 && kvp.Value == savedRuby)
+					kvp.Key.Checked = true;
 			}
 		}
 
@@ -333,8 +416,36 @@ namespace Ocean_Trip
 						case ExchangeFish exchangeFish:
 							OceanTripNewSettings.Instance.ExchangeFish = exchangeFish;
 							break;
+						case LurePreference lure:
+							OceanTripNewSettings.Instance.LurePreference = lure;
+							break;
 					}
 				}
+			}
+		}
+
+		private void AchievementFocus_CheckedChanged(object sender, EventArgs e)
+		{
+			if (sender is RadioButton rb && rb.Checked)
+			{
+				if (_achievementFocusMap.TryGetValue(rb, out var achievementType))
+				{
+					if (rb.Parent == groupBox1)
+						OceanTripNewSettings.Instance.IndigoAchievementFocus = achievementType;
+					else
+						OceanTripNewSettings.Instance.RubyAchievementFocus = achievementType;
+				}
+			}
+		}
+
+		private void TargetFish_CheckedChanged(object sender, EventArgs e)
+		{
+			if (sender is RadioButton rb && rb.Checked)
+			{
+				if (rb == targetFishJinbei)
+					OceanTripNewSettings.Instance.TargetFishId = 51236;
+				else
+					OceanTripNewSettings.Instance.TargetFishId = 0;
 			}
 		}
 

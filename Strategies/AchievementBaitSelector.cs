@@ -70,19 +70,42 @@ namespace OceanTripPlanner.Strategies
 			bool isSpectral = (_gameCache.CurrentWeatherId == Weather.Spectral);
 
 			// Filter fish by spectral status
-			var availableFish = achievementFish.Where(f => f.IsSpectral == isSpectral).ToList();
+			var availableFish = achievementFish.Where(f => f.SpectralFish == isSpectral).ToList();
+
+			// Not in spectral but achievement fish here are mostly spectral? Pop spectral first.
+			if (!isSpectral && !availableFish.Any())
+			{
+				int spectralCount = achievementFish.Count(f => f.SpectralFish);
+				if (spectralCount > 0)
+				{
+					var allFish = FishDataCache.GetFish();
+					var spectralTrigger = allFish.FirstOrDefault(f => f.RouteShortName == context.Location && f.CausesSpectral);
+					if (spectralTrigger != null)
+					{
+						await _baitChanger.ChangeBait(spectralTrigger.FavoriteBait,
+							$"Achievement ({targetAchievement}) — popping spectral, {spectralCount} achievement fish need it");
+						if (OceanTripNewSettings.Instance.Patience == ShouldUsePatience.AlwaysUsePatience)
+							await _patienceManager.UsePatience();
+						// Note: not spectral here (we're trying to pop it), so SpectralOnly doesn't apply
+						return;
+					}
+				}
+
+				Log($"No {targetAchievement} fish available for current conditions. Using default bait.", OceanLogLevel.Debug);
+				await _baitChanger.ChangeBait(context.DefaultBaitId);
+				return;
+			}
 
 			if (!availableFish.Any())
 			{
-				Log($"No {targetAchievement} fish available for current conditions (Spectral: {isSpectral}). Using default bait.", OceanLogLevel.Debug);
+				Log($"No {targetAchievement} fish available at {context.Location}. Using default bait.", OceanLogLevel.Debug);
 				await _baitChanger.ChangeBait(context.DefaultBaitId);
 				return;
 			}
 
 			// Select the preferred bait for achievement fish
-			// Priority: Choose bait that catches the most achievement fish in this location
 			var baitCounts = availableFish
-				.GroupBy(f => f.PreferredBait)
+				.GroupBy(f => f.FavoriteBait)
 				.Select(g => new { Bait = g.Key, Count = g.Count() })
 				.OrderByDescending(x => x.Count)
 				.ToList();
@@ -90,43 +113,25 @@ namespace OceanTripPlanner.Strategies
 			if (baitCounts.Any())
 			{
 				var selectedBait = baitCounts.First().Bait;
-				var fishNames = string.Join(", ", availableFish.Where(f => f.PreferredBait == selectedBait).Select(f => f.FishName));
+				var fishNames = string.Join(", ", availableFish.Where(f => f.FavoriteBait == selectedBait).Select(f => f.FishName));
 
 				await _baitChanger.ChangeBait(selectedBait,
-					$"Targeting {targetAchievement} achievement: {fishNames}");
+					$"Achievement ({targetAchievement}) — targeting: {fishNames}");
 			}
 			else
 			{
-				// Fallback to default bait
-				await _baitChanger.ChangeBait(context.DefaultBaitId);
+				await _baitChanger.ChangeBait(context.DefaultBaitId,
+					$"Achievement ({targetAchievement}) — no matching fish, using default bait");
 			}
 
-			// Use Patience if appropriate
-			await _patienceManager.UsePatience();
+			if (OceanTripNewSettings.Instance.Patience == ShouldUsePatience.AlwaysUsePatience
+				|| (isSpectral && OceanTripNewSettings.Instance.Patience == ShouldUsePatience.SpectralOnly))
+				await _patienceManager.UsePatience();
 		}
 
-		/// <summary>
-		/// Determines which achievement the user has selected based on the UI checkboxes
-		/// </summary>
 		private AchievementType GetSelectedAchievement()
 		{
-			var databinds = FFXIV_Databinds.Instance;
-
-			// Check Indigo route achievements
-			if (databinds.achievementMantas) return AchievementType.Mantas;
-			if (databinds.achievementOctopods) return AchievementType.Octopods;
-			if (databinds.achievementSharks) return AchievementType.Sharks;
-			if (databinds.achievementJellyfish) return AchievementType.Jellyfish;
-			if (databinds.achievementSeadragons) return AchievementType.Seadragons;
-			if (databinds.achievementBalloons) return AchievementType.Balloons;
-			if (databinds.achievementCrabs) return AchievementType.Crabs;
-
-			// Check Ruby route achievements
-			if (databinds.achievementShrimp) return AchievementType.Shrimp;
-			if (databinds.achievementShellfish) return AchievementType.Shellfish;
-			if (databinds.achievementSquid) return AchievementType.Squid;
-
-			return AchievementType.None;
+			return AchievementFishDataCache.GetCurrentAchievementFocus();
 		}
 
 		/// <summary>

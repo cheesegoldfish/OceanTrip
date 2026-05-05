@@ -1,4 +1,4 @@
-﻿using ff14bot.Enums;
+using ff14bot.Enums;
 using ff14bot.Helpers;
 using Newtonsoft.Json;
 using Ocean_Trip.Definitions;
@@ -11,6 +11,13 @@ using System.Threading.Tasks;
 
 namespace Ocean_Trip.Definitions
 {
+	public class IntuitionPrereq
+	{
+		public int FishID { get; set; }
+		public int Count { get; set; }
+		public bool IsMooch { get; set; }
+	}
+
 	public class Fish
 	{
 		public uint RouteID { get; set; }
@@ -20,6 +27,7 @@ namespace Ocean_Trip.Definitions
 		public int IconX { get; set; }
 		public int IconY { get; set; }
 		public TugType BiteType { get; set; }
+		public TugType HooksetType { get; set; }
 		public string Rarity { get; set; }
 		public uint FavoriteBait { get; set; }
 		public bool CausesSpectral { get; set; }
@@ -34,6 +42,19 @@ namespace Ocean_Trip.Definitions
 		public string WeatherExclusion2 { get; set; }
 		public string TimeOfDayExclusion1 { get; set; }
 		public string TimeOfDayExclusion2 { get; set; }
+		public bool RequiresIntuition { get; set; }
+		public List<IntuitionPrereq> IntuitionPrereqs { get; set; }
+		public Dictionary<string, float[]> BiteTimers { get; set; }
+
+		/// <summary>
+		/// Get bite range for a specific bait. Falls back to BiteStart/BiteEnd if no BiteTimers entry.
+		/// </summary>
+		public (float start, float end) GetBiteRange(uint baitId)
+		{
+			if (BiteTimers != null && BiteTimers.TryGetValue(baitId.ToString(), out var range) && range.Length >= 2)
+				return (range[0], range[1]);
+			return (BiteStart, BiteEnd);
+		}
 	}
 
 	public static class FishDataCache
@@ -81,9 +102,8 @@ namespace Ocean_Trip.Definitions
 			}
 			catch (Exception ex)
 			{
-				// Log the exception or handle it as needed
 				Logging.Write($"[Ocean Trip] Error loading fish list: {ex.Message}");
-				return new List<Fish>(); // Return an empty list in case of error
+				return new List<Fish>();
 			}
 		}
 
