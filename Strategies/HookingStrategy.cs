@@ -35,6 +35,10 @@ namespace OceanTripPlanner.Strategies
 		{
 			double biteElapsed = Math.Round(context.BiteElapsedSeconds, 1);
 			bool doubleHook = false;
+			bool hasChum = Core.Player.HasAura(CharacterAuras.Chum);
+
+			// Chum reduces bite time by ~50% — double observed time to match our database windows
+			double matchElapsed = hasChum ? biteElapsed * 2.0 : biteElapsed;
 
 			// Cache current weather to avoid repeated API calls in LINQ queries
 			string currentWeather = _gameCache.CurrentWeather;
@@ -42,41 +46,77 @@ namespace OceanTripPlanner.Strategies
 			// Build fish lists for bite prediction - first try exact match, then fallback to nearest
 			List<Fish> spectralFishToCatch = FindMatchingFish(
 				context.CurrentRoute?.SpectralFish,
-				biteElapsed,
+				matchElapsed,
 				context.TimeOfDay,
 				currentWeather,
 				excludeWeather: false);
 
 			List<Fish> normalFishToCatch = FindMatchingFish(
 				context.CurrentRoute?.NormalFish,
-				biteElapsed,
+				matchElapsed,
 				context.TimeOfDay,
 				currentWeather,
 				excludeWeather: true);
 
-			var potentialFish = String.Join(", ", (context.Spectraled ? spectralFishToCatch : normalFishToCatch).Select(x => _gameCache.GetItemName((uint)x.FishID)).ToList());
+			var matchedFish = context.Spectraled ? spectralFishToCatch : normalFishToCatch;
+			var potentialFish = String.Join(", ", matchedFish.Select(x => _gameCache.GetItemName((uint)x.FishID)).ToList());
 
-			if (Core.Player.HasAura(CharacterAuras.Chum))
-				potentialFish = "Cannot predict due to Chum.";
+			// Check if this is a fuzzy match (nearest fish outside its expected window)
+			bool isFuzzy = false;
+			if (matchedFish.Any())
+			{
+				var firstFish = matchedFish.First();
+				var (start, end) = firstFish.GetBiteRange(FishingManager.SelectedBaitItemId);
+				isFuzzy = matchElapsed < start || matchElapsed > end;
+			}
 
-			Log($"Bite Time: {biteElapsed:F1}s, Potential Fish: {(String.IsNullOrWhiteSpace(potentialFish) ? "Unable to determine" : potentialFish)}");
+			string tugName = FishingManager.TugType == TugType.Light ? "!" : FishingManager.TugType == TugType.Medium ? "!!" : "!!!";
+			string fuzzyTag = isFuzzy ? " (fuzzy)" : "";
+			string chumTag = hasChum ? $" (Chum: raw {biteElapsed:F1}s)" : "";
+			Log($"Bite Time: {matchElapsed:F1}s, Tug: {tugName}, Potential Fish: {(String.IsNullOrWhiteSpace(potentialFish) ? "Unable to determine" : potentialFish)}{fuzzyTag}{chumTag}");
+
+			if (isFuzzy)
+				LogExcludedFish(context, currentWeather);
 
 			Log("Checking if we should double hook based on bite timer and current fishing conditions!", OceanLogLevel.Debug);
 
-			// Determine if Double/Triple Hook should be used for points
-			if (OceanTripNewSettings.Instance.FishPriority == FishPriority.Points || OceanTripNewSettings.Instance.FishPriority == FishPriority.Auto)
+			// DH/TH cannot be used during Patience — fish always escapes without Precision/Powerful Hookset
+			if (!FishingManager.HasPatience)
 			{
-				// Special handling for South's lastMooch rule - Always DH/TH after a Mooch in South if spectral.
-				if (context.Location == "south" && context.LastCastMooch && (context.TimeOfDay == "Sunset" || context.TimeOfDay == "Night") && context.Spectraled)
+				if (OceanTripNewSettings.Instance.FishPriority == FishPriority.Achievements)
 				{
-					doubleHook = true;
+					// Achievement mode: DH/TH when predicted fish matches the target achievement category
+					var achievementFocus = AchievementFishDataCache.GetCurrentAchievementFocus();
+					if (achievementFocus != AchievementType.None)
+					{
+						var matchingFish = FindMatchingFishForHook(context.Location, matchElapsed, context.TimeOfDay, currentWeather);
+						doubleHook = matchingFish.Any(f =>
+							!string.IsNullOrEmpty(f.Achievement) &&
+							AchievementFishDataCache.MapAchievementString(f.Achievement) == achievementFocus);
+					}
+
+					// No achievement fish matched — fall through to points-based DH/TH
+					if (!doubleHook)
+					{
+						var matchingFish = FindMatchingFishForHook(context.Location, matchElapsed, context.TimeOfDay, currentWeather);
+						doubleHook = matchingFish.Any(x =>
+							((x.Points * x.THBonus > 600 && x.THBonus > 1) || (x.Points * x.DHBonus > 400 && x.DHBonus > 1)) || (x.THBonus > 5 || x.DHBonus > 3));
+					}
 				}
-				else
+				else if (OceanTripNewSettings.Instance.FishPriority == FishPriority.Points || OceanTripNewSettings.Instance.FishPriority == FishPriority.Auto)
 				{
-					// Find matching fish for DH/TH decision with fallback to nearest
-					var matchingFish = FindMatchingFishForHook(context.Location, biteElapsed, context.TimeOfDay, currentWeather);
-					doubleHook = matchingFish.Any(x =>
-						((x.Points * x.THBonus > 600 && x.THBonus > 1) || (x.Points * x.DHBonus > 400 && x.DHBonus > 1)) || (x.THBonus > 5 || x.DHBonus > 3));
+					// Special handling for South's lastMooch rule - Always DH/TH after a Mooch in South if spectral.
+					if (context.Location == "south" && context.LastCastMooch && (context.TimeOfDay == "Sunset" || context.TimeOfDay == "Night") && context.Spectraled)
+					{
+						doubleHook = true;
+					}
+					else
+					{
+						// Find matching fish for DH/TH decision with fallback to nearest
+						var matchingFish = FindMatchingFishForHook(context.Location, matchElapsed, context.TimeOfDay, currentWeather);
+						doubleHook = matchingFish.Any(x =>
+							((x.Points * x.THBonus > 600 && x.THBonus > 1) || (x.Points * x.DHBonus > 400 && x.DHBonus > 1)) || (x.THBonus > 5 || x.DHBonus > 3));
+					}
 				}
 			}
 
@@ -102,20 +142,31 @@ namespace OceanTripPlanner.Strategies
 			{
 				Log("Player has patience on them. Need to use special hooking.", OceanLogLevel.Debug);
 
-				if (FishingManager.TugType == TugType.Light)
+				var predictedFish = context.Spectraled ? spectralFishToCatch : normalFishToCatch;
+				var hooksetFish = predictedFish.FirstOrDefault(f => (int)f.HooksetType != 0);
+
+				bool usePrecision;
+				if (hooksetFish != null)
+				{
+					usePrecision = hooksetFish.HooksetType == TugType.Light;
+					Log($"Hookset override from {_gameCache.GetItemName((uint)hooksetFish.FishID)}: {(usePrecision ? "Precision" : "Powerful")}");
+				}
+				else
+				{
+					usePrecision = FishingManager.TugType == TugType.Light;
+				}
+
+				if (usePrecision)
 				{
 					Log($"Using Precision Hookset!", OceanLogLevel.Debug);
-
 					ActionManager.DoAction(Actions.PrecisionHookset, Core.Me);
-					context.OnHookExecuted(false);
 				}
 				else
 				{
 					Log($"Using Powerful Hookset!", OceanLogLevel.Debug);
-
 					ActionManager.DoAction(Actions.PowerfulHookset, Core.Me);
-					context.OnHookExecuted(false);
 				}
+				context.OnHookExecuted(false);
 			}
 			else
 			{
@@ -146,7 +197,6 @@ namespace OceanTripPlanner.Strategies
 
 			Log("Refreshing UI for Bait and Achievements in case something changed.", OceanLogLevel.Debug);
 
-			context.OnHookExecuted(true); // Mark fish as caught and ready to log
 			FFXIV_Databinds.Instance.RefreshBait();
 
 			return Task.CompletedTask;
@@ -160,22 +210,29 @@ namespace OceanTripPlanner.Strategies
 			if (fishList == null)
 				return new List<Fish>();
 
-			// Filter by time of day, weather (if applicable), and tug type
+			uint currentBait = FishingManager.SelectedBaitItemId;
+			bool hasIntuition = Core.Player.HasAura(CharacterAuras.FishersIntuition);
+
+			// Filter by time of day, weather (if applicable), tug type, and intuition requirement
 			var eligibleFish = fishList.Where(x =>
 				x.TimeOfDayExclusion1 != timeOfDay &&
 				x.TimeOfDayExclusion2 != timeOfDay &&
 				x.BiteType == FishingManager.TugType &&
-				(!excludeWeather || (x.WeatherExclusion1 != currentWeather && x.WeatherExclusion2 != currentWeather))).ToList();
+				(!excludeWeather || (x.WeatherExclusion1 != currentWeather && x.WeatherExclusion2 != currentWeather)) &&
+				(!x.RequiresIntuition || hasIntuition)).ToList();
 
-			// First try exact match (within bite range)
+			// First try exact match using bite range for current bait
 			var exactMatches = eligibleFish.Where(x =>
-				x.BiteStart <= biteElapsed && x.BiteEnd >= biteElapsed).ToList();
+			{
+				var (start, end) = x.GetBiteRange(currentBait);
+				return start <= biteElapsed && end >= biteElapsed;
+			}).ToList();
 
 			if (exactMatches.Any())
 				return exactMatches;
 
 			// No exact match - find nearest fish within tolerance
-			return FindNearestFish(eligibleFish, biteElapsed);
+			return FindNearestFish(eligibleFish, biteElapsed, currentBait);
 		}
 
 		/// <summary>
@@ -184,58 +241,95 @@ namespace OceanTripPlanner.Strategies
 		private List<Fish> FindMatchingFishForHook(string location, double biteElapsed, string timeOfDay, string currentWeather)
 		{
 			var allFish = FishDataCache.GetFish();
+			uint currentBait = FishingManager.SelectedBaitItemId;
+			bool hasIntuition = Core.Player.HasAura(CharacterAuras.FishersIntuition);
 
-			// Filter by location, time of day, weather, and tug type
+			// Filter by location, time of day, weather, tug type, and intuition requirement
 			var eligibleFish = allFish.Where(x =>
 				x.RouteShortName == location &&
 				x.TimeOfDayExclusion1 != timeOfDay &&
 				x.TimeOfDayExclusion2 != timeOfDay &&
 				x.WeatherExclusion1 != currentWeather &&
 				x.WeatherExclusion2 != currentWeather &&
-				x.BiteType == FishingManager.TugType).ToList();
+				x.BiteType == FishingManager.TugType &&
+				(!x.RequiresIntuition || hasIntuition)).ToList();
 
-			// First try exact match (within bite range)
+			// First try exact match using bite range for current bait
 			var exactMatches = eligibleFish.Where(x =>
-				x.BiteStart <= biteElapsed && x.BiteEnd >= biteElapsed).ToList();
+			{
+				var (start, end) = x.GetBiteRange(currentBait);
+				return start <= biteElapsed && end >= biteElapsed;
+			}).ToList();
 
 			if (exactMatches.Any())
 				return exactMatches;
 
 			// No exact match - find nearest fish within tolerance
-			return FindNearestFish(eligibleFish, biteElapsed);
+			return FindNearestFish(eligibleFish, biteElapsed, currentBait);
 		}
 
 		/// <summary>
-		/// Find the nearest fish by bite time within the configured tolerance
+		/// Return ALL eligible fish sorted by distance to the observed bite time.
+		/// The caught fish must be one of the known fish at this location — bite time
+		/// narrows the prediction but any eligible fish with the right tug could have bitten.
 		/// </summary>
-		private List<Fish> FindNearestFish(List<Fish> eligibleFish, double biteElapsed)
+		private List<Fish> FindNearestFish(List<Fish> eligibleFish, double biteElapsed, uint currentBait = 0)
 		{
 			if (!eligibleFish.Any())
 				return new List<Fish>();
 
-			// Calculate distance to each fish's bite range
-			var fishWithDistance = eligibleFish.Select(x =>
+			return eligibleFish.Select(x =>
 			{
+				var (start, end) = currentBait > 0 ? x.GetBiteRange(currentBait) : (x.BiteStart, x.BiteEnd);
 				double distance;
-				if (biteElapsed < x.BiteStart)
-					distance = x.BiteStart - biteElapsed;
-				else if (biteElapsed > x.BiteEnd)
-					distance = biteElapsed - x.BiteEnd;
+				if (biteElapsed < start)
+					distance = start - biteElapsed;
+				else if (biteElapsed > end)
+					distance = biteElapsed - end;
 				else
-					distance = 0; // Within range (shouldn't happen as we check exact matches first)
+					distance = 0;
 
 				return new { Fish = x, Distance = distance };
-			}).ToList();
+			})
+			.OrderBy(x => x.Distance)
+			.Select(x => x.Fish)
+			.ToList();
+		}
 
-			// Find minimum distance
-			double minDistance = fishWithDistance.Min(x => x.Distance);
+		/// <summary>
+		/// Log fish excluded by time/weather filters when a fuzzy match occurs.
+		/// Helps identify if the actual caught fish was filtered out of the eligible pool.
+		/// </summary>
+		private void LogExcludedFish(HookContext context, string currentWeather)
+		{
+			var fishList = context.Spectraled ? context.CurrentRoute?.SpectralFish : context.CurrentRoute?.NormalFish;
+			if (fishList == null)
+				return;
 
-			// Only return fish within tolerance
-			if (minDistance > FishingConstants.BITE_TIME_TOLERANCE)
-				return new List<Fish>();
+			bool excludeWeather = !context.Spectraled;
 
-			// Return all fish at the minimum distance (could be multiple with same bite time)
-			return fishWithDistance.Where(x => Math.Abs(x.Distance - minDistance) < 0.001).Select(x => x.Fish).ToList();
+			var excluded = fishList.Where(x =>
+				x.BiteType == FishingManager.TugType &&
+				(x.TimeOfDayExclusion1 == context.TimeOfDay ||
+				x.TimeOfDayExclusion2 == context.TimeOfDay ||
+				(excludeWeather && (x.WeatherExclusion1 == currentWeather || x.WeatherExclusion2 == currentWeather))))
+				.ToList();
+
+			if (excluded.Any())
+			{
+				uint currentBait = FishingManager.SelectedBaitItemId;
+				var excludedStr = String.Join(", ", excluded.Select(x =>
+				{
+					var reasons = new List<string>();
+					if (x.TimeOfDayExclusion1 == context.TimeOfDay || x.TimeOfDayExclusion2 == context.TimeOfDay)
+						reasons.Add($"time={context.TimeOfDay}");
+					if (excludeWeather && (x.WeatherExclusion1 == currentWeather || x.WeatherExclusion2 == currentWeather))
+						reasons.Add($"weather={currentWeather}");
+					var (start, end) = x.GetBiteRange(currentBait);
+					return $"{_gameCache.GetItemName((uint)x.FishID)} [{start:F0}-{end:F0}s, excluded: {String.Join("+", reasons)}]";
+				}));
+				Log($"  Excluded: {excludedStr}");
+			}
 		}
 
 		/// <summary>

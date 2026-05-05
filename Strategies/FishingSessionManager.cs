@@ -10,6 +10,7 @@ using ff14bot.Helpers;
 using ff14bot.Managers;
 using ff14bot.Navigation;
 using Ocean_Trip.Definitions;
+using OceanTrip;
 using OceanTripPlanner.Definitions;
 using OceanTripPlanner.Helpers;
 
@@ -22,12 +23,15 @@ namespace OceanTripPlanner.Strategies
 	{
 		private readonly GameStateCache _gameCache;
 		private readonly HookingStrategy _hookingStrategy;
+		private readonly LureStrategy _lureStrategy;
 		private readonly bool _loggingEnabled;
+		private double _moochCastOffset;
 
 		public FishingSessionManager(GameStateCache gameCache, HookingStrategy hookingStrategy, bool enableLogging = true)
 		{
 			_gameCache = gameCache;
 			_hookingStrategy = hookingStrategy;
+			_lureStrategy = new LureStrategy(gameCache);
 			_loggingEnabled = enableLogging;
 		}
 
@@ -37,6 +41,7 @@ namespace OceanTripPlanner.Strategies
 		public async Task ExecuteFishingSession(FishingSessionContext context)
 		{
 			bool spectraled = false;
+			bool hookExecuted = false;
 
 			// Handle food consumption at start of session
 			await ConsumeFood(context);
@@ -77,25 +82,32 @@ namespace OceanTripPlanner.Strategies
 
 				if (FishingManager.State == FishingState.None || FishingManager.State == FishingState.PoleReady)
 				{
+					hookExecuted = false;
+					_moochCastOffset = 0;
+					_lureStrategy.ResetForNewCast();
 					// Process caught fish and check for Identical Cast
 					bool identicalCastUsed = await context.ProcessCaughtFishCallback();
 
 					// If Identical Cast was used, skip mooch/bait selection (cast already started)
 					if (!identicalCastUsed)
 					{
-						// Check for Mooch before using Mooch II
+						// Only mooch when the bait selector indicated a mooch chain is active
 						Log("Checking for Mooch before moving into bait checks.", OceanLogLevel.Debug);
-						if (FishingManager.CanMoochAny == FishingManager.AvailableMooch.Mooch || FishingManager.CanMoochAny == FishingManager.AvailableMooch.Both)
+						if (context.GetShouldMooch() && (FishingManager.CanMoochAny == FishingManager.AvailableMooch.Mooch || FishingManager.CanMoochAny == FishingManager.AvailableMooch.Both))
 						{
 							Log("Using Mooch!");
+							_moochCastOffset = FishingManager.TimeSinceCast.TotalSeconds;
 							FishingManager.Mooch();
 							context.SetLastCastMooch(true);
+							context.SetShouldMooch(false);
 						}
-						else if (FishingManager.CanMoochAny == FishingManager.AvailableMooch.MoochTwo)
+						else if (context.GetShouldMooch() && FishingManager.CanMoochAny == FishingManager.AvailableMooch.MoochTwo)
 						{
 							Log("Using Mooch II!");
+							_moochCastOffset = FishingManager.TimeSinceCast.TotalSeconds;
 							FishingManager.MoochTwo();
 							context.SetLastCastMooch(true);
+							context.SetShouldMooch(false);
 						}
 						else
 						{
@@ -124,14 +136,38 @@ namespace OceanTripPlanner.Strategies
 						spectraled = true;
 
 						if (FishingManager.CanHook)
+						{
 							FishingManager.Hook();
+							hookExecuted = true;
+							context.OnHookExecutedCallback?.Invoke(false);
+						}
 					}
 
-					if (FishingManager.CanHook && FishingManager.State == FishingState.Bite)
+					// Apply lure while line is in water, before a bite occurs
+					if (FishingManager.State != FishingState.Bite && FishingManager.State != FishingState.PoleReady)
 					{
+						var lureContext = new LureContext
+						{
+							Location = context.Location,
+							TimeOfDay = context.TimeOfDay,
+							Spectraled = spectraled,
+							LastCastMooch = context.GetLastCastMooch(),
+							TargetFishId = OceanTripNewSettings.Instance.TargetFishId,
+							MissingFish = FishingLog.MissingFish()
+						};
+						await _lureStrategy.TryApplyLure(lureContext);
+					}
+
+					if (FishingManager.CanHook && FishingManager.State == FishingState.Bite && !hookExecuted)
+					{
+						hookExecuted = true;
+						double rawTime = FishingManager.TimeSinceCast.TotalSeconds;
+						double biteTime = context.GetLastCastMooch()
+							? (rawTime - _moochCastOffset)
+							: rawTime;
 						var hookContext = new HookContext
 						{
-							BiteElapsedSeconds = FishingManager.TimeSinceCast.TotalSeconds + FishingConstants.BITE_TIMER_OFFSET,
+							BiteElapsedSeconds = biteTime + FishingConstants.BITE_TIMER_OFFSET,
 							Spectraled = spectraled,
 							Location = context.Location,
 							TimeOfDay = context.TimeOfDay,
@@ -269,8 +305,11 @@ namespace OceanTripPlanner.Strategies
 
 		// State management
 		private bool _lastCastMooch;
+		private bool _shouldMooch;
 
 		public bool GetLastCastMooch() => _lastCastMooch;
 		public void SetLastCastMooch(bool value) => _lastCastMooch = value;
+		public bool GetShouldMooch() => _shouldMooch;
+		public void SetShouldMooch(bool value) => _shouldMooch = value;
 	}
 }

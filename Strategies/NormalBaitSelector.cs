@@ -1,17 +1,15 @@
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using ff14bot;
 using ff14bot.Managers;
 using Ocean_Trip.Definitions;
+using OceanTrip;
 using OceanTripPlanner.Definitions;
 using OceanTripPlanner.Helpers;
 
 namespace OceanTripPlanner.Strategies
 {
-	/// <summary>
-	/// Bait selection strategy for normal (non-spectral) fishing
-	/// Handles Fisher's Intuition and favorite bait preferences
-	/// </summary>
 	public class NormalBaitSelector : IBaitSelector
 	{
 		private readonly BaitChanger _baitChanger;
@@ -27,56 +25,117 @@ namespace OceanTripPlanner.Strategies
 
 		public async Task SelectBait(BaitSelectionContext context)
 		{
-			// Cache missing fish set to avoid repeated property access
 			var missingFish = context.MissingFish;
-			var location = context.Location;
-			var timeOfDay = context.TimeOfDay;
-			var baitId = context.DefaultBaitId;
 			var currentRoute = context.CurrentRoute;
+			var timeOfDay = context.TimeOfDay;
 			var focusFishLog = context.FocusFishLog;
-
-			// Cache current weather to avoid repeated API calls in LINQ query
+			var caughtFish = context.CaughtFish;
 			string currentWeather = context.CurrentWeather;
 
-			// Build Normal Fish List
-			var normalFishToCatch = (currentRoute == null
-				? new System.Collections.Generic.List<Fish>()
-				: currentRoute.NormalFish.Where(x => missingFish.Contains((uint)x.FishID)
-					&& x.TimeOfDayExclusion1 != timeOfDay
-					&& x.TimeOfDayExclusion2 != timeOfDay
-					&& x.WeatherExclusion1 != currentWeather
-					&& x.WeatherExclusion2 != currentWeather)
-				.ToList());
+			var availableNormalFish = currentRoute?.NormalFish
+				.Where(f => f.TimeOfDayExclusion1 != timeOfDay
+					&& f.TimeOfDayExclusion2 != timeOfDay
+					&& f.WeatherExclusion1 != currentWeather
+					&& f.WeatherExclusion2 != currentWeather)
+				.ToList() ?? new List<Fish>();
 
 			if (OceanTripNewSettings.Instance.Patience == ShouldUsePatience.AlwaysUsePatience)
 				await _patienceManager.UsePatience();
 
-			// Deal with Intuition fish first... if we have the intution buff
-			if (Core.Player.HasAura(CharacterAuras.FishersIntuition) && (location == "galadion" || location == "rhotano" || location == "ciel" || location == "blood" || location == "rubysea"))
-				await _baitChanger.ChangeBait(FishBait.Krill);
-			else if (Core.Player.HasAura(CharacterAuras.FishersIntuition) && ((location == "south" && ((currentWeather != "Wind" && currentWeather != "Gales"))) || location == "sirensong" || location == "oneriver"))
-				await _baitChanger.ChangeBait(FishBait.PlumpWorm);
-			else if (Core.Player.HasAura(CharacterAuras.FishersIntuition) && (location == "sound" || location == "north" || location == "kugane"))
-				await _baitChanger.ChangeBait(FishBait.Ragworm);
+			uint selectedBait = 0;
+			string baitReason = null;
 
-			// Deal with all the rest - prefer favorite bait for missing fish
-			else if (focusFishLog && normalFishToCatch.Any(x => x.FavoriteBait == FishBait.Krill))
-				await _baitChanger.ChangeBait(FishBait.Krill);
-			else if (focusFishLog && normalFishToCatch.Any(x => x.FavoriteBait == FishBait.PlumpWorm))
-				await _baitChanger.ChangeBait(FishBait.PlumpWorm);
-			else if (focusFishLog && normalFishToCatch.Any(x => x.FavoriteBait == FishBait.Ragworm))
-				await _baitChanger.ChangeBait(FishBait.Ragworm);
-			// Location-based defaults
-			else if (location == "galadion" || location == "rhotano" || location == "sound" || location == "oneriver" || location == "sirensong")
-				await _baitChanger.ChangeBait(FishBait.PlumpWorm);
-			else if (location == "south" || location == "blood")
-				await _baitChanger.ChangeBait(FishBait.Krill);
-			else if (location == "north" || location == "ciel" || location == "kugane" || location == "rubysea")
-				await _baitChanger.ChangeBait(FishBait.Ragworm);
-			else
-				await _baitChanger.ChangeBait(baitId);
+			// Step 0: Target fish override — use target fish's bait when in its zone
+			if (context.TargetFishId != 0)
+			{
+				var targetFish = availableNormalFish.FirstOrDefault(f => f.FishID == (int)context.TargetFishId);
+				if (targetFish != null)
+				{
+					selectedBait = targetFish.FavoriteBait;
+					baitReason = $"Target fish mode — using {_gameCache.GetItemName(targetFish.FavoriteBait)} for {targetFish.FishName}";
+				}
+			}
 
-			// Should we use Chum?
+			// Step 1: Intuition buff active — use highest-points fish bait (always the Intuition fish)
+			if (selectedBait == 0 && Core.Player.HasAura(CharacterAuras.FishersIntuition))
+			{
+				var topFish = availableNormalFish.OrderByDescending(f => f.Points).FirstOrDefault();
+				if (topFish != null)
+				{
+					selectedBait = topFish.FavoriteBait;
+					baitReason = $"Fisher's Intuition active — targeting {topFish.FishName} ({topFish.Points} pts)";
+				}
+			}
+
+			// Step 1.5: Goal needs spectral — use bait for the spectral trigger fish
+			if (selectedBait == 0 && !Core.Player.HasAura(CharacterAuras.FishersIntuition))
+			{
+				var spectralTrigger = availableNormalFish.FirstOrDefault(f => f.CausesSpectral);
+				if (spectralTrigger != null)
+				{
+					string spectralReason = NeedsSpectral(context, missingFish);
+					if (spectralReason != null)
+					{
+						selectedBait = spectralTrigger.FavoriteBait;
+						baitReason = $"Popping spectral — {spectralReason}";
+					}
+				}
+			}
+
+			if (selectedBait == 0 && focusFishLog)
+			{
+				// Step 2: Chase missing Intuition fish prereqs
+				var missingIntuitionFish = availableNormalFish
+					.Where(f => f.RequiresIntuition && missingFish.Contains((uint)f.FishID))
+					.OrderByDescending(f => f.Points)
+					.FirstOrDefault();
+
+				if (missingIntuitionFish?.IntuitionPrereqs != null)
+				{
+					foreach (var prereq in missingIntuitionFish.IntuitionPrereqs)
+					{
+						if (!prereq.IsMooch && caughtFish.Count(x => x == (uint)prereq.FishID) < prereq.Count)
+						{
+							var prereqFish = availableNormalFish.FirstOrDefault(f => f.FishID == prereq.FishID);
+							if (prereqFish != null)
+							{
+								selectedBait = prereqFish.FavoriteBait;
+								var caught = caughtFish.Count(x => x == (uint)prereq.FishID);
+								baitReason = $"Targeting {caught}/{prereq.Count}x {prereqFish.FishName} (prereq for missing {missingIntuitionFish.FishName})";
+								break;
+							}
+						}
+					}
+				}
+
+				// Step 3: Other missing fish, rarity-first
+				if (selectedBait == 0)
+				{
+					selectedBait = BaitRanker.SelectBaitForMissingFish(availableNormalFish, missingFish);
+					if (selectedBait != 0)
+					{
+						var targetedFish = availableNormalFish
+							.Where(f => missingFish.Contains((uint)f.FishID) && !f.RequiresIntuition && f.FavoriteBait == selectedBait)
+							.Select(f => f.FishName);
+						baitReason = $"Targeting missing fish: {string.Join(", ", targetedFish)}";
+					}
+				}
+			}
+
+			// Step 4: Fallback — points optimization
+			if (selectedBait == 0)
+			{
+				selectedBait = BaitRanker.SelectBaitForPoints(availableNormalFish);
+				if (selectedBait != 0)
+					baitReason = "Optimizing for points";
+			}
+
+			if (selectedBait == 0)
+				selectedBait = (uint)context.DefaultBaitId;
+
+			await _baitChanger.ChangeBait(selectedBait, baitReason);
+
+			// Chum handling
 			if (_gameCache.MaxGP >= FishingConstants.FULL_GP_BUFFER
 				&& (_gameCache.GPDeficit <= FishingConstants.FULL_GP_BUFFER)
 				&& OceanTripNewSettings.Instance.FullGPAction == FullGPAction.Chum)
@@ -87,6 +146,48 @@ namespace OceanTripPlanner.Strategies
 					ActionManager.DoAction(Actions.Chum, Core.Me);
 				}
 			}
+		}
+
+		/// <summary>
+		/// Returns a reason string if spectral should be prioritized, null otherwise.
+		/// Achievement mode spectral popping is handled in AchievementBaitSelector.
+		/// </summary>
+		private string NeedsSpectral(BaitSelectionContext context, HashSet<uint> missingFish)
+		{
+			var location = context.Location;
+			var allFish = FishDataCache.GetFish();
+
+			// Fish Log / Auto mode: check if missing fish at this zone are spectral
+			if (context.FocusFishLog && missingFish.Count > 0)
+			{
+				var missingHere = allFish
+					.Where(f => f.RouteShortName == location && missingFish.Contains((uint)f.FishID))
+					.ToList();
+				if (missingHere.Any())
+				{
+					int spectralMissing = missingHere.Count(f => f.SpectralFish);
+					int normalMissing = missingHere.Count(f => !f.SpectralFish);
+					if (spectralMissing > 0 && normalMissing == 0)
+						return $"all {spectralMissing} missing fish here are spectral";
+					if (spectralMissing > normalMissing)
+						return $"most missing fish here are spectral ({spectralMissing} spectral vs {normalMissing} normal)";
+				}
+			}
+
+			// Points/Auto mode: spectral fish are worth more points
+			if (OceanTripNewSettings.Instance.FishPriority == FishPriority.Points || OceanTripNewSettings.Instance.FishPriority == FishPriority.Auto)
+			{
+				var spectralFish = allFish
+					.Where(f => f.RouteShortName == location && f.SpectralFish)
+					.ToList();
+				var normalFish = allFish
+					.Where(f => f.RouteShortName == location && !f.SpectralFish && !f.CausesSpectral)
+					.ToList();
+				if (spectralFish.Any() && normalFish.Any() && spectralFish.Average(f => f.Points) > normalFish.Average(f => f.Points))
+					return "spectral fish are worth more points";
+			}
+
+			return null;
 		}
 	}
 }

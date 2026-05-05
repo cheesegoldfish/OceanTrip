@@ -43,6 +43,14 @@
 			radioButtonFlat9 = new UI.Controls.RadioButtonFlat();
 			radioButtonFlat8 = new UI.Controls.RadioButtonFlat();
 			radioButtonFlat7 = new UI.Controls.RadioButtonFlat();
+#if !RB_TC
+			thavnairMantis = new UI.Controls.RadioButtonFlat();
+			thavnairPrehistoric = new UI.Controls.RadioButtonFlat();
+			MantisLabel = new System.Windows.Forms.Label();
+			mantisPicture = new System.Windows.Forms.CheckBox();
+			PrehistoricLabel = new System.Windows.Forms.Label();
+			prehistoricPicture = new System.Windows.Forms.CheckBox();
+#endif
 			groupBox3 = new System.Windows.Forms.GroupBox();
 			assistedFishingLabel = new System.Windows.Forms.Label();
 			assistedFishingToggle = new UI.Controls.ToggleButton();
@@ -64,6 +72,13 @@
 			GPActionChum = new UI.Controls.RadioButtonFlat();
 			GPActionDoubleHook = new UI.Controls.RadioButtonFlat();
 			GPActionNothing = new UI.Controls.RadioButtonFlat();
+			lureGroup = new System.Windows.Forms.GroupBox();
+			lureAuto = new UI.Controls.RadioButtonFlat();
+			lureAmbitious = new UI.Controls.RadioButtonFlat();
+			lureModest = new UI.Controls.RadioButtonFlat();
+			lureNone = new UI.Controls.RadioButtonFlat();
+			lureStacksLabel = new System.Windows.Forms.Label();
+			lureStacksNumeric = new System.Windows.Forms.NumericUpDown();
 			groupBox5 = new System.Windows.Forms.GroupBox();
 			patienceAlways = new UI.Controls.RadioButtonFlat();
 			patienceSpectralOnly = new UI.Controls.RadioButtonFlat();
@@ -142,7 +157,11 @@
 			octopodsPicture = new System.Windows.Forms.CheckBox();
 			mantasLabel = new System.Windows.Forms.Label();
 			mantasPicture = new System.Windows.Forms.CheckBox();
+			targetFishGroupBox = new System.Windows.Forms.GroupBox();
+			targetFishNone = new UI.Controls.RadioButtonFlat();
+			targetFishJinbei = new UI.Controls.RadioButtonFlat();
 			exitIcon = new System.Windows.Forms.PictureBox();
+			targetFishGroupBox.SuspendLayout();
 			groupBox1.SuspendLayout();
 			groupBox2.SuspendLayout();
 			groupBox3.SuspendLayout();
@@ -150,6 +169,8 @@
 			fishingRoute.SuspendLayout();
 			lateQueue.SuspendLayout();
 			fullGPAction.SuspendLayout();
+			lureGroup.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)lureStacksNumeric).BeginInit();
 			groupBox5.SuspendLayout();
 			groupBox4.SuspendLayout();
 			tackleboxGroup.SuspendLayout();
@@ -203,7 +224,7 @@
 			groupBox1.Controls.Add(radioButtonFlat1);
 			groupBox1.Controls.Add(indigoMantas);
 			groupBox1.ForeColor = System.Drawing.Color.Gainsboro;
-			groupBox1.Location = new System.Drawing.Point(20, 342);
+			groupBox1.Location = new System.Drawing.Point(20, 420);
 			groupBox1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
 			groupBox1.Name = "groupBox1";
 			groupBox1.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
@@ -218,7 +239,6 @@
 			radioButtonFlat6.AutoSize = true;
 			radioButtonFlat6.CheckedColor = System.Drawing.Color.FromArgb(0, 137, 198);
 			radioButtonFlat6.DisabledColor = System.Drawing.Color.SlateGray;
-			radioButtonFlat6.Enabled = false;
 			radioButtonFlat6.Location = new System.Drawing.Point(128, 48);
 			radioButtonFlat6.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
 			radioButtonFlat6.MinimumSize = new System.Drawing.Size(0, 17);
@@ -235,7 +255,6 @@
 			radioButtonFlat5.AutoSize = true;
 			radioButtonFlat5.CheckedColor = System.Drawing.Color.FromArgb(0, 137, 198);
 			radioButtonFlat5.DisabledColor = System.Drawing.Color.SlateGray;
-			radioButtonFlat5.Enabled = false;
 			radioButtonFlat5.Location = new System.Drawing.Point(8, 48);
 			radioButtonFlat5.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
 			radioButtonFlat5.MinimumSize = new System.Drawing.Size(0, 17);
@@ -252,7 +271,6 @@
 			radioButtonFlat4.AutoSize = true;
 			radioButtonFlat4.CheckedColor = System.Drawing.Color.FromArgb(0, 137, 198);
 			radioButtonFlat4.DisabledColor = System.Drawing.Color.SlateGray;
-			radioButtonFlat4.Enabled = false;
 			radioButtonFlat4.Location = new System.Drawing.Point(540, 23);
 			radioButtonFlat4.Margin = new System.Windows.Forms.Padding(0);
 			radioButtonFlat4.MinimumSize = new System.Drawing.Size(0, 17);
@@ -269,7 +287,6 @@
 			radioButtonFlat3.AutoSize = true;
 			radioButtonFlat3.CheckedColor = System.Drawing.Color.FromArgb(0, 137, 198);
 			radioButtonFlat3.DisabledColor = System.Drawing.Color.SlateGray;
-			radioButtonFlat3.Enabled = false;
 			radioButtonFlat3.Location = new System.Drawing.Point(385, 22);
 			radioButtonFlat3.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
 			radioButtonFlat3.MinimumSize = new System.Drawing.Size(0, 17);
@@ -286,7 +303,6 @@
 			radioButtonFlat2.AutoSize = true;
 			radioButtonFlat2.CheckedColor = System.Drawing.Color.FromArgb(0, 137, 198);
 			radioButtonFlat2.DisabledColor = System.Drawing.Color.SlateGray;
-			radioButtonFlat2.Enabled = false;
 			radioButtonFlat2.Location = new System.Drawing.Point(262, 22);
 			radioButtonFlat2.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
 			radioButtonFlat2.MinimumSize = new System.Drawing.Size(0, 17);
@@ -303,7 +319,6 @@
 			radioButtonFlat1.AutoSize = true;
 			radioButtonFlat1.CheckedColor = System.Drawing.Color.FromArgb(0, 137, 198);
 			radioButtonFlat1.DisabledColor = System.Drawing.Color.SlateGray;
-			radioButtonFlat1.Enabled = false;
 			radioButtonFlat1.Location = new System.Drawing.Point(128, 22);
 			radioButtonFlat1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
 			radioButtonFlat1.MinimumSize = new System.Drawing.Size(0, 17);
@@ -320,7 +335,6 @@
 			indigoMantas.AutoSize = true;
 			indigoMantas.CheckedColor = System.Drawing.Color.FromArgb(0, 137, 198);
 			indigoMantas.DisabledColor = System.Drawing.Color.SlateGray;
-			indigoMantas.Enabled = false;
 			indigoMantas.Location = new System.Drawing.Point(8, 22);
 			indigoMantas.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
 			indigoMantas.MinimumSize = new System.Drawing.Size(0, 17);
@@ -334,11 +348,15 @@
 			// 
 			// groupBox2
 			// 
+#if !RB_TC
+			groupBox2.Controls.Add(thavnairPrehistoric);
+			groupBox2.Controls.Add(thavnairMantis);
+#endif
 			groupBox2.Controls.Add(radioButtonFlat9);
 			groupBox2.Controls.Add(radioButtonFlat8);
 			groupBox2.Controls.Add(radioButtonFlat7);
 			groupBox2.ForeColor = System.Drawing.Color.Gainsboro;
-			groupBox2.Location = new System.Drawing.Point(20, 434);
+			groupBox2.Location = new System.Drawing.Point(20, 512);
 			groupBox2.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
 			groupBox2.Name = "groupBox2";
 			groupBox2.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
@@ -353,7 +371,6 @@
 			radioButtonFlat9.AutoSize = true;
 			radioButtonFlat9.CheckedColor = System.Drawing.Color.FromArgb(0, 137, 198);
 			radioButtonFlat9.DisabledColor = System.Drawing.Color.SlateGray;
-			radioButtonFlat9.Enabled = false;
 			radioButtonFlat9.Location = new System.Drawing.Point(262, 22);
 			radioButtonFlat9.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
 			radioButtonFlat9.MinimumSize = new System.Drawing.Size(0, 17);
@@ -370,7 +387,6 @@
 			radioButtonFlat8.AutoSize = true;
 			radioButtonFlat8.CheckedColor = System.Drawing.Color.FromArgb(0, 137, 198);
 			radioButtonFlat8.DisabledColor = System.Drawing.Color.SlateGray;
-			radioButtonFlat8.Enabled = false;
 			radioButtonFlat8.Location = new System.Drawing.Point(128, 22);
 			radioButtonFlat8.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
 			radioButtonFlat8.MinimumSize = new System.Drawing.Size(0, 17);
@@ -387,7 +403,6 @@
 			radioButtonFlat7.AutoSize = true;
 			radioButtonFlat7.CheckedColor = System.Drawing.Color.FromArgb(0, 137, 198);
 			radioButtonFlat7.DisabledColor = System.Drawing.Color.SlateGray;
-			radioButtonFlat7.Enabled = false;
 			radioButtonFlat7.Location = new System.Drawing.Point(8, 22);
 			radioButtonFlat7.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
 			radioButtonFlat7.MinimumSize = new System.Drawing.Size(0, 17);
@@ -398,9 +413,43 @@
 			radioButtonFlat7.Text = "Shrimp (Solo)";
 			radioButtonFlat7.UnCheckedColor = System.Drawing.Color.Gray;
 			radioButtonFlat7.UseVisualStyleBackColor = true;
-			// 
+#if !RB_TC
+			//
+			// thavnairMantis
+			//
+			thavnairMantis.AutoSize = true;
+			thavnairMantis.CheckedColor = System.Drawing.Color.FromArgb(0, 137, 198);
+			thavnairMantis.DisabledColor = System.Drawing.Color.SlateGray;
+			thavnairMantis.Location = new System.Drawing.Point(385, 22);
+			thavnairMantis.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+			thavnairMantis.MinimumSize = new System.Drawing.Size(0, 17);
+			thavnairMantis.Name = "thavnairMantis";
+			thavnairMantis.Size = new System.Drawing.Size(113, 19);
+			thavnairMantis.TabIndex = 0;
+			thavnairMantis.TabStop = true;
+			thavnairMantis.Text = "Mantis Shrimp (Solo)";
+			thavnairMantis.UnCheckedColor = System.Drawing.Color.Gray;
+			thavnairMantis.UseVisualStyleBackColor = true;
+			//
+			// thavnairPrehistoric
+			//
+			thavnairPrehistoric.AutoSize = true;
+			thavnairPrehistoric.CheckedColor = System.Drawing.Color.FromArgb(0, 137, 198);
+			thavnairPrehistoric.DisabledColor = System.Drawing.Color.SlateGray;
+			thavnairPrehistoric.Location = new System.Drawing.Point(540, 22);
+			thavnairPrehistoric.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+			thavnairPrehistoric.MinimumSize = new System.Drawing.Size(0, 17);
+			thavnairPrehistoric.Name = "thavnairPrehistoric";
+			thavnairPrehistoric.Size = new System.Drawing.Size(121, 19);
+			thavnairPrehistoric.TabIndex = 1;
+			thavnairPrehistoric.TabStop = true;
+			thavnairPrehistoric.Text = "Primordial";
+			thavnairPrehistoric.UnCheckedColor = System.Drawing.Color.Gray;
+			thavnairPrehistoric.UseVisualStyleBackColor = true;
+#endif
+			//
 			// groupBox3
-			// 
+			//
 			groupBox3.Controls.Add(assistedFishingLabel);
 			groupBox3.Controls.Add(assistedFishingToggle);
 			groupBox3.ForeColor = System.Drawing.Color.Gainsboro;
@@ -478,7 +527,6 @@
 			achievements.AutoSize = true;
 			achievements.CheckedColor = System.Drawing.Color.FromArgb(0, 137, 198);
 			achievements.DisabledColor = System.Drawing.Color.SlateGray;
-			achievements.Enabled = false;
 			achievements.Location = new System.Drawing.Point(385, 21);
 			achievements.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
 			achievements.MinimumSize = new System.Drawing.Size(0, 17);
@@ -715,7 +763,109 @@
 			GPActionNothing.Text = "Nothing";
 			GPActionNothing.UnCheckedColor = System.Drawing.Color.Gray;
 			GPActionNothing.UseVisualStyleBackColor = true;
-			// 
+			//
+			// lureGroup
+			//
+			lureGroup.Controls.Add(lureAuto);
+			lureGroup.Controls.Add(lureAmbitious);
+			lureGroup.Controls.Add(lureModest);
+			lureGroup.Controls.Add(lureNone);
+			lureGroup.Controls.Add(lureStacksLabel);
+			lureGroup.Controls.Add(lureStacksNumeric);
+			lureGroup.ForeColor = System.Drawing.Color.Gainsboro;
+			lureGroup.Location = new System.Drawing.Point(274, 341);
+			lureGroup.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+			lureGroup.Name = "lureGroup";
+			lureGroup.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
+			lureGroup.Size = new System.Drawing.Size(397, 75);
+			lureGroup.TabIndex = 30;
+			lureGroup.TabStop = false;
+			lureGroup.Text = "Lure";
+			lureGroup.MouseDown += FormOceanSettings_MouseDown;
+			//
+			// lureAuto
+			//
+			lureAuto.AutoSize = true;
+			lureAuto.CheckedColor = System.Drawing.Color.FromArgb(0, 137, 198);
+			lureAuto.DisabledColor = System.Drawing.Color.SlateGray;
+			lureAuto.Location = new System.Drawing.Point(287, 20);
+			lureAuto.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+			lureAuto.MinimumSize = new System.Drawing.Size(0, 17);
+			lureAuto.Name = "lureAuto";
+			lureAuto.Size = new System.Drawing.Size(60, 19);
+			lureAuto.TabIndex = 5;
+			lureAuto.Text = "Auto";
+			lureAuto.UnCheckedColor = System.Drawing.Color.Gray;
+			lureAuto.UseVisualStyleBackColor = true;
+			//
+			// lureAmbitious
+			//
+			lureAmbitious.AutoSize = true;
+			lureAmbitious.CheckedColor = System.Drawing.Color.FromArgb(0, 137, 198);
+			lureAmbitious.DisabledColor = System.Drawing.Color.SlateGray;
+			lureAmbitious.Location = new System.Drawing.Point(178, 20);
+			lureAmbitious.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+			lureAmbitious.MinimumSize = new System.Drawing.Size(0, 17);
+			lureAmbitious.Name = "lureAmbitious";
+			lureAmbitious.Size = new System.Drawing.Size(100, 19);
+			lureAmbitious.TabIndex = 4;
+			lureAmbitious.Text = "Ambitious";
+			lureAmbitious.UnCheckedColor = System.Drawing.Color.Gray;
+			lureAmbitious.UseVisualStyleBackColor = true;
+			//
+			// lureModest
+			//
+			lureModest.AutoSize = true;
+			lureModest.CheckedColor = System.Drawing.Color.FromArgb(0, 137, 198);
+			lureModest.DisabledColor = System.Drawing.Color.SlateGray;
+			lureModest.Location = new System.Drawing.Point(93, 20);
+			lureModest.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+			lureModest.MinimumSize = new System.Drawing.Size(0, 17);
+			lureModest.Name = "lureModest";
+			lureModest.Size = new System.Drawing.Size(80, 19);
+			lureModest.TabIndex = 3;
+			lureModest.Text = "Modest";
+			lureModest.UnCheckedColor = System.Drawing.Color.Gray;
+			lureModest.UseVisualStyleBackColor = true;
+			//
+			// lureNone
+			//
+			lureNone.AutoSize = true;
+			lureNone.CheckedColor = System.Drawing.Color.FromArgb(0, 137, 198);
+			lureNone.DisabledColor = System.Drawing.Color.SlateGray;
+			lureNone.Location = new System.Drawing.Point(8, 20);
+			lureNone.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+			lureNone.MinimumSize = new System.Drawing.Size(0, 17);
+			lureNone.Name = "lureNone";
+			lureNone.Size = new System.Drawing.Size(70, 19);
+			lureNone.TabIndex = 2;
+			lureNone.TabStop = true;
+			lureNone.Text = "None";
+			lureNone.UnCheckedColor = System.Drawing.Color.Gray;
+			lureNone.UseVisualStyleBackColor = true;
+			//
+			// lureStacksLabel
+			//
+			lureStacksLabel.AutoSize = true;
+			lureStacksLabel.ForeColor = System.Drawing.Color.Gainsboro;
+			lureStacksLabel.Location = new System.Drawing.Point(8, 47);
+			lureStacksLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+			lureStacksLabel.Name = "lureStacksLabel";
+			lureStacksLabel.Size = new System.Drawing.Size(73, 15);
+			lureStacksLabel.TabIndex = 6;
+			lureStacksLabel.Text = "Max Stacks:";
+			//
+			// lureStacksNumeric
+			//
+			lureStacksNumeric.Location = new System.Drawing.Point(93, 44);
+			lureStacksNumeric.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+			lureStacksNumeric.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
+			lureStacksNumeric.Maximum = new decimal(new int[] { 3, 0, 0, 0 });
+			lureStacksNumeric.Value = new decimal(new int[] { 3, 0, 0, 0 });
+			lureStacksNumeric.Name = "lureStacksNumeric";
+			lureStacksNumeric.Size = new System.Drawing.Size(45, 23);
+			lureStacksNumeric.TabIndex = 7;
+			//
 			// groupBox5
 			// 
 			groupBox5.Controls.Add(patienceAlways);
@@ -1174,12 +1324,18 @@
 			groupBox7.Controls.Add(octopodsPicture);
 			groupBox7.Controls.Add(mantasLabel);
 			groupBox7.Controls.Add(mantasPicture);
+#if !RB_TC
+			groupBox7.Controls.Add(MantisLabel);
+			groupBox7.Controls.Add(mantisPicture);
+			groupBox7.Controls.Add(PrehistoricLabel);
+			groupBox7.Controls.Add(prehistoricPicture);
+#endif
 			groupBox7.ForeColor = System.Drawing.Color.Gainsboro;
-			groupBox7.Location = new System.Drawing.Point(20, 496);
+			groupBox7.Location = new System.Drawing.Point(20, 574);
 			groupBox7.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
 			groupBox7.Name = "groupBox7";
 			groupBox7.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
-			groupBox7.Size = new System.Drawing.Size(649, 167);
+			groupBox7.Size = new System.Drawing.Size(649, 240);
 			groupBox7.TabIndex = 16;
 			groupBox7.TabStop = false;
 			groupBox7.Text = "Ocean Fishing Achievements";
@@ -1740,18 +1896,121 @@
 			exitIcon.Size = new System.Drawing.Size(23, 23);
 			exitIcon.TabIndex = 17;
 			exitIcon.TabStop = false;
-			// 
+#if !RB_TC
+			//
+			// MantisLabel
+			//
+			MantisLabel.AutoSize = true;
+			MantisLabel.Location = new System.Drawing.Point(16, 164);
+			MantisLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+			MantisLabel.Name = "MantisLabel";
+			MantisLabel.Size = new System.Drawing.Size(44, 15);
+			MantisLabel.TabIndex = 40;
+			MantisLabel.Text = "Mantis";
+			//
+			// mantisPicture
+			//
+			mantisPicture.Appearance = System.Windows.Forms.Appearance.Button;
+			mantisPicture.AutoCheck = false;
+			mantisPicture.FlatAppearance.BorderColor = System.Drawing.Color.Gainsboro;
+			mantisPicture.FlatAppearance.CheckedBackColor = System.Drawing.Color.Transparent;
+			mantisPicture.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Transparent;
+			mantisPicture.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Transparent;
+			mantisPicture.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			mantisPicture.Location = new System.Drawing.Point(15, 185);
+			mantisPicture.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+			mantisPicture.Name = "mantisPicture";
+			mantisPicture.Size = new System.Drawing.Size(47, 46);
+			mantisPicture.TabIndex = 41;
+			mantisPicture.UseVisualStyleBackColor = true;
+			//
+			// PrehistoricLabel
+			//
+			PrehistoricLabel.AutoSize = true;
+			PrehistoricLabel.Location = new System.Drawing.Point(69, 164);
+			PrehistoricLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+			PrehistoricLabel.Name = "PrehistoricLabel";
+			PrehistoricLabel.Size = new System.Drawing.Size(65, 15);
+			PrehistoricLabel.TabIndex = 42;
+			PrehistoricLabel.Text = "Prehistoric";
+			//
+			// prehistoricPicture
+			//
+			prehistoricPicture.Appearance = System.Windows.Forms.Appearance.Button;
+			prehistoricPicture.AutoCheck = false;
+			prehistoricPicture.FlatAppearance.BorderColor = System.Drawing.Color.Gainsboro;
+			prehistoricPicture.FlatAppearance.CheckedBackColor = System.Drawing.Color.Transparent;
+			prehistoricPicture.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Transparent;
+			prehistoricPicture.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Transparent;
+			prehistoricPicture.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			prehistoricPicture.Location = new System.Drawing.Point(72, 185);
+			prehistoricPicture.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+			prehistoricPicture.Name = "prehistoricPicture";
+			prehistoricPicture.Size = new System.Drawing.Size(47, 46);
+			prehistoricPicture.TabIndex = 43;
+			prehistoricPicture.UseVisualStyleBackColor = true;
+#endif
+			//
+			// targetFishGroupBox
+			//
+			targetFishGroupBox.Controls.Add(targetFishNone);
+			targetFishGroupBox.Controls.Add(targetFishJinbei);
+			targetFishGroupBox.ForeColor = System.Drawing.Color.Gainsboro;
+			targetFishGroupBox.Location = new System.Drawing.Point(20, 342);
+			targetFishGroupBox.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+			targetFishGroupBox.Name = "targetFishGroupBox";
+			targetFishGroupBox.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
+			targetFishGroupBox.Size = new System.Drawing.Size(244, 55);
+			targetFishGroupBox.TabIndex = 51;
+			targetFishGroupBox.TabStop = false;
+			targetFishGroupBox.Text = "Target Fish";
+			targetFishGroupBox.MouseDown += FormOceanSettings_MouseDown;
+			//
+			// targetFishNone
+			//
+			targetFishNone.AutoSize = true;
+			targetFishNone.CheckedColor = System.Drawing.Color.FromArgb(0, 137, 198);
+			targetFishNone.DisabledColor = System.Drawing.Color.SlateGray;
+			targetFishNone.Location = new System.Drawing.Point(8, 22);
+			targetFishNone.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+			targetFishNone.MinimumSize = new System.Drawing.Size(0, 17);
+			targetFishNone.Name = "targetFishNone";
+			targetFishNone.Size = new System.Drawing.Size(54, 19);
+			targetFishNone.TabIndex = 0;
+			targetFishNone.TabStop = true;
+			targetFishNone.Text = "None";
+			targetFishNone.UnCheckedColor = System.Drawing.Color.Gray;
+			targetFishNone.UseVisualStyleBackColor = true;
+			//
+			// targetFishJinbei
+			//
+			targetFishJinbei.AutoSize = true;
+			targetFishJinbei.CheckedColor = System.Drawing.Color.FromArgb(0, 137, 198);
+			targetFishJinbei.DisabledColor = System.Drawing.Color.SlateGray;
+			targetFishJinbei.Location = new System.Drawing.Point(85, 22);
+			targetFishJinbei.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+			targetFishJinbei.MinimumSize = new System.Drawing.Size(0, 17);
+			targetFishJinbei.Name = "targetFishJinbei";
+			targetFishJinbei.Size = new System.Drawing.Size(120, 19);
+			targetFishJinbei.TabIndex = 1;
+			targetFishJinbei.TabStop = true;
+			targetFishJinbei.Text = "Junior Jinbei";
+			targetFishJinbei.UnCheckedColor = System.Drawing.Color.Gray;
+			targetFishJinbei.UseVisualStyleBackColor = true;
+			//
 			// FormOceanSettings
 			// 
 			AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
 			AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			BackColor = System.Drawing.Color.FromArgb(30, 30, 44);
-			ClientSize = new System.Drawing.Size(852, 692);
+			ClientSize = new System.Drawing.Size(852, 762);
 			Controls.Add(exitIcon);
 			Controls.Add(groupBox7);
 			Controls.Add(tackleboxGroup);
+			Controls.Add(targetFishGroupBox);
 			Controls.Add(groupBox4);
 			Controls.Add(groupBox5);
+			Controls.Add(lureGroup);
 			Controls.Add(fullGPAction);
 			Controls.Add(lateQueue);
 			Controls.Add(fishingRoute);
@@ -1780,10 +2039,15 @@
 			lateQueue.PerformLayout();
 			fullGPAction.ResumeLayout(false);
 			fullGPAction.PerformLayout();
+			lureGroup.ResumeLayout(false);
+			lureGroup.PerformLayout();
+			((System.ComponentModel.ISupportInitialize)lureStacksNumeric).EndInit();
 			groupBox5.ResumeLayout(false);
 			groupBox5.PerformLayout();
 			groupBox4.ResumeLayout(false);
 			groupBox4.PerformLayout();
+			targetFishGroupBox.ResumeLayout(false);
+			targetFishGroupBox.PerformLayout();
 			tackleboxGroup.ResumeLayout(false);
 			tackleboxGroup.PerformLayout();
 			((System.ComponentModel.ISupportInitialize)pictureBoxStoneflyNymph).EndInit();
@@ -1840,6 +2104,13 @@
 		private UI.Controls.RadioButtonFlat GPActionNothing;
 		private UI.Controls.RadioButtonFlat GPActionDoubleHook;
 		private UI.Controls.RadioButtonFlat GPActionChum;
+		private System.Windows.Forms.GroupBox lureGroup;
+		private UI.Controls.RadioButtonFlat lureNone;
+		private UI.Controls.RadioButtonFlat lureModest;
+		private UI.Controls.RadioButtonFlat lureAmbitious;
+		private UI.Controls.RadioButtonFlat lureAuto;
+		private System.Windows.Forms.Label lureStacksLabel;
+		private System.Windows.Forms.NumericUpDown lureStacksNumeric;
 		private UI.Controls.RadioButtonFlat patienceAlways;
 		private UI.Controls.RadioButtonFlat patienceSpectralOnly;
 		private UI.Controls.RadioButtonFlat patienceDefaultLogic;
@@ -1856,6 +2127,14 @@
 		private UI.Controls.RadioButtonFlat radioButtonFlat9;
 		private UI.Controls.RadioButtonFlat radioButtonFlat8;
 		private UI.Controls.RadioButtonFlat radioButtonFlat7;
+#if !RB_TC
+		private UI.Controls.RadioButtonFlat thavnairMantis;
+		private UI.Controls.RadioButtonFlat thavnairPrehistoric;
+		private System.Windows.Forms.Label MantisLabel;
+		private System.Windows.Forms.CheckBox mantisPicture;
+		private System.Windows.Forms.Label PrehistoricLabel;
+		private System.Windows.Forms.CheckBox prehistoricPicture;
+#endif
 		private System.Windows.Forms.PictureBox pictureBoxKrill;
 		private System.Windows.Forms.Label stoneflynymphLabel;
 		private System.Windows.Forms.Label mackerelstripLabel;
@@ -1922,5 +2201,8 @@
 		private System.Windows.Forms.CheckBox overall500kPicture;
 		private System.Windows.Forms.Label Overall100kLabel;
 		private System.Windows.Forms.CheckBox overall100kPicture;
+		private System.Windows.Forms.GroupBox targetFishGroupBox;
+		private UI.Controls.RadioButtonFlat targetFishNone;
+		private UI.Controls.RadioButtonFlat targetFishJinbei;
 	}
 }

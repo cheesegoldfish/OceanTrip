@@ -102,6 +102,10 @@ namespace OceanTripPlanner
 		public bool achievementShellfish { get => _achievementShellfish; set => SetProperty(ref _achievementShellfish, value); }
 		private bool _achievementSquid;
 		public bool achievementSquid { get => _achievementSquid; set => SetProperty(ref _achievementSquid, value); }
+		private bool _achievementMantisShrimp;
+		public bool achievementMantisShrimp { get => _achievementMantisShrimp; set => SetProperty(ref _achievementMantisShrimp, value); }
+		private bool _achievementPrehistoric;
+		public bool achievementPrehistoric { get => _achievementPrehistoric; set => SetProperty(ref _achievementPrehistoric, value); }
 
 
 		private bool _achievement5kruby;
@@ -263,6 +267,8 @@ namespace OceanTripPlanner
 				{ nameof(achievementShrimp), () => Achievements.HasAchievement(Definitions.Achievement.Shrimp) },
 				{ nameof(achievementShellfish), () => Achievements.HasAchievement(Definitions.Achievement.Shellfish) },
 				{ nameof(achievementSquid), () => Achievements.HasAchievement(Definitions.Achievement.Squid) },
+				{ nameof(achievementMantisShrimp), () => Achievements.HasAchievement(Definitions.Achievement.MantisShrimp) },
+				{ nameof(achievementPrehistoric), () => Achievements.HasAchievement(Definitions.Achievement.Prehistoric) },
 				{ nameof(achievement5kruby), () => Achievements.HasAchievement(Definitions.Achievement.Ruby5kPoints) },
 				{ nameof(achievement10kruby), () => Achievements.HasAchievement(Definitions.Achievement.Ruby10kPoints) },
 				{ nameof(achievement16kruby), () => Achievements.HasAchievement(Definitions.Achievement.Ruby16kPoints) },

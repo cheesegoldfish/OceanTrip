@@ -68,14 +68,12 @@ namespace OceanTripPlanner
 		private NormalBaitSelector normalBaitSelector;
 		private AchievementBaitSelector achievementBaitSelector;
 		private HookingStrategy hookingStrategy;
-		private AchievementHookingStrategy achievementHookingStrategy;
 		private BoatBoardingHandler boatBoardingHandler;
 		private FishingSessionManager fishingSessionManager;
-		private FishingSessionManager achievementFishingSessionManager;
 		private BaitRestockStrategy baitRestockStrategy;
 		private CordialStrategy cordialStrategy;
-	private FishCatchLogger fishCatchLogger;
-	private SpectralDetector spectralDetector;
+		private FishCatchLogger fishCatchLogger;
+		private SpectralDetector spectralDetector;
 
 		public override string Name => "Ocean Trip";
 
@@ -161,10 +159,8 @@ namespace OceanTripPlanner
 			normalBaitSelector = new NormalBaitSelector(baitChanger, patienceManager, gameCache);
 			achievementBaitSelector = new AchievementBaitSelector(baitChanger, patienceManager, gameCache);
 			hookingStrategy = new HookingStrategy(gameCache);
-			achievementHookingStrategy = new AchievementHookingStrategy(gameCache);
 			boatBoardingHandler = new BoatBoardingHandler();
 			fishingSessionManager = new FishingSessionManager(gameCache, hookingStrategy);
-			achievementFishingSessionManager = new FishingSessionManager(gameCache, hookingStrategy); // TODO: Update to use achievementHookingStrategy once interface is created
 			baitRestockStrategy = new BaitRestockStrategy();
 			cordialStrategy = new CordialStrategy(gameCache);
 			fishCatchLogger = new FishCatchLogger(gameCache, (text, level) => Log(text, level));
@@ -195,13 +191,13 @@ namespace OceanTripPlanner
 			_root = new ActionRunCoroutine(r => Run());
 		}
 
-	/// <summary>
-	/// Calculate time remaining until next boat departure
-	/// </summary>
-	public static TimeSpan TimeUntilNextBoat()
-	{
-		return BoatScheduleCalculator.TimeUntilNextBoat(OceanTripNewSettings.Instance.LateBoatQueue);
-	}
+		/// <summary>
+		/// Calculate time remaining until next boat departure
+		/// </summary>
+		public static TimeSpan TimeUntilNextBoat()
+		{
+			return BoatScheduleCalculator.TimeUntilNextBoat(OceanTripNewSettings.Instance.LateBoatQueue);
+		}
 
 		private void KillLisbeth(object sender, ElapsedEventArgs e)
 		{
@@ -222,7 +218,7 @@ namespace OceanTripPlanner
 				}
 			}
 
-		// Timer will be restarted after voyage completes in HandleVoyageCompletion()
+			// Timer will be restarted after voyage completes in HandleVoyageCompletion()
 		}
 
 		public override void Stop()
@@ -278,12 +274,12 @@ namespace OceanTripPlanner
 				if (OceanTripNewSettings.Instance.ExchangeFish == ExchangeFish.Sell)
 				{
 					await Coroutine.Sleep(FishingConstants.FISH_EXCHANGE_DELAY_MS);
-					await LandSell(FishDataCache.GetFish().Where(x => x.Rarity != "Rare").Select(x => x.FishID).ToList());
+					await LandSell(GetExchangeableFishIds());
 				}
 				else if (OceanTripNewSettings.Instance.ExchangeFish == ExchangeFish.Desynth)
 				{
 					await Coroutine.Sleep(FishingConstants.FISH_EXCHANGE_DELAY_MS);
-					await PassTheTime.DesynthOcean(FishDataCache.GetFish().Where(x => x.Rarity != "Rare").Select(x => x.FishID).ToList());
+					await PassTheTime.DesynthOcean(GetExchangeableFishIds());
 				}
 
 				//await Lisbeth.SelfRepairWithMenderFallback();
@@ -392,9 +388,44 @@ namespace OceanTripPlanner
 		private async Task ExecuteVoyage()
 		{
 			int spot = rnd.Next(6);
-			schedule = Routes.GetSchedule();
+
+			// Auto-detect route from zone ID and sync the setting so achievement code reads the correct route
+			string detectedRoute = WorldManager.RawZoneId == Zones.TheEndeavor ? "Indigo" : "Ruby";
+			var settingRoute = OceanTripNewSettings.Instance.FishingRoute == FishingRoute.Ruby ? "Ruby" : "Indigo";
+			if (detectedRoute != settingRoute)
+			{
+				Log($"Route auto-detected as {detectedRoute} (UI setting was {settingRoute}) — updating setting to match");
+				OceanTripNewSettings.Instance.FishingRoute = detectedRoute == "Ruby" ? FishingRoute.Ruby : FishingRoute.Indigo;
+			}
+
+			schedule = Routes.GetSchedule(route: detectedRoute);
 			string location = "";
 			string TimeOfDay = "";
+			string lastLoggedLocation = "";
+
+			// Warn if selected achievement has few fish available across this route
+			if (OceanTripNewSettings.Instance.FishPriority == FishPriority.Achievements)
+			{
+				var focus = AchievementFishDataCache.GetCurrentAchievementFocus();
+				if (focus != AchievementType.None)
+				{
+					int stopsWithFish = 0;
+					for (int i = 0; i < 3; i++)
+					{
+						string stopLocation = schedule[i].Item1;
+						string stopTime = schedule[i].Item2;
+						var fish = AchievementFishDataCache.GetFishForLocation(stopLocation, focus)
+							.Where(f => f.TimeOfDayExclusion1 != stopTime && f.TimeOfDayExclusion2 != stopTime)
+							.ToList();
+						if (fish.Any())
+							stopsWithFish++;
+					}
+					if (stopsWithFish == 0)
+						Log($"WARNING: No {focus} fish available on this route! Consider switching to Points or Fish Log mode.");
+					else if (stopsWithFish == 1)
+						Log($"WARNING: {focus} fish only available at 1/3 stops on this route. Achievement progress will be limited.");
+				}
+			}
 
 			// Cache the director if needed
 			if (OnBoat)
@@ -419,6 +450,18 @@ namespace OceanTripPlanner
 				if (String.IsNullOrEmpty(TimeOfDay))
 					TimeOfDay = "Day";
 
+				if (location != lastLoggedLocation)
+				{
+					lastLoggedLocation = location;
+					string priorityMode = OceanTripNewSettings.Instance.FishPriority.ToString();
+					string focusMode = FocusFishLog ? "Fish Log" : "Points";
+					Log($"Zone: {Schedule.areaName(location)} ({location}), Time: {TimeOfDay}, Stop: {Endeavor.CurrentZone + 1}/3, Priority: {priorityMode} ({focusMode})");
+
+					var zoneRoute = RouteDataCache.GetRoutesWithFish().FirstOrDefault(x => x.Route.RouteShortName == location);
+					if (zoneRoute != null)
+						Log($"Bait: Normal={gameCache.GetItemName((uint)zoneRoute.Route.NormalBait)}, Spectral={gameCache.GetItemName((uint)zoneRoute.Route.SpectralBait)}");
+				}
+
 				// Get the baits required
 				var currentRoute = RouteDataCache.GetRoutesWithFish().FirstOrDefault(x => x.Route.RouteShortName == location);
 				if (currentRoute == null)
@@ -434,29 +477,30 @@ namespace OceanTripPlanner
 				}
 
 				var fishingContext = new FishingSessionContext
-			{
-				Location = location,
-				TimeOfDay = TimeOfDay,
-				Spot = spot,
-				CurrentRoute = currentRoute,
-				BaitId = baitId,
-				SpectralBaitId = spectralbaitId,
-				ShouldContinueFishingCallback = () => OnBoat && Endeavor.shouldFish,
-				RefreshUICallback = () =>
 				{
-					FFXIV_Databinds.Instance.RefreshAchievements();
-					FFXIV_Databinds.Instance.RefreshCurrentRoute();
-				},
-				RefreshBaitCallback = () => FFXIV_Databinds.Instance.RefreshBait(),
-				ManageBuffsCallback = ManageBuffsAndConsumables,
-				ProcessCaughtFishCallback = ProcessCaughtFish,
-				SelectAndApplyBaitCallback = async (spectraled) =>
+					Location = location,
+					TimeOfDay = TimeOfDay,
+					Spot = spot,
+					CurrentRoute = currentRoute,
+					BaitId = baitId,
+					SpectralBaitId = spectralbaitId,
+					ShouldContinueFishingCallback = () => OnBoat && Endeavor.shouldFish,
+					RefreshUICallback = () =>
+					{
+						FFXIV_Databinds.Instance.RefreshAchievements();
+						FFXIV_Databinds.Instance.RefreshCurrentRoute();
+					},
+					RefreshBaitCallback = () => FFXIV_Databinds.Instance.RefreshBait(),
+					ManageBuffsCallback = ManageBuffsAndConsumables,
+					ProcessCaughtFishCallback = ProcessCaughtFish,
+					OnHookExecutedCallback = (logged) => { caughtFishLogged = logged; lastCaughtFish = 0; }
+				};
+				fishingContext.SelectAndApplyBaitCallback = async (spectraled) =>
 				{
-					await SelectAndApplyBait(spectraled, location, TimeOfDay, baitId, spectralbaitId, currentRoute);
-				},
-				OnHookExecutedCallback = (logged) => caughtFishLogged = logged
-			};
-			await fishingSessionManager.ExecuteFishingSession(fishingContext);
+					bool shouldMooch = await SelectAndApplyBait(spectraled, location, TimeOfDay, baitId, spectralbaitId, currentRoute);
+					fishingContext.SetShouldMooch(shouldMooch);
+				};
+				await fishingSessionManager.ExecuteFishingSession(fishingContext);
 			}
 		}
 
@@ -498,28 +542,28 @@ namespace OceanTripPlanner
 					PassTheTime.freeToCraft = true;
 				}
 
-			// Restart the timer for the next boat
-			lock (timerLock)
-			{
-				if (execute != null)
+				// Restart the timer for the next boat
+				lock (timerLock)
 				{
-					TimeSpan timeLeftUntilNextRun = TimeUntilNextBoat();
-					if (timeLeftUntilNextRun.TotalMilliseconds < 0)
-						execute.Interval = 100;
-					else
-						execute.Interval = timeLeftUntilNextRun.TotalMilliseconds;
+					if (execute != null)
+					{
+						TimeSpan timeLeftUntilNextRun = TimeUntilNextBoat();
+						if (timeLeftUntilNextRun.TotalMilliseconds < 0)
+							execute.Interval = 100;
+						else
+							execute.Interval = timeLeftUntilNextRun.TotalMilliseconds;
 
-					execute.Start();
+						execute.Start();
+					}
 				}
-			}
 
 				await Coroutine.Sleep(FishingConstants.VOYAGE_COMPLETION_DELAY_MS);
 			}
 		}
 
 		private async Task OceanFishing()
-	{
-		await Coroutine.Sleep(FishingConstants.STANDARD_DELAY_MS);
+		{
+			await Coroutine.Sleep(FishingConstants.STANDARD_DELAY_MS);
 
 			//GetSchedule();
 			if (!OnBoat)
@@ -537,9 +581,21 @@ namespace OceanTripPlanner
 			{
 				FFXIV_Databinds.Instance.RefreshBait();
 
-				if ((Core.Me.MaxGP - Core.Me.CurrentGP) > 200 && ActionManager.CanCast(Actions.ThaliaksFavor, Core.Me))
+				if ((Core.Me.MaxGP - Core.Me.CurrentGP) > FishingConstants.THALIAK_GP_THRESHOLD && ActionManager.CanCast(Actions.ThaliaksFavor, Core.Me))
 				{
 					ActionManager.DoAction(Actions.ThaliaksFavor, Core.Me);
+				}
+
+				// Cordial for GP recovery
+				if (gameCache.NeedsGPRecovery(FishingConstants.CORDIAL_GP_THRESHOLD))
+				{
+					await UseCordial();
+				}
+
+				// Apply Patience if enabled and not already active
+				if (OceanTripNewSettings.Instance.Patience != ShouldUsePatience.OnlyForSpecificFish && !FishingManager.HasPatience)
+				{
+					await patienceManager.UsePatience();
 				}
 
 				if (FishingManager.CanMoochAny == FishingManager.AvailableMooch.Mooch || FishingManager.CanMoochAny == FishingManager.AvailableMooch.Both)
@@ -556,20 +612,55 @@ namespace OceanTripPlanner
 				}
 			}
 
-			if ((Core.Me.MaxGP - Core.Me.CurrentGP) > FishingConstants.THALIAK_GP_THRESHOLD && ActionManager.CanCast(Actions.ThaliaksFavor, Core.Me))
-			{
-				ActionManager.DoAction(Actions.ThaliaksFavor, Core.Me);
-			}
+			var openWorldLureStrategy = new LureStrategy(gameCache);
+			openWorldLureStrategy.ResetForNewCast();
+			bool hookExecuted = false;
 
-			while (FishingManager.State != FishingState.PoleReady)
+			while (FishingManager.State != FishingState.PoleReady && FishingManager.State != FishingState.None)
 			{
-				if (FishingManager.CanHook && FishingManager.State == FishingState.Bite)
+				// Apply lure while line is in water
+				if (FishingManager.State != FishingState.Bite && FishingManager.State != FishingState.PoleReady)
 				{
-					Log($"Bite Time: {FishingManager.TimeSinceCast.TotalSeconds + FishingConstants.BITE_TIMER_OFFSET:F1}s");
-					FishingManager.Hook();
+					var lureContext = new LureContext
+					{
+						Location = "",
+						TimeOfDay = "",
+						Spectraled = false,
+						LastCastMooch = false,
+						TargetFishId = 0,
+						MissingFish = null
+					};
+					await openWorldLureStrategy.TryApplyLure(lureContext);
 				}
 
-				FFXIV_Databinds.Instance.RefreshBait();
+				// Auto-accept collectable preservation dialog
+				if (SelectYesno.IsOpen)
+					SelectYesno.Yes();
+
+				if (FishingManager.CanHook && FishingManager.State == FishingState.Bite && !hookExecuted)
+				{
+					hookExecuted = true;
+					Log($"Bite Time: {FishingManager.TimeSinceCast.TotalSeconds + FishingConstants.BITE_TIMER_OFFSET:F1}s, Tug: {FishingManager.TugType}");
+
+					if (FishingManager.HasPatience)
+					{
+						if (FishingManager.TugType == TugType.Light)
+						{
+							Log("Using Precision Hookset!");
+							ActionManager.DoAction(Actions.PrecisionHookset, Core.Me);
+						}
+						else
+						{
+							Log("Using Powerful Hookset!");
+							ActionManager.DoAction(Actions.PowerfulHookset, Core.Me);
+						}
+					}
+					else
+					{
+						FishingManager.Hook();
+					}
+				}
+
 				await Coroutine.Yield();
 			}
 		}
@@ -710,12 +801,12 @@ namespace OceanTripPlanner
 				return false;
 			}
 		}
-		
+
 		public static bool OnBoat
 		{
-			get 
+			get
 			{
-				if (WorldManager.RawZoneId == Zones.TheEndeavor || WorldManager.RawZoneId == Zones.TheEndeaver_Ruby)
+				if (WorldManager.RawZoneId == Zones.TheEndeavor || WorldManager.RawZoneId == Zones.TheEndeaver_Ruby || WorldManager.RawZoneId == Zones.TheEndeavor_Thavnair)
 					return true;
 
 				return false;
@@ -750,12 +841,7 @@ namespace OceanTripPlanner
 			// Should we Cordial?
 			Log("Checking for Hi-Cordial Use.", OceanLogLevel.Debug);
 
-			if (gameCache.NeedsGPRecovery(FishingConstants.CORDIAL_GP_THRESHOLD) && spectraled)
-			{
-				await UseCordial();
-				await Coroutine.Yield();
-			}
-			else if (gameCache.NeedsGPRecovery(FishingConstants.CORDIAL_GP_THRESHOLD) && gameCache.CurrentGPPercent < FishingConstants.LOW_GP_PERCENT)
+			if (gameCache.NeedsGPRecovery(FishingConstants.CORDIAL_GP_THRESHOLD))
 			{
 				await UseCordial();
 				await Coroutine.Yield();
@@ -770,13 +856,13 @@ namespace OceanTripPlanner
 			{
 				Log("Using Thaliak's Favor!");
 				ActionManager.DoAction(Actions.ThaliaksFavor, Core.Me);
-				await Coroutine.Yield();
+				await Coroutine.Wait(1000, () => !ActionManager.CanCast(Actions.ThaliaksFavor, Core.Me));
 			}
-			else if (!spectraled && gameCache.NeedsGPRecovery(FishingConstants.THALIAK_GP_THRESHOLD) && ActionManager.CanCast(Actions.ThaliaksFavor, Core.Me) && Core.Player.Auras.Any(x => x.Id == CharacterAuras.AnglersArt && x.Value >= 7))
+			else if (!spectraled && gameCache.NeedsGPRecovery(FishingConstants.THALIAK_GP_THRESHOLD) && ActionManager.CanCast(Actions.ThaliaksFavor, Core.Me) && Core.Player.Auras.Any(x => x.Id == CharacterAuras.AnglersArt && x.Value >= 3))
 			{
-				Log("Currently at >7 Angler's Art Stacks - Using Thaliak's Favor!");
+				Log("Using Thaliak's Favor!");
 				ActionManager.DoAction(Actions.ThaliaksFavor, Core.Me);
-				await Coroutine.Yield();
+				await Coroutine.Wait(1000, () => !ActionManager.CanCast(Actions.ThaliaksFavor, Core.Me));
 			}
 
 			Log("Done with Thaliak's Favor.", OceanLogLevel.Debug);
@@ -794,6 +880,8 @@ namespace OceanTripPlanner
 			// Now uses the new Catch API when available for better reliability
 			var currentFish = FishingLog.LastFishCaught;
 
+			Log($"ProcessCaughtFish: currentFish={currentFish}, lastCaughtFish={lastCaughtFish}, caughtFishLogged={caughtFishLogged}", OceanLogLevel.Debug);
+
 			// Did we catch a fish? Let's log it.
 			if (lastCaughtFish != currentFish && !caughtFishLogged)
 			{
@@ -801,16 +889,24 @@ namespace OceanTripPlanner
 				caughtFish.Add(currentFish);
 				caughtFishLogged = true;
 
-				// Use Catch.FishName if available, otherwise fall back to gameCache lookup
+				// Use Catch.FishName if available, fall back to gameCache, then fishList.json
 				string fishName = FishingLog.LastFishName;
 				if (string.IsNullOrEmpty(fishName))
 					fishName = gameCache.GetItemName(currentFish);
+				if (string.IsNullOrEmpty(fishName))
+				{
+					var fishData = FishDataCache.GetFish().FirstOrDefault(f => f.FishID == (int)currentFish);
+					fishName = fishData?.FishName ?? $"Unknown ({currentFish})";
+				}
 
 				Log($"Caught {fishName}.");
 
 				// Remove from missing fish list if needed
 				if (FishingLog.MissingFish().Contains(currentFish))
+				{
 					FishingLog.RemoveFish(currentFish);
+					FishingLog.SaveMissingFishLog();
+				}
 			}
 
 			Log("Done checking for a recently caught fish.", OceanLogLevel.Debug);
@@ -834,6 +930,20 @@ namespace OceanTripPlanner
 			{
 				shouldIdenticalCast = true;
 			}
+			// Achievement mode: IC on any fish matching the target achievement
+			else if (OceanTripNewSettings.Instance.FishPriority == FishPriority.Achievements)
+			{
+				var focus = AchievementFishDataCache.GetCurrentAchievementFocus();
+				if (focus != AchievementType.None)
+				{
+					var caughtFishData = FishDataCache.GetFish().FirstOrDefault(f => f.FishID == (int)lastCaughtFish);
+					if (caughtFishData != null && !string.IsNullOrEmpty(caughtFishData.Achievement) &&
+						AchievementFishDataCache.MapAchievementString(caughtFishData.Achievement) == focus)
+					{
+						shouldIdenticalCast = true;
+					}
+				}
+			}
 
 			if (shouldIdenticalCast && ActionManager.CanCast(Actions.IdenticalCast, Core.Me) && !Core.Player.HasAura(CharacterAuras.FishersIntuition))
 			{
@@ -851,8 +961,18 @@ namespace OceanTripPlanner
 		/// <summary>
 		/// Select and apply the appropriate bait based on spectral status, location, time of day, and fish log
 		/// </summary>
-		private async Task SelectAndApplyBait(bool spectraled, string location, string timeOfDay, ulong baitId, ulong spectralbaitId, RouteWithFish currentRoute)
+		private async Task<bool> SelectAndApplyBait(bool spectraled, string location, string timeOfDay, ulong baitId, ulong spectralbaitId, RouteWithFish currentRoute)
 		{
+			// Determine if target fish is available in this zone
+			uint targetFishId = OceanTripNewSettings.Instance.TargetFishId;
+			uint contextTargetFishId = 0;
+			if (targetFishId != 0)
+			{
+				var targetFish = FishDataCache.GetFish().FirstOrDefault(f => f.FishID == (int)targetFishId);
+				if (targetFish != null && targetFish.RouteShortName == location)
+					contextTargetFishId = targetFishId;
+			}
+
 			var context = new BaitSelectionContext
 			{
 				Location = location,
@@ -862,13 +982,27 @@ namespace OceanTripPlanner
 				MissingFish = FishingLog.MissingFish(),
 				CaughtFish = caughtFish,
 				FocusFishLog = FocusFishLog,
-				CurrentWeather = gameCache.CurrentWeather
+				CurrentWeather = gameCache.CurrentWeather,
+				TargetFishId = contextTargetFishId
 			};
 
-			// Use achievement bait selector when in achievement mode
+			// Use achievement bait selector when in achievement mode AND achievement fish exist here
 			if (OceanTripNewSettings.Instance.FishPriority == FishPriority.Achievements)
 			{
-				await achievementBaitSelector.SelectBait(context);
+				var focus = AchievementFishDataCache.GetCurrentAchievementFocus();
+				var achievementFish = AchievementFishDataCache.GetFishForLocation(location, focus);
+				if (achievementFish != null && achievementFish.Any())
+				{
+					await achievementBaitSelector.SelectBait(context);
+				}
+				else if (spectraled)
+				{
+					await spectralBaitSelector.SelectBait(context);
+				}
+				else
+				{
+					await normalBaitSelector.SelectBait(context);
+				}
 			}
 			else if (spectraled)
 			{
@@ -878,6 +1012,22 @@ namespace OceanTripPlanner
 			{
 				await normalBaitSelector.SelectBait(context);
 			}
+
+			return context.ShouldMooch;
+		}
+
+		private static readonly HashSet<int> NeverExchangeFish = new HashSet<int>
+		{
+			OceanFish.JuniorJinbei
+		};
+
+		private List<int> GetExchangeableFishIds()
+		{
+			uint targetFish = OceanTripNewSettings.Instance.TargetFishId;
+			return FishDataCache.GetFish()
+				.Where(x => x.Rarity != "Rare" && !NeverExchangeFish.Contains(x.FishID) && x.FishID != (int)targetFish)
+				.Select(x => x.FishID)
+				.ToList();
 		}
 
 		private static bool PartyLeaderWaitConditions()
